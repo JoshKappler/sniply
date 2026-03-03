@@ -108,7 +108,6 @@ export default function SettingsPage() {
     if (!user) return;
     const errs: Record<string, string> = {};
     if (!currentPassword) errs.currentPassword = "Enter your current password.";
-    else if (currentPassword !== user.password) errs.currentPassword = "Current password is incorrect.";
     if (!newPassword) errs.newPassword = "Enter a new password.";
     else if (newPassword.length < 6) errs.newPassword = "Password must be at least 6 characters.";
     if (!confirmPassword) errs.confirmPassword = "Confirm your new password.";
@@ -120,7 +119,7 @@ export default function SettingsPage() {
     }
     setErrors({});
     try {
-      const updated = await apiUpdateUser(user.id, { password: newPassword });
+      const updated = await apiUpdateUser(user.id, { password: newPassword, currentPassword });
       const merged = { ...user, ...updated };
       setUser(merged);
       setCurrentUser(merged);
@@ -130,8 +129,9 @@ export default function SettingsPage() {
       setPasswordSuccess(true);
       setTimeout(() => setPasswordSuccess(false), 2500);
       addToast("Password updated successfully.");
-    } catch {
-      addToast("Failed to update password. Please try again.");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Failed to update password. Please try again.";
+      setErrors({ currentPassword: msg });
     }
   };
 

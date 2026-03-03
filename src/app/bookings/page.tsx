@@ -74,17 +74,6 @@ export default function BookingsPage() {
   const { addToast } = useToast();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
-  const [storageWarningDismissed, setStorageWarningDismissed] = useState(false);
-
-  useEffect(() => {
-    try {
-      if (localStorage.getItem("sniply_storage_warn_dismissed") === "1") {
-        setStorageWarningDismissed(true);
-      }
-    } catch (err) {
-      console.error("sniply/bookings: failed to read storage warning state", err);
-    }
-  }, []);
 
   useEffect(() => {
     const user = getCurrentUser();
@@ -116,8 +105,9 @@ export default function BookingsPage() {
 
   if (loading) return <LoadingSpinner />;
 
-  const upcoming = bookings.filter((b) => new Date(b.date) >= new Date());
-  const past = bookings.filter((b) => new Date(b.date) < new Date());
+  const todayStr = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD in local time
+  const upcoming = bookings.filter((b) => b.date.slice(0, 10) >= todayStr);
+  const past = bookings.filter((b) => b.date.slice(0, 10) < todayStr);
 
   return (
     <div className="min-h-screen bg-[var(--color-page-bg)] dark:bg-black">
@@ -125,29 +115,6 @@ export default function BookingsPage() {
       <main className="max-w-[720px] mx-auto px-6 py-10 animate-fade-in-up">
         <h1 className="font-heading font-bold text-gray-900 text-2xl sm:text-3xl mb-6">My Bookings</h1>
 
-        {/* localStorage volatility warning (one-time) */}
-        {!storageWarningDismissed && (
-          <div className="mb-6 flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl px-5 py-3.5">
-            <svg className="w-5 h-5 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <p className="text-sm text-amber-700 flex-1">
-              Your data is saved locally in this browser. Use the same browser and device to access your bookings.
-            </p>
-            <button
-              onClick={() => {
-                setStorageWarningDismissed(true);
-                try { localStorage.setItem("sniply_storage_warn_dismissed", "1"); } catch (err) { console.error("sniply/bookings: failed to persist storage warning dismissed state", err); }
-              }}
-              className="text-amber-400 hover:text-amber-600 transition-colors shrink-0"
-              aria-label="Dismiss"
-            >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-              </svg>
-            </button>
-          </div>
-        )}
 
         {bookings.length === 0 ? (
           <div className="bg-white border border-[var(--color-primary)]/12 rounded-2xl p-14 text-center">

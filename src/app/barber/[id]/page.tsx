@@ -1111,9 +1111,9 @@ export default function BarberProfilePage({
         date: r.date,
         reply: r.reply,
       })));
-      // Build reply map from reviews
+      // Build reply map from reviews — keyed by userId_date to match render logic
       const replies: Record<string, string> = {};
-      reviews.forEach((r, i) => { if (r.reply) replies[`review-${i}`] = r.reply; });
+      reviews.forEach((r) => { if (r.reply) replies[`${r.userId}_${r.date}`] = r.reply; });
       setReviewReplies(replies);
     }).catch(() => {});
 
@@ -2008,8 +2008,8 @@ export default function BarberProfilePage({
                           </div>
                         )}
 
-                        {/* Reply input (own profile only) */}
-                        {isOwnProfile && (
+                        {/* Reply input (own profile only, DB reviews only — not static seed reviews) */}
+                        {isOwnProfile && i < extraReviews.length && (
                           isReplying ? (
                             <div className="mt-3 space-y-2">
                               <textarea

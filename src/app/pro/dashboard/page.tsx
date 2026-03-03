@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { Stars } from "@/components/Stars";
+import { useToast } from "@/components/Toast";
 import { getCurrentUser, type User } from "@/lib/auth";
 import { apiGetBarber, apiUpdateBarber, apiGetBookings, apiUpdateBooking, apiGetReviews, apiReplyToReview, apiGetThreads, apiUpdateThreads, apiGetAvailability, apiUpdateAvailability, apiGetBusinessHours, apiUpdateBusinessHours } from "@/lib/api";
 
@@ -443,13 +444,13 @@ function OnboardingChecklist({ profile, hasAvailability }: { profile: ProProfile
 
 export default function ProDashboardPage() {
   const router = useRouter();
+  const { addToast } = useToast();
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<ProProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<TabKey>("profile");
   const [newBookingNotifs, setNewBookingNotifs] = useState<Booking[]>([]);
   const [notifsVisible, setNotifsVisible] = useState(true);
-  const [storageWarningDismissed, setStorageWarningDismissed] = useState(false);
 
   // Appointments / calendar
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -582,13 +583,8 @@ export default function ProDashboardPage() {
       apiGetReviews(profileId).then((reviews) => {
         setProReviews(reviews.map((r) => ({ userId: r.userId, name: r.userName, rating: r.rating, text: r.text, date: r.date })));
         const repliesMap: Record<string, string> = {};
-        reviews.forEach((r, i) => {
+        reviews.forEach((r) => {
           if (r.reply) repliesMap[`${r.userId}_${r.date}`] = r.reply;
-          else {
-            // fallback key by index for legacy data
-            const legacyKey = `review-${i}`;
-            if (r.reply) repliesMap[legacyKey] = r.reply;
-          }
         });
         setDashReviewReplies(repliesMap);
       }).catch(() => {});
@@ -645,16 +641,6 @@ export default function ProDashboardPage() {
     void apiUpdateBusinessHours(pid, businessHours);
   }, [businessHours]);
 
-  // ── One-time localStorage warning ─────────────────────────────────────────
-  useEffect(() => {
-    try {
-      if (localStorage.getItem("sniply_storage_warn_dismissed") === "1") {
-        setStorageWarningDismissed(true);
-      }
-    } catch (err) {
-      console.error("sniply/dashboard: failed to read storage warning state", err);
-    }
-  }, []);
 
 
   // ── Auto-refresh bookings from API (polls every 5s) ──────────────────────
@@ -1051,30 +1037,6 @@ export default function ProDashboardPage() {
 
         <main className="flex-1 px-6 py-8 pb-24 lg:pb-8 min-w-0 animate-fade-in-up">
 
-          {/* localStorage volatility warning (one-time) */}
-          {!storageWarningDismissed && (
-            <div className="mb-5 flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl px-5 py-3.5">
-              <svg className="w-5 h-5 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <p className="text-sm text-amber-700 flex-1">
-                Your data is saved locally in this browser. Use the same browser and device to access your bookings.
-              </p>
-              <button
-                onClick={() => {
-                  setStorageWarningDismissed(true);
-                  try { localStorage.setItem("sniply_storage_warn_dismissed", "1"); } catch (err) { console.error("sniply/dashboard: failed to persist storage warning dismissed state", err); }
-                }}
-                className="text-amber-400 hover:text-amber-600 transition-colors shrink-0"
-                aria-label="Dismiss"
-              >
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-              </button>
-            </div>
-          )}
-
           {/* New booking notification banner */}
           {notifsVisible && newBookingNotifs.length > 0 && (
             <div className="mb-6 bg-emerald-50 border border-emerald-200 rounded-xl px-5 py-4 flex items-start gap-3">
@@ -1450,6 +1412,7 @@ export default function ProDashboardPage() {
                                   setDashSvcs(prev => prev.map((s, i) => i === idx ? { ...s, images: [...s.images, compressed] } : s));
                                 } catch (err) {
                                   console.error("sniply/dashboard: service photo compression failed", err);
+                                  addToast("Failed to upload photo. Please try a different image.", "error");
                                 }
                                 e.target.value = "";
                               }}
@@ -1544,25 +1507,6 @@ export default function ProDashboardPage() {
                           const dur = getBookingDuration(b, profile);
                           const avatar = customerAvatars[b.userId];
                           const initials = (b.userName ?? "").split(" ").map((n: string) => n[0]).join("").slice(0, 2).toUpperCase();
-                          // Load customer reference photos + notes
-                          let refPhotos: string[] = [];
-                          let refNotes = "";
-                          try {
-                            const allUsers: { id: string; username: string }[] = JSON.parse(localStorage.getItem("sniply_users") ?? "[]");
-                            const customerUser = allUsers.find(u => u.id === b.userId);
-                            if (customerUser) {
-                              const cpRaw = localStorage.getItem("sniply_customer_profile");
-                              if (cpRaw) {
-                                const cp = JSON.parse(cpRaw);
-                                if (cp.userId === b.userId || cp.id === b.userId) {
-                                  refPhotos = cp.referencePhotos ?? [];
-                                  refNotes = cp.referenceNotes ?? "";
-                                }
-                              }
-                            }
-                          } catch (err) {
-                            console.error("sniply/dashboard: failed to parse customer profile for booking", err);
-                          }
                           const bookingNotes = (b as Booking & { notes?: string }).notes;
                           return (
                             <div key={b.id} className="bg-[var(--color-section-bg)] dark:bg-[#1e1e1e] rounded-xl border border-[var(--color-primary)]/10 overflow-hidden">
@@ -1584,20 +1528,6 @@ export default function ProDashboardPage() {
                               {bookingNotes && (
                                 <div className="px-4 pb-3 text-xs text-gray-600 bg-amber-50 border-t border-amber-100 pt-2">
                                   <span className="font-semibold text-amber-700">Client note: </span>{bookingNotes}
-                                </div>
-                              )}
-                              {/* Reference photos */}
-                              {refPhotos.length > 0 && (
-                                <div className="px-4 pb-3 border-t border-gray-200 pt-2">
-                                  <p className="text-xs font-semibold text-gray-500 mb-1.5">Reference photos</p>
-                                  <div className="flex gap-1.5 overflow-x-auto">
-                                    {refPhotos.map((photo, pi) => (
-                                      <div key={pi} className="w-14 h-14 rounded-lg overflow-hidden shrink-0 bg-gray-200">
-                                        <img src={photo} alt={`Ref ${pi + 1}`} className="w-full h-full object-cover" />
-                                      </div>
-                                    ))}
-                                  </div>
-                                  {refNotes && <p className="text-xs text-gray-500 mt-1.5 italic">&ldquo;{refNotes}&rdquo;</p>}
                                 </div>
                               )}
                             </div>

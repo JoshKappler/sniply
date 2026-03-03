@@ -15,7 +15,7 @@ import type {
 } from "@/lib/types";
 
 async function apiFetch<T>(url: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(url, { ...options, headers: { "Content-Type": "application/json", ...(options?.headers ?? {}) } });
+  const res = await fetch(url, { credentials: "include", ...options, headers: { "Content-Type": "application/json", ...(options?.headers ?? {}) } });
   if (!res.ok) {
     const body = await res.json().catch(() => ({})) as { error?: string };
     throw new Error(body.error ?? `API error ${res.status}`);
@@ -51,7 +51,7 @@ export async function apiGetUser(id: string): Promise<User> {
   return apiFetch(`/api/users/${id}`);
 }
 
-export async function apiUpdateUser(id: string, patch: Partial<User>): Promise<User> {
+export async function apiUpdateUser(id: string, patch: Partial<User> & { currentPassword?: string }): Promise<User> {
   return apiFetch(`/api/users/${id}`, { method: "PUT", body: JSON.stringify(patch) });
 }
 
