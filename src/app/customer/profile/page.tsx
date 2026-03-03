@@ -86,11 +86,13 @@ export default function CustomerProfilePage() {
         const saved = JSON.parse(raw);
         setProfile((prev) => ({ ...prev, ...saved }));
       }
-    } catch {}
+    } catch (err) {
+      console.error("sniply/profile: failed to parse legacy profile from localStorage", err);
+    }
     // Load message threads from API
     apiGetCustomerThreads(user.id).then((threads) => {
       setMessageThreads(threads.slice(0, 4));
-    }).catch(() => {}).finally(() => setLoading(false));
+    }).catch((err) => console.error("sniply/profile: failed to load message threads", err)).finally(() => setLoading(false));
   }, [router]);
 
   if (loading) {
@@ -98,7 +100,7 @@ export default function CustomerProfilePage() {
       <div className="min-h-screen bg-white flex flex-col">
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-8 h-8 border-2 border-[#2E4A8B]/20 border-t-[#2E4A8B] rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[var(--color-primary)]/20 border-t-[var(--color-primary)] rounded-full animate-spin" />
         </div>
       </div>
     );
@@ -129,8 +131,8 @@ export default function CustomerProfilePage() {
 
         {!profile ? (
           <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-12 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-[#2E4A8B]/8 flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-[#2E4A8B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-16 h-16 rounded-2xl bg-[var(--color-primary)]/8 flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-[var(--color-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
@@ -154,7 +156,7 @@ export default function CustomerProfilePage() {
                     className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-md shrink-0"
                   />
                 ) : (
-                  <div className="w-20 h-20 rounded-full bg-[#2E4A8B] text-white font-semibold flex items-center justify-center text-2xl shrink-0">
+                  <div className="w-20 h-20 rounded-full bg-[var(--color-primary)] text-white font-semibold flex items-center justify-center text-2xl shrink-0">
                     {initials || "?"}
                   </div>
                 )}
@@ -203,7 +205,7 @@ export default function CustomerProfilePage() {
                   {profile.stylePrefs.map((pref) => (
                     <span
                       key={pref}
-                      className="text-sm font-medium bg-[#2E4A8B]/8 text-[#2E4A8B] px-3 py-1.5 rounded-full"
+                      className="text-sm font-medium bg-[var(--color-primary)]/8 text-[var(--color-primary)] px-3 py-1.5 rounded-full"
                     >
                       {pref}
                     </span>
@@ -270,7 +272,7 @@ export default function CustomerProfilePage() {
             <h3 className="font-heading font-semibold text-gray-900 text-lg">Messages</h3>
             <Link
               href="/messages"
-              className="text-sm font-medium text-[#2E4A8B] hover:underline flex items-center gap-1"
+              className="text-sm font-medium text-[var(--color-primary)] hover:underline flex items-center gap-1"
             >
               View all
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -280,14 +282,14 @@ export default function CustomerProfilePage() {
           </div>
           {messageThreads.length === 0 ? (
             <div className="text-center py-6">
-              <div className="w-12 h-12 rounded-xl bg-[#2E4A8B]/8 flex items-center justify-center mx-auto mb-3">
-                <svg className="w-6 h-6 text-[#2E4A8B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-12 h-12 rounded-xl bg-[var(--color-primary)]/8 flex items-center justify-center mx-auto mb-3">
+                <svg className="w-6 h-6 text-[var(--color-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
               </div>
               <p className="text-sm text-gray-500 font-medium">No messages yet</p>
               <p className="text-xs text-gray-400 mt-1">Your conversations with pros will appear here</p>
-              <Link href="/browse" className="inline-flex items-center gap-1 text-sm font-medium text-[#2E4A8B] hover:underline mt-3">
+              <Link href="/browse" className="inline-flex items-center gap-1 text-sm font-medium text-[var(--color-primary)] hover:underline mt-3">
                 Find a pro to message
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -305,7 +307,7 @@ export default function CustomerProfilePage() {
                   {thread.proAvatar ? (
                     <img src={thread.proAvatar} alt={thread.proName} className="w-10 h-10 rounded-full object-cover shrink-0" />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-[#2E4A8B] text-white font-semibold flex items-center justify-center text-sm shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-[var(--color-primary)] text-white font-semibold flex items-center justify-center text-sm shrink-0">
                       {thread.proName.charAt(0).toUpperCase()}
                     </div>
                   )}
@@ -315,21 +317,21 @@ export default function CustomerProfilePage() {
                         {thread.proName}
                       </p>
                       {thread.unread && (
-                        <span className="w-2 h-2 rounded-full bg-[#2E4A8B] shrink-0" />
+                        <span className="w-2 h-2 rounded-full bg-[var(--color-primary)] shrink-0" />
                       )}
                     </div>
                     {thread.lastMessage && (
                       <p className="text-xs text-gray-400 truncate mt-0.5">{thread.lastMessage}</p>
                     )}
                   </div>
-                  <svg className="w-4 h-4 text-gray-300 group-hover:text-[#2E4A8B] transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 text-gray-300 group-hover:text-[var(--color-primary)] transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </Link>
               ))}
               <Link
                 href="/messages"
-                className="block text-center text-sm font-medium text-[#2E4A8B] hover:underline pt-2"
+                className="block text-center text-sm font-medium text-[var(--color-primary)] hover:underline pt-2"
               >
                 View all conversations →
               </Link>

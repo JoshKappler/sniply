@@ -319,7 +319,7 @@ function PortfolioManager({ profile, onUpdate }: { profile: ProProfile; onUpdate
     setUploading(true);
     const newImgs: string[] = [];
     for (const file of files) {
-      try { newImgs.push(await compressImage(file)); } catch {}
+      try { newImgs.push(await compressImage(file)); } catch (err) { console.error("sniply/dashboard: image compression failed", err); }
     }
     onUpdate([...imgs, ...newImgs].slice(0, 12));
     setUploading(false);
@@ -331,12 +331,12 @@ function PortfolioManager({ profile, onUpdate }: { profile: ProProfile; onUpdate
   };
 
   return (
-    <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-6">
+    <div className="bg-white border border-[var(--color-primary)]/12 rounded-xl p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-gray-900">Portfolio</h3>
-        <label className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border cursor-pointer transition-all ${uploading ? "opacity-50 cursor-not-allowed" : "border-[#2E4A8B]/30 text-[#2E4A8B] hover:bg-[#2E4A8B]/5"}`}>
+        <label className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border cursor-pointer transition-all ${uploading ? "opacity-50 cursor-not-allowed" : "border-[var(--color-primary)]/30 text-[var(--color-primary)] hover:bg-[var(--color-primary)]/5"}`}>
           {uploading ? (
-            <><div className="w-3 h-3 border border-[#2E4A8B]/30 border-t-[#2E4A8B] rounded-full animate-spin" /> Uploading…</>
+            <><div className="w-3 h-3 border border-[var(--color-primary)]/30 border-t-[var(--color-primary)] rounded-full animate-spin" /> Uploading…</>
           ) : (
             <><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg> Add Photos</>
           )}
@@ -379,7 +379,9 @@ function OnboardingChecklist({ profile, hasAvailability }: { profile: ProProfile
     try {
       const v = localStorage.getItem("sniply_onboarding_dismissed");
       if (v === "1") setDismissed(true);
-    } catch {}
+    } catch (err) {
+      console.error("sniply/dashboard: failed to read onboarding dismissed state", err);
+    }
   }, []);
 
   if (dismissed) return null;
@@ -398,7 +400,7 @@ function OnboardingChecklist({ profile, hasAvailability }: { profile: ProProfile
   if (allDone) return null;
 
   return (
-    <div className="mb-6 bg-gradient-to-br from-[#2E4A8B]/5 to-[#4A6BC0]/5 border border-[#2E4A8B]/20 rounded-xl p-5">
+    <div className="mb-6 bg-gradient-to-br from-[var(--color-primary)]/5 to-[var(--color-primary-light)]/5 border border-[var(--color-primary)]/20 rounded-xl p-5">
       <div className="flex items-start justify-between gap-3 mb-4">
         <div>
           <h3 className="font-semibold text-gray-900">Complete your profile</h3>
@@ -409,7 +411,7 @@ function OnboardingChecklist({ profile, hasAvailability }: { profile: ProProfile
         <button
           onClick={() => {
             setDismissed(true);
-            try { localStorage.setItem("sniply_onboarding_dismissed", "1"); } catch {}
+            try { localStorage.setItem("sniply_onboarding_dismissed", "1"); } catch (err) { console.error("sniply/dashboard: failed to persist onboarding dismissed state", err); }
           }}
           className="text-gray-400 hover:text-gray-600 shrink-0"
         >
@@ -422,13 +424,13 @@ function OnboardingChecklist({ profile, hasAvailability }: { profile: ProProfile
       <div className="h-1.5 bg-gray-200 rounded-full mb-4 overflow-hidden">
         <div
           className="h-full rounded-full transition-all"
-          style={{ width: `${(doneCount / checks.length) * 100}%`, background: "linear-gradient(135deg, #2E4A8B, #4A6BC0)" }}
+          style={{ width: `${(doneCount / checks.length) * 100}%`, background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-light))" }}
         />
       </div>
       <div className="space-y-2">
         {checks.map(({ label, done }) => (
           <div key={label} className="flex items-center gap-2.5">
-            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${done ? "border-[#2E4A8B] bg-[#2E4A8B]" : "border-gray-300"}`}>
+            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${done ? "border-[var(--color-primary)] bg-[var(--color-primary)]" : "border-gray-300"}`}>
               {done && <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
             </div>
             <span className={`text-sm ${done ? "line-through text-gray-400" : "text-gray-700"}`}>{label}</span>
@@ -447,6 +449,7 @@ export default function ProDashboardPage() {
   const [tab, setTab] = useState<TabKey>("profile");
   const [newBookingNotifs, setNewBookingNotifs] = useState<Booking[]>([]);
   const [notifsVisible, setNotifsVisible] = useState(true);
+  const [storageWarningDismissed, setStorageWarningDismissed] = useState(false);
 
   // Appointments / calendar
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -535,6 +538,7 @@ export default function ProDashboardPage() {
   // Services tab
   const [dashSvcs, setDashSvcs] = useState<DashService[]>([{ name: "", description: "", price: "", duration: "", images: [] }]);
   const [svcsSaved, setSvcsSaved] = useState(false);
+  const [svcsError, setSvcsError] = useState<string | null>(null);
 
   // ── Load data ──────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -640,6 +644,17 @@ export default function ProDashboardPage() {
     if (!pid) return;
     void apiUpdateBusinessHours(pid, businessHours);
   }, [businessHours]);
+
+  // ── One-time localStorage warning ─────────────────────────────────────────
+  useEffect(() => {
+    try {
+      if (localStorage.getItem("sniply_storage_warn_dismissed") === "1") {
+        setStorageWarningDismissed(true);
+      }
+    } catch (err) {
+      console.error("sniply/dashboard: failed to read storage warning state", err);
+    }
+  }, []);
 
 
   // ── Auto-refresh bookings from API (polls every 5s) ──────────────────────
@@ -800,7 +815,8 @@ export default function ProDashboardPage() {
 
   // ── Services helpers ───────────────────────────────────────────────────────
   const saveDashServices = async () => {
-    if (!profile?.id) return;
+    setSvcsError(null);
+    if (!profile?.id) { setSvcsError("Profile not loaded — please refresh."); return; }
     const validSvcs = dashSvcs
       .filter(s => s.name.trim() && s.price.trim())
       .map(s => ({
@@ -810,13 +826,17 @@ export default function ProDashboardPage() {
         duration: parseInt(s.duration) || 30,
         images: s.images,
       }));
-    const startingPrice = validSvcs.length > 0 ? Math.min(...validSvcs.map(s => s.price)) : profile.startingPrice ?? 0;
+    if (validSvcs.length === 0) { setSvcsError("Add at least one service with a name and price before saving."); return; }
+    const startingPrice = Math.min(...validSvcs.map(s => s.price));
     try {
       const updated = await apiUpdateBarber(profile.id, { services: validSvcs, startingPrice });
       setProfile(prev => prev ? { ...prev, ...updated } : prev);
       setSvcsSaved(true);
       setTimeout(() => setSvcsSaved(false), 2500);
-    } catch {}
+    } catch (err) {
+      console.error("sniply/dashboard: failed to save services", err);
+      setSvcsError(err instanceof Error ? err.message : "Failed to save — please try again.");
+    }
   };
 
   // ── Schedule helpers ───────────────────────────────────────────────────────
@@ -974,7 +994,7 @@ export default function ProDashboardPage() {
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="flex flex-col items-center gap-3">
-        <div className="w-8 h-8 border-2 border-[#2E4A8B]/20 border-t-[#2E4A8B] rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[var(--color-primary)]/20 border-t-[var(--color-primary)] rounded-full animate-spin" />
         <p className="text-sm text-gray-400">Loading dashboard...</p>
       </div>
     </div>
@@ -991,16 +1011,16 @@ export default function ProDashboardPage() {
   const todayKey = toISODate(new Date());
 
   return (
-    <div className="min-h-screen bg-[#d6e4f7] dark:bg-black" onClick={() => { setActiveBlock(null); setActiveBookingId(null); }}>
+    <div className="min-h-screen bg-[var(--color-page-bg)] dark:bg-black" onClick={() => { setActiveBlock(null); setActiveBookingId(null); }}>
       <Navbar />
       <div className="max-w-[1200px] mx-auto flex min-h-[calc(100vh-72px)]">
 
         {/* Sidebar */}
-        <aside className="hidden lg:flex flex-col w-[240px] shrink-0 border-r border-[#2E4A8B]/12 bg-[#e4edf8] dark:bg-[#111111] pt-8 pb-4 px-4">
+        <aside className="hidden lg:flex flex-col w-[240px] shrink-0 border-r border-[var(--color-primary)]/12 bg-[var(--color-section-bg)] dark:bg-[#111111] pt-8 pb-4 px-4">
           <nav className="space-y-1 flex-1">
             {TABS.map(({ key, label }) => (
               <button key={key} onClick={() => setTab(key)}
-                className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all ${tab === key ? "bg-[#2E4A8B] text-white" : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"}`}
+                className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-all ${tab === key ? "bg-[var(--color-primary)] text-white" : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"}`}
               >{label}</button>
             ))}
           </nav>
@@ -1016,11 +1036,11 @@ export default function ProDashboardPage() {
         </aside>
 
         {/* Mobile tabs */}
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#e4edf8] dark:bg-[#111111] border-t border-[#2E4A8B]/12">
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[var(--color-section-bg)] dark:bg-[#111111] border-t border-[var(--color-primary)]/12">
           <div className="flex">
             {TABS.map(({ key, label, shortLabel }) => (
               <button key={key} onClick={() => setTab(key)}
-                className={`flex-1 py-3 text-xs font-semibold whitespace-nowrap border-t-2 transition-all ${tab === key ? "border-[#2E4A8B] text-[#2E4A8B]" : "border-transparent text-gray-400 hover:text-gray-600"}`}
+                className={`flex-1 py-3 text-xs font-semibold whitespace-nowrap border-t-2 transition-all ${tab === key ? "border-[var(--color-primary)] text-[var(--color-primary)]" : "border-transparent text-gray-400 hover:text-gray-600"}`}
               >
                 <span className="sm:hidden">{shortLabel}</span>
                 <span className="hidden sm:inline">{label}</span>
@@ -1029,7 +1049,31 @@ export default function ProDashboardPage() {
           </div>
         </div>
 
-        <main className="flex-1 px-6 py-8 pb-24 lg:pb-8 min-w-0">
+        <main className="flex-1 px-6 py-8 pb-24 lg:pb-8 min-w-0 animate-fade-in-up">
+
+          {/* localStorage volatility warning (one-time) */}
+          {!storageWarningDismissed && (
+            <div className="mb-5 flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl px-5 py-3.5">
+              <svg className="w-5 h-5 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="text-sm text-amber-700 flex-1">
+                Your data is saved locally in this browser. Use the same browser and device to access your bookings.
+              </p>
+              <button
+                onClick={() => {
+                  setStorageWarningDismissed(true);
+                  try { localStorage.setItem("sniply_storage_warn_dismissed", "1"); } catch (err) { console.error("sniply/dashboard: failed to persist storage warning dismissed state", err); }
+                }}
+                className="text-amber-400 hover:text-amber-600 transition-colors shrink-0"
+                aria-label="Dismiss"
+              >
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </div>
+          )}
 
           {/* New booking notification banner */}
           {notifsVisible && newBookingNotifs.length > 0 && (
@@ -1068,7 +1112,7 @@ export default function ProDashboardPage() {
 
           {/* ══ MY PROFILE ════════════════════════════════════════════════════ */}
           {tab === "profile" && (
-            <div className="max-w-[660px]">
+            <div className="max-w-[660px] animate-tab-fade">
               <div className="flex items-center justify-between mb-6">
                 <h1 className="font-heading font-bold text-gray-900 text-2xl">My Profile</h1>
                 <div className="flex flex-col sm:flex-row gap-2">
@@ -1079,11 +1123,11 @@ export default function ProDashboardPage() {
               <OnboardingChecklist profile={profile} hasAvailability={Object.keys(schedData).length > 0} />
               {profile ? (
                 <div className="space-y-5">
-                  <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-6">
+                  <div className="bg-white border border-[var(--color-primary)]/12 rounded-xl p-6">
                     <div className="flex items-start gap-4 mb-4">
                       {profile.profileImage
                         ? <img src={profile.profileImage} alt={profile.name} className="w-20 h-20 rounded-full object-cover shrink-0" />
-                        : <div className="w-20 h-20 rounded-full bg-[#2E4A8B] text-white text-2xl font-bold flex items-center justify-center shrink-0">{profile.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}</div>
+                        : <div className="w-20 h-20 rounded-full bg-[var(--color-primary)] text-white text-2xl font-bold flex items-center justify-center shrink-0">{profile.name?.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}</div>
                       }
                       <div>
                         <h2 className="font-heading font-bold text-gray-900 text-xl">{profile.name}</h2>
@@ -1096,7 +1140,7 @@ export default function ProDashboardPage() {
                         )}
                         {profile.shopName && <p className="text-sm text-gray-500 mt-0.5">Shop: {profile.shopName}</p>}
                         <div className="flex flex-wrap gap-2 mt-2">
-                          {profile.type && <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${profile.type === "independent" ? "bg-[#2E4A8B] text-white" : "bg-gray-100 text-gray-700"}`}>{profile.type === "independent" ? "Independent Barber / Stylist" : "Shop-Based"}</span>}
+                          {profile.type && <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${profile.type === "independent" ? "bg-[var(--color-primary)] text-white" : "bg-gray-100 text-gray-700"}`}>{profile.type === "independent" ? "Independent Barber / Stylist" : "Shop-Based"}</span>}
                           {profile.experience && <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-gray-100 text-gray-700">{profile.experience}</span>}
                         </div>
                       </div>
@@ -1104,31 +1148,31 @@ export default function ProDashboardPage() {
                     {profile.bio && <div className="border-t border-gray-100 pt-4"><p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Bio</p><p className="text-sm text-gray-600 leading-relaxed">{profile.bio}</p></div>}
                   </div>
                   {profile.services && profile.services.length > 0 && (
-                    <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-6">
+                    <div className="bg-white border border-[var(--color-primary)]/12 rounded-xl p-6">
                       <h3 className="font-semibold text-gray-900 mb-4">Services</h3>
                       <div className="space-y-3">
                         {profile.services.map((svc, i) => (
                           <div key={i} className="flex items-center justify-between py-2 border-b last:border-b-0 border-gray-100">
                             <div><p className="text-sm font-medium text-gray-800">{svc.name}</p>{svc.description && <p className="text-xs text-gray-400">{svc.description}</p>}</div>
-                            <div className="text-right shrink-0 ml-4"><p className="text-sm font-bold text-[#2E4A8B]">${svc.price}</p>{svc.duration > 0 && <p className="text-xs text-gray-400">{svc.duration} min</p>}</div>
+                            <div className="text-right shrink-0 ml-4"><p className="text-sm font-bold text-[var(--color-primary)]">${svc.price}</p>{svc.duration > 0 && <p className="text-xs text-gray-400">{svc.duration} min</p>}</div>
                           </div>
                         ))}
                       </div>
                     </div>
                   )}
-                  <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-6 space-y-5">
-                    {profile.specialties && profile.specialties.length > 0 && <div><p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Specialties</p><div className="flex flex-wrap gap-2">{profile.specialties.map(s => <span key={s} className="text-xs bg-[#2E4A8B]/10 text-[#2E4A8B] font-medium px-3 py-1 rounded-full">{s}</span>)}</div></div>}
+                  <div className="bg-white border border-[var(--color-primary)]/12 rounded-xl p-6 space-y-5">
+                    {profile.specialties && profile.specialties.length > 0 && <div><p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Specialties</p><div className="flex flex-wrap gap-2">{profile.specialties.map(s => <span key={s} className="text-xs bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-medium px-3 py-1 rounded-full">{s}</span>)}</div></div>}
                     {profile.hairTypes && profile.hairTypes.length > 0 && <div><p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Hair Types</p><p className="text-sm text-gray-700">{profile.hairTypes.join(", ")}</p></div>}
                     {profile.languages && profile.languages.length > 0 && <div><p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Languages</p><p className="text-sm text-gray-700">{profile.languages.join(", ")}</p></div>}
                   </div>
                   {profile.credentials && profile.credentials.some(c => c.text) && (
-                    <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-6">
+                    <div className="bg-white border border-[var(--color-primary)]/12 rounded-xl p-6">
                       <h3 className="font-semibold text-gray-900 mb-4">Credentials</h3>
                       <div className="space-y-2">
                         {profile.credentials.filter(c => c.text).map((c, i) => (
                           <div key={i} className="flex items-center gap-3 py-2 border-b last:border-b-0 border-gray-100">
-                            <div className="w-8 h-8 rounded-lg bg-[#2E4A8B]/10 flex items-center justify-center shrink-0">
-                              <svg className="w-4 h-4 text-[#2E4A8B]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                            <div className="w-8 h-8 rounded-lg bg-[var(--color-primary)]/10 flex items-center justify-center shrink-0">
+                              <svg className="w-4 h-4 text-[var(--color-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                             </div>
                             <div className="flex-1 min-w-0"><p className="text-sm font-medium text-gray-800">{c.text}</p>{c.fileName && <p className="text-xs text-gray-400">{c.fileName}</p>}</div>
                           </div>
@@ -1147,7 +1191,7 @@ export default function ProDashboardPage() {
 
 
                   {/* Business Hours */}
-                  <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-6">
+                  <div className="bg-white border border-[var(--color-primary)]/12 rounded-xl p-6">
                     <h3 className="font-semibold text-gray-900 mb-1">Business Hours</h3>
                     <p className="text-xs text-gray-400 mb-4">Sets the visible range on your availability calendar for customers.</p>
                     <div className="flex items-center gap-4">
@@ -1157,7 +1201,7 @@ export default function ProDashboardPage() {
                           type="time"
                           value={toInputTime(businessHours.openTime)}
                           onChange={(e) => setBusinessHours(h => ({ ...h, openTime: fromInputTime(e.target.value) }))}
-                          className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:border-[#2E4A8B]"
+                          className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:border-[var(--color-primary)]"
                         />
                       </div>
                       <div className="flex-1">
@@ -1166,14 +1210,14 @@ export default function ProDashboardPage() {
                           type="time"
                           value={toInputTime(businessHours.closeTime)}
                           onChange={(e) => setBusinessHours(h => ({ ...h, closeTime: fromInputTime(e.target.value) }))}
-                          className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:border-[#2E4A8B]"
+                          className="w-full text-sm border border-gray-200 rounded-xl px-3 py-2 focus:outline-none focus:border-[var(--color-primary)]"
                         />
                       </div>
                     </div>
                   </div>
 
                   {/* Reviews */}
-                  <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-6">
+                  <div className="bg-white border border-[var(--color-primary)]/12 rounded-xl p-6">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="font-semibold text-gray-900">Reviews</h3>
                       {proReviews.length > 0 && (
@@ -1191,7 +1235,7 @@ export default function ProDashboardPage() {
                     </div>
                     {proReviews.length === 0 ? (
                       <div className="flex flex-col items-center py-8 text-center">
-                        <div className="w-12 h-12 rounded-xl bg-[#2E4A8B]/8 flex items-center justify-center text-[#2E4A8B] mb-3">
+                        <div className="w-12 h-12 rounded-xl bg-[var(--color-primary)]/8 flex items-center justify-center text-[var(--color-primary)] mb-3">
                           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                           </svg>
@@ -1219,8 +1263,8 @@ export default function ProDashboardPage() {
                               )}
                               {/* Existing reply */}
                               {existingReply && !isReplying && (
-                                <div className="mt-2.5 pl-3 border-l-2 border-[#2E4A8B]/20 bg-[#2E4A8B]/4 rounded-r-lg px-3 py-2">
-                                  <p className="text-[11px] font-bold text-[#2E4A8B] mb-0.5">Your response</p>
+                                <div className="mt-2.5 pl-3 border-l-2 border-[var(--color-primary)]/20 bg-[var(--color-primary)]/4 rounded-r-lg px-3 py-2">
+                                  <p className="text-[11px] font-bold text-[var(--color-primary)] mb-0.5">Your response</p>
                                   <p className="text-xs text-gray-600 leading-relaxed">{existingReply}</p>
                                 </div>
                               )}
@@ -1233,7 +1277,7 @@ export default function ProDashboardPage() {
                                     onChange={(e) => setDashReplyDraft(e.target.value)}
                                     placeholder="Write a response to this review…"
                                     rows={3}
-                                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#2E4A8B] focus:ring-1 focus:ring-[#2E4A8B]/30 resize-none"
+                                    className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]/30 resize-none"
                                   />
                                   <div className="flex gap-2">
                                     <button
@@ -1265,7 +1309,7 @@ export default function ProDashboardPage() {
                               ) : (
                                 <button
                                   onClick={() => { setDashReplyingTo(replyKey); setDashReplyDraft(existingReply ?? ""); }}
-                                  className="mt-1.5 text-xs font-semibold text-[#2E4A8B] hover:underline"
+                                  className="mt-1.5 text-xs font-semibold text-[var(--color-primary)] hover:underline"
                                 >
                                   {existingReply ? "Edit response" : "Reply"}
                                 </button>
@@ -1278,7 +1322,7 @@ export default function ProDashboardPage() {
                   </div>
                 </div>
               ) : (
-                <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-10 text-center">
+                <div className="bg-white border border-[var(--color-primary)]/12 rounded-xl p-10 text-center">
                   <p className="text-gray-500 mb-4">No profile saved yet.</p>
                   <Link href="/signup/professional" className="btn-primary">Complete Your Profile</Link>
                 </div>
@@ -1288,15 +1332,15 @@ export default function ProDashboardPage() {
 
           {/* ══ SERVICES ══════════════════════════════════════════════════════ */}
           {tab === "services" && (
-            <div className="max-w-[660px]">
-              <div className="flex items-center justify-between mb-6">
+            <div className="max-w-[660px] animate-tab-fade">
+              <div className="flex items-start justify-between mb-6 gap-4">
                 <div>
                   <h1 className="font-heading font-bold text-gray-900 text-2xl">Services</h1>
                   <p className="text-sm text-gray-500 mt-1">Manage the services you offer with pricing, duration, and example photos</p>
                 </div>
                 <button
                   onClick={() => void saveDashServices()}
-                  className={`btn-primary text-sm ${svcsSaved ? "opacity-80" : ""}`}
+                  className={`btn-primary text-sm shrink-0 ${svcsSaved ? "opacity-80" : ""}`}
                   style={{ height: 40, padding: "0 20px", display: "flex", alignItems: "center", gap: 6 }}
                 >
                   {svcsSaved ? (
@@ -1309,10 +1353,18 @@ export default function ProDashboardPage() {
                   ) : "Save Services"}
                 </button>
               </div>
+              {svcsError && (
+                <div className="mb-4 flex items-center gap-2.5 bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">
+                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  {svcsError}
+                </div>
+              )}
 
               <div className="space-y-4">
                 {dashSvcs.map((svc, idx) => (
-                  <div key={idx} className="bg-white border border-[#2E4A8B]/12 rounded-xl p-5 relative">
+                  <div key={idx} className="bg-white border border-[var(--color-primary)]/12 rounded-xl p-5 relative">
                     {dashSvcs.length > 1 && (
                       <button
                         onClick={() => setDashSvcs(prev => prev.filter((_, i) => i !== idx))}
@@ -1329,7 +1381,7 @@ export default function ProDashboardPage() {
                           placeholder="e.g., Fade & Lineup"
                           value={svc.name}
                           onChange={e => setDashSvcs(prev => prev.map((s, i) => i === idx ? { ...s, name: e.target.value } : s))}
-                          className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#2E4A8B] focus:ring-1 focus:ring-[#2E4A8B]/30"
+                          className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]/30"
                         />
                       </div>
                       <div>
@@ -1339,7 +1391,7 @@ export default function ProDashboardPage() {
                           placeholder="Brief description (optional)"
                           value={svc.description}
                           onChange={e => setDashSvcs(prev => prev.map((s, i) => i === idx ? { ...s, description: e.target.value } : s))}
-                          className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#2E4A8B] focus:ring-1 focus:ring-[#2E4A8B]/30"
+                          className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]/30"
                         />
                       </div>
                       <div>
@@ -1350,7 +1402,7 @@ export default function ProDashboardPage() {
                           placeholder="45"
                           value={svc.price}
                           onChange={e => setDashSvcs(prev => prev.map((s, i) => i === idx ? { ...s, price: e.target.value } : s))}
-                          className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#2E4A8B] focus:ring-1 focus:ring-[#2E4A8B]/30"
+                          className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]/30"
                         />
                       </div>
                       <div>
@@ -1361,7 +1413,7 @@ export default function ProDashboardPage() {
                           placeholder="30"
                           value={svc.duration}
                           onChange={e => setDashSvcs(prev => prev.map((s, i) => i === idx ? { ...s, duration: e.target.value } : s))}
-                          className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#2E4A8B] focus:ring-1 focus:ring-[#2E4A8B]/30"
+                          className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]/30"
                         />
                       </div>
                     </div>
@@ -1381,8 +1433,8 @@ export default function ProDashboardPage() {
                           </div>
                         ))}
                         {svc.images.length < 4 && (
-                          <label className="w-20 h-20 rounded-lg border-2 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:border-[#2E4A8B] hover:bg-blue-50/30 transition-colors shrink-0 group">
-                            <svg className="w-5 h-5 text-gray-300 group-hover:text-[#2E4A8B]/50 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <label className="w-20 h-20 rounded-lg border-2 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:border-[var(--color-primary)] hover:bg-blue-50/30 transition-colors shrink-0 group">
+                            <svg className="w-5 h-5 text-gray-300 group-hover:text-[var(--color-primary)]/50 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
                             </svg>
                             <span className="text-[10px] text-gray-400 mt-1">Add photo</span>
@@ -1396,7 +1448,9 @@ export default function ProDashboardPage() {
                                 try {
                                   const compressed = await compressImage(file, 600, 0.80);
                                   setDashSvcs(prev => prev.map((s, i) => i === idx ? { ...s, images: [...s.images, compressed] } : s));
-                                } catch {}
+                                } catch (err) {
+                                  console.error("sniply/dashboard: service photo compression failed", err);
+                                }
                                 e.target.value = "";
                               }}
                             />
@@ -1410,7 +1464,7 @@ export default function ProDashboardPage() {
 
               <button
                 onClick={() => setDashSvcs(prev => [...prev, { name: "", description: "", price: "", duration: "", images: [] }])}
-                className="mt-4 flex items-center gap-2 text-sm text-[#2E4A8B] font-medium hover:underline"
+                className="mt-4 flex items-center gap-2 text-sm text-[var(--color-primary)] font-medium hover:underline"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -1423,7 +1477,7 @@ export default function ProDashboardPage() {
 
           {/* ══ APPOINTMENTS ═══════════════════════════════════════════════════ */}
           {tab === "appointments" && (
-            <div>
+            <div className="animate-tab-fade">
               <h1 className="font-heading font-bold text-gray-900 text-2xl mb-6">Appointments</h1>
 
               {/* ── Day-view panel ───────────────────────────────────────────── */}
@@ -1440,7 +1494,7 @@ export default function ProDashboardPage() {
                 const fullLabel = apptViewDate.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
 
                 return (
-                  <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-5 mb-6">
+                  <div className="bg-white border border-[var(--color-primary)]/12 rounded-xl p-5 mb-6">
                     {/* Day selector */}
                     <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
                       <div>
@@ -1454,7 +1508,7 @@ export default function ProDashboardPage() {
                         {!isToday && (
                           <button
                             onClick={() => { const d = new Date(); d.setHours(0,0,0,0); setApptViewDate(d); }}
-                            className="text-xs font-medium px-3 py-1.5 rounded-lg border border-[#2E4A8B]/30 text-[#2E4A8B] hover:bg-[#2E4A8B]/5 transition-colors"
+                            className="text-xs font-medium px-3 py-1.5 rounded-lg border border-[var(--color-primary)]/30 text-[var(--color-primary)] hover:bg-[var(--color-primary)]/5 transition-colors"
                           >
                             Today
                           </button>
@@ -1506,14 +1560,16 @@ export default function ProDashboardPage() {
                                 }
                               }
                             }
-                          } catch {}
+                          } catch (err) {
+                            console.error("sniply/dashboard: failed to parse customer profile for booking", err);
+                          }
                           const bookingNotes = (b as Booking & { notes?: string }).notes;
                           return (
-                            <div key={b.id} className="bg-[#e4edf8] dark:bg-[#1e1e1e] rounded-xl border border-[#2E4A8B]/10 overflow-hidden">
+                            <div key={b.id} className="bg-[var(--color-section-bg)] dark:bg-[#1e1e1e] rounded-xl border border-[var(--color-primary)]/10 overflow-hidden">
                               <div className="flex items-center gap-3 px-4 py-3">
                                 {avatar
                                   ? <img src={avatar} alt={b.userName} className="w-9 h-9 rounded-full object-cover shrink-0" />
-                                  : <div className="w-9 h-9 rounded-full bg-[#2E4A8B]/10 text-[#2E4A8B] font-bold text-xs flex items-center justify-center shrink-0">{initials}</div>
+                                  : <div className="w-9 h-9 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold text-xs flex items-center justify-center shrink-0">{initials}</div>
                                 }
                                 <div className="flex-1 min-w-0">
                                   <p className="text-sm font-semibold text-gray-900 truncate">{b.userName}</p>
@@ -1557,7 +1613,7 @@ export default function ProDashboardPage() {
               })()}
 
               {/* ── Multi-Week Interactive Schedule ─────────────────────────── */}
-              <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-5 mb-6">
+              <div className="bg-white border border-[var(--color-primary)]/12 rounded-xl p-5 mb-6">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
                   <div>
@@ -1566,7 +1622,7 @@ export default function ProDashboardPage() {
                       <div className="relative group/schedhelp">
                         <button
                           type="button"
-                          className="w-5 h-5 rounded-full border border-gray-300 text-gray-400 hover:border-[#2E4A8B] hover:text-[#2E4A8B] transition-colors flex items-center justify-center text-[11px] font-bold leading-none"
+                          className="w-5 h-5 rounded-full border border-gray-300 text-gray-400 hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-colors flex items-center justify-center text-[11px] font-bold leading-none"
                           aria-label="Scheduling help"
                         >
                           ?
@@ -1690,7 +1746,7 @@ export default function ProDashboardPage() {
                         <span className="text-[10px] font-bold text-gray-400 uppercase leading-none mb-0.5">
                           {WEEK_DAY_LABELS[i]}
                         </span>
-                        <span className={`text-base font-bold leading-tight ${isToday ? "text-[#2E4A8B]" : "text-gray-700"}`}>
+                        <span className={`text-base font-bold leading-tight ${isToday ? "text-[var(--color-primary)]" : "text-gray-700"}`}>
                           {date.getDate()}
                         </span>
                         <span className="text-[10px] text-gray-400 leading-none">
@@ -1793,15 +1849,15 @@ export default function ProDashboardPage() {
                                     data-block="1"
                                     className={`absolute inset-x-0.5 rounded-md select-none flex flex-col overflow-visible ${
                                       isActive
-                                        ? "bg-[#2E4A8B]/15 border border-[#2E4A8B]/30 ring-2 ring-[#2E4A8B] z-10"
-                                        : "bg-[#2E4A8B]/15 border border-[#2E4A8B]/30 hover:ring-1 hover:ring-[#2E4A8B]/40 z-10"
+                                        ? "bg-[var(--color-primary)]/15 border border-[var(--color-primary)]/30 ring-2 ring-[var(--color-primary)] z-10"
+                                        : "bg-[var(--color-primary)]/15 border border-[var(--color-primary)]/30 hover:ring-1 hover:ring-[var(--color-primary)]/40 z-10"
                                     }`}
                                     style={{ top: segTop, height: segHeight }}
                                   >
                                     {/* Top resize handle — first segment only */}
                                     {isFirst && (
                                       <div
-                                        className="h-2 cursor-n-resize bg-[#2E4A8B]/20 hover:bg-[#2E4A8B]/50 rounded-t-md shrink-0 transition-colors"
+                                        className="h-2 cursor-n-resize bg-[var(--color-primary)]/20 hover:bg-[var(--color-primary)]/50 rounded-t-md shrink-0 transition-colors"
                                         onMouseDown={(e) => handleResizeTopDown(dateKey, block.id, e)}
                                         onTouchStart={(e) => { const t = e.touches[0]; if (!t) return; e.preventDefault(); e.stopPropagation(); handleResizeTopDown(dateKey, block.id, { clientX: t.clientX, clientY: t.clientY, preventDefault: () => {}, stopPropagation: () => {} } as unknown as React.MouseEvent); }}
                                       />
@@ -1813,13 +1869,13 @@ export default function ProDashboardPage() {
                                       onTouchStart={(e) => { const t = e.touches[0]; if (!t) return; e.preventDefault(); e.stopPropagation(); handleMoveDown(dateKey, block.id, { clientX: t.clientX, clientY: t.clientY, preventDefault: () => {}, stopPropagation: () => {} } as unknown as React.MouseEvent); }}
                                     >
                                       {isFirst && segHeight >= 28 && (
-                                        <div className="text-[9px] font-semibold text-[#2E4A8B] leading-tight pointer-events-none pt-0.5">
+                                        <div className="text-[9px] font-semibold text-[var(--color-primary)] leading-tight pointer-events-none pt-0.5">
                                           {minsToStr(liveS)}
                                           {isLast && segHeight >= 44 && <><br />{minsToStr(liveE)}</>}
                                         </div>
                                       )}
                                       {isLast && !isFirst && segHeight >= 28 && (
-                                        <div className="text-[9px] font-semibold text-[#2E4A8B] leading-tight pointer-events-none pt-0.5">
+                                        <div className="text-[9px] font-semibold text-[var(--color-primary)] leading-tight pointer-events-none pt-0.5">
                                           {minsToStr(liveE)}
                                         </div>
                                       )}
@@ -1827,7 +1883,7 @@ export default function ProDashboardPage() {
                                     {/* Bottom resize handle — last segment only */}
                                     {isLast && (
                                       <div
-                                        className="h-2 cursor-s-resize bg-[#2E4A8B]/25 hover:bg-[#2E4A8B]/50 rounded-b-md shrink-0 transition-colors"
+                                        className="h-2 cursor-s-resize bg-[var(--color-primary)]/25 hover:bg-[var(--color-primary)]/50 rounded-b-md shrink-0 transition-colors"
                                         onMouseDown={(e) => handleResizeBottomDown(dateKey, block.id, e)}
                                         onTouchStart={(e) => { const t = e.touches[0]; if (!t) return; e.preventDefault(); e.stopPropagation(); handleResizeBottomDown(dateKey, block.id, { clientX: t.clientX, clientY: t.clientY, preventDefault: () => {}, stopPropagation: () => {} } as unknown as React.MouseEvent); }}
                                       />
@@ -1837,7 +1893,7 @@ export default function ProDashboardPage() {
                                       <button
                                         data-block="1"
                                         onClick={(e) => { e.stopPropagation(); removeBlock(dateKey, block.id); }}
-                                        className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-[#2E4A8B]/40 hover:bg-red-500 text-white text-[11px] font-bold flex items-center justify-center z-30 leading-none transition-colors"
+                                        className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-[var(--color-primary)]/40 hover:bg-red-500 text-white text-[11px] font-bold flex items-center justify-center z-30 leading-none transition-colors"
                                         title="Delete this block"
                                       >
                                         ×
@@ -1857,7 +1913,7 @@ export default function ProDashboardPage() {
                                               type="time"
                                               value={toInputTime(block.start)}
                                               onChange={(e) => updateBlockTime(dateKey, block.id, "start", fromInputTime(e.target.value))}
-                                              className="w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:border-[#2E4A8B] font-medium"
+                                              className="w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:border-[var(--color-primary)] font-medium"
                                             />
                                           </div>
                                           <div className="text-gray-300 mt-4">→</div>
@@ -1867,7 +1923,7 @@ export default function ProDashboardPage() {
                                               type="time"
                                               value={toInputTime(block.end)}
                                               onChange={(e) => updateBlockTime(dateKey, block.id, "end", fromInputTime(e.target.value))}
-                                              className="w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:border-[#2E4A8B] font-medium"
+                                              className="w-full text-xs border border-gray-200 rounded-lg px-2 py-1.5 focus:outline-none focus:border-[var(--color-primary)] font-medium"
                                             />
                                           </div>
                                         </div>
@@ -1966,11 +2022,11 @@ export default function ProDashboardPage() {
                               const ph = Math.max(minsToPx(dragOp.e, tlBounds) - pt, 4);
                               return (
                                 <div
-                                  className="absolute inset-x-0.5 rounded-md bg-[#2E4A8B]/25 border-2 border-[#2E4A8B]/60 pointer-events-none z-10"
+                                  className="absolute inset-x-0.5 rounded-md bg-[var(--color-primary)]/25 border-2 border-[var(--color-primary)]/60 pointer-events-none z-10"
                                   style={{ top: pt, height: ph }}
                                 >
                                   {ph >= 20 && (
-                                    <div className="px-1.5 pt-0.5 text-[9px] font-semibold text-[#2E4A8B] leading-tight">
+                                    <div className="px-1.5 pt-0.5 text-[9px] font-semibold text-[var(--color-primary)] leading-tight">
                                       {minsToStr(dragOp.s)}{ph >= 36 && <><br />{minsToStr(dragOp.e)}</>}
                                     </div>
                                   )}
@@ -1984,11 +2040,11 @@ export default function ProDashboardPage() {
                               const ph = Math.max(minsToPx(dragOp.e, tlBounds) - pt, 4);
                               return (
                                 <div
-                                  className="absolute inset-x-0.5 rounded-md bg-[#2E4A8B]/25 border-2 border-[#2E4A8B]/60 pointer-events-none z-10"
+                                  className="absolute inset-x-0.5 rounded-md bg-[var(--color-primary)]/25 border-2 border-[var(--color-primary)]/60 pointer-events-none z-10"
                                   style={{ top: pt, height: ph }}
                                 >
                                   {ph >= 20 && (
-                                    <div className="px-1.5 pt-0.5 text-[9px] font-semibold text-[#2E4A8B] leading-tight">
+                                    <div className="px-1.5 pt-0.5 text-[9px] font-semibold text-[var(--color-primary)] leading-tight">
                                       {minsToStr(dragOp.s)}{ph >= 36 && <><br />{minsToStr(dragOp.e)}</>}
                                     </div>
                                   )}
@@ -2005,7 +2061,7 @@ export default function ProDashboardPage() {
                 {/* Legend */}
                 <div className="flex items-center gap-4 mt-3 ml-10 text-[10px] text-gray-400">
                   <span className="flex items-center gap-1.5">
-                    <span className="w-3 h-3 rounded-sm bg-[#2E4A8B]/20 border border-[#2E4A8B]/30 inline-block" />
+                    <span className="w-3 h-3 rounded-sm bg-[var(--color-primary)]/20 border border-[var(--color-primary)]/30 inline-block" />
                     Available
                   </span>
                   <span className="flex items-center gap-1.5">
@@ -2020,7 +2076,7 @@ export default function ProDashboardPage() {
               <div className="hidden">
 
                 {/* Monthly calendar */}
-                <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-6">
+                <div className="bg-white border border-[var(--color-primary)]/12 rounded-xl p-6">
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="font-semibold text-gray-900">{MONTH_NAMES[calMonth]} {calYear}</h2>
                     <div className="flex gap-1">
@@ -2040,9 +2096,9 @@ export default function ProDashboardPage() {
                       const isTod = today.getDate() === day && today.getMonth() === calMonth && today.getFullYear() === calYear;
                       return (
                         <button key={day} onClick={() => setSelectedDay(isSel ? null : day)}
-                          className={`relative aspect-square flex flex-col items-center justify-center rounded-lg text-sm font-medium transition-all ${isSel ? "bg-[#2E4A8B] text-white" : isTod ? "bg-[#2E4A8B]/10 text-[#2E4A8B] font-bold" : "hover:bg-gray-100 text-gray-700"}`}>
+                          className={`relative aspect-square flex flex-col items-center justify-center rounded-lg text-sm font-medium transition-all ${isSel ? "bg-[var(--color-primary)] text-white" : isTod ? "bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold" : "hover:bg-gray-100 text-gray-700"}`}>
                           {day}
-                          {hasB && <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full ${isSel ? "bg-white/70" : "bg-[#FF9500]"}`} />}
+                          {hasB && <span className={`absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full ${isSel ? "bg-white/70" : "bg-[var(--color-accent)]"}`} />}
                         </button>
                       );
                     })}
@@ -2050,14 +2106,14 @@ export default function ProDashboardPage() {
                 </div>
 
                 {/* Day detail / upcoming */}
-                <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-6">
+                <div className="bg-white border border-[var(--color-primary)]/12 rounded-xl p-6">
                   {selectedDay ? (
                     <>
                       <h2 className="font-semibold text-gray-900 mb-4">{MONTH_NAMES[calMonth]} {selectedDay}</h2>
                       {dayBookings.length > 0 ? (
                         <div className="space-y-2">
                           {dayBookings.map(b => (
-                            <div key={b.id} className="flex items-center justify-between text-sm bg-[#2E4A8B]/5 rounded-lg px-3 py-2.5">
+                            <div key={b.id} className="flex items-center justify-between text-sm bg-[var(--color-primary)]/5 rounded-lg px-3 py-2.5">
                               <div><p className="font-medium text-gray-800">{b.userName}</p><p className="text-xs text-gray-500">{b.service}</p></div>
                               <p className="text-gray-500 text-xs shrink-0 ml-2">{b.time}</p>
                             </div>
@@ -2114,7 +2170,7 @@ export default function ProDashboardPage() {
                   <div className="space-y-3">
                     {bookings.map(b => (
                       <div key={b.id} className="flex items-center gap-4 py-3 border-b last:border-b-0 border-gray-100">
-                        <div className="w-10 h-10 rounded-full bg-[#2E4A8B]/10 text-[#2E4A8B] font-bold text-sm flex items-center justify-center shrink-0">
+                        <div className="w-10 h-10 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold text-sm flex items-center justify-center shrink-0">
                           {(b.userName ?? "").split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
                         </div>
                         <div className="flex-1 min-w-0"><p className="font-semibold text-gray-900">{b.userName}</p><p className="text-sm text-gray-500">{b.service}</p></div>
@@ -2132,22 +2188,22 @@ export default function ProDashboardPage() {
 
           {/* ══ MESSAGES ════════════════════════════════════════════════════════ */}
           {tab === "messages" && (
-            <div className="max-w-[760px]">
+            <div className="max-w-[760px] animate-tab-fade">
               <h1 className="font-heading font-bold text-gray-900 text-2xl mb-6">Messages</h1>
               <div className="flex gap-4 h-[560px]">
-                <div className={`${selectedThread ? "hidden md:flex" : "flex"} flex-col w-full md:w-[280px] shrink-0 bg-white border border-[#2E4A8B]/12 rounded-xl overflow-hidden`}>
+                <div className={`${selectedThread ? "hidden md:flex" : "flex"} flex-col w-full md:w-[280px] shrink-0 bg-white border border-[var(--color-primary)]/12 rounded-xl overflow-hidden`}>
                   {threads.map(thread => (
                     <button key={thread.id}
                       onClick={() => { setSelectedThread(thread); setThreads(p => p.map(t => t.id === thread.id ? { ...t, unread: false } : t)); }}
                       className={`flex items-start gap-3 p-4 border-b last:border-b-0 border-gray-100 text-left hover:bg-gray-50 transition-colors ${selectedThread?.id === thread.id ? "bg-blue-50" : ""}`}>
-                      <div className="w-9 h-9 rounded-full bg-[#2E4A8B]/10 text-[#2E4A8B] font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                      <div className="w-9 h-9 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                         {thread.customerName.split(" ").map(n => n[0]).join("").slice(0, 2)}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-1">
                           <p className={`text-sm font-semibold truncate ${thread.unread ? "text-gray-900" : "text-gray-700"}`}>{thread.customerName}</p>
                           <div className="flex items-center gap-1.5 shrink-0">
-                            {thread.unread && <span className="w-2 h-2 rounded-full bg-[#2E4A8B]" />}
+                            {thread.unread && <span className="w-2 h-2 rounded-full bg-[var(--color-primary)]" />}
                             <span className="text-xs text-gray-400">{thread.timestamp}</span>
                           </div>
                         </div>
@@ -2157,12 +2213,12 @@ export default function ProDashboardPage() {
                   ))}
                 </div>
                 {selectedThread ? (
-                  <div className="flex-1 bg-white border border-[#2E4A8B]/12 rounded-xl flex flex-col overflow-hidden">
+                  <div className="flex-1 bg-white border border-[var(--color-primary)]/12 rounded-xl flex flex-col overflow-hidden">
                     <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
                       <button onClick={() => setSelectedThread(null)} className="md:hidden text-gray-400 hover:text-gray-700 mr-1">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
                       </button>
-                      <div className="w-9 h-9 rounded-full bg-[#2E4A8B]/10 text-[#2E4A8B] font-bold text-xs flex items-center justify-center shrink-0">
+                      <div className="w-9 h-9 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold text-xs flex items-center justify-center shrink-0">
                         {selectedThread.customerName.split(" ").map(n => n[0]).join("").slice(0, 2)}
                       </div>
                       <p className="font-semibold text-gray-900">{selectedThread.customerName}</p>
@@ -2170,7 +2226,7 @@ export default function ProDashboardPage() {
                     <div className="flex-1 overflow-y-auto p-5 space-y-3">
                       {selectedThread.messages.map((msg, i) => (
                         <div key={i} className={`flex ${msg.from === "pro" ? "justify-end" : "justify-start"}`}>
-                          <div className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${msg.from === "pro" ? "bg-[#2E4A8B] text-white rounded-br-sm" : "bg-gray-100 text-gray-800 rounded-bl-sm"}`}>
+                          <div className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${msg.from === "pro" ? "bg-[var(--color-primary)] text-white rounded-br-sm" : "bg-gray-100 text-gray-800 rounded-bl-sm"}`}>
                             {msg.text}
                             <p className={`text-[10px] mt-1 ${msg.from === "pro" ? "text-blue-200" : "text-gray-400"}`}>{msg.time}</p>
                           </div>
@@ -2181,15 +2237,15 @@ export default function ProDashboardPage() {
                     <div className="px-4 py-3 border-t border-gray-100 flex items-center gap-2">
                       <input type="text" placeholder="Type a message..." value={replyText}
                         onChange={(e) => setReplyText(e.target.value)} onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-                        className="flex-1 border border-gray-200 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-[#2E4A8B]" />
+                        className="flex-1 border border-gray-200 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-[var(--color-primary)]" />
                       <button onClick={sendMessage} disabled={!replyText.trim()}
-                        className="w-9 h-9 rounded-full bg-[#2E4A8B] text-white flex items-center justify-center hover:bg-[#243A6F] transition-colors shrink-0 disabled:opacity-40 disabled:cursor-not-allowed">
+                        className="w-9 h-9 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center hover:bg-[#243A6F] transition-colors shrink-0 disabled:opacity-40 disabled:cursor-not-allowed">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
                       </button>
                     </div>
                   </div>
                 ) : (
-                  <div className="hidden md:flex flex-1 bg-white border border-[#2E4A8B]/12 rounded-xl items-center justify-center text-gray-400 text-sm">Select a conversation</div>
+                  <div className="hidden md:flex flex-1 bg-white border border-[var(--color-primary)]/12 rounded-xl items-center justify-center text-gray-400 text-sm">Select a conversation</div>
                 )}
               </div>
             </div>
@@ -2217,12 +2273,8 @@ export default function ProDashboardPage() {
               : profile?.startingPrice ?? 50;
             const estimatedRevenue = Math.round(monthBookingCount * avgPrice);
 
-            // Simulated profile views (deterministic, grows ~5–12/day based on profileId seed)
-            const daysSinceStart = Math.floor((now.getTime() - new Date(now.getFullYear(), 0, 1).getTime()) / 86400000);
-            const seed = profileId ? profileId.split("").reduce((a, c) => a + c.charCodeAt(0), 0) : 42;
-            const dailyRate = 5 + (seed % 8);
-            const monthViews = Math.floor(now.getDate() * dailyRate + (seed % 20));
-            const conversionRate = monthViews > 0 ? ((monthBookingCount / monthViews) * 100).toFixed(1) : "—";
+            // Total unique clients (real data)
+            const totalClients = new Set(bookings.map(b => b.userId)).size;
 
             // Most popular service
             const svcCounts: Record<string, number> = {};
@@ -2248,20 +2300,19 @@ export default function ProDashboardPage() {
               .slice(0, 5);
 
             return (
-              <div className="max-w-[760px]">
+              <div className="max-w-[760px] animate-tab-fade">
                 <h1 className="font-heading font-bold text-gray-900 text-2xl mb-6">Analytics</h1>
 
                 {/* Stat cards */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                   {[
                     {
-                      label: "Profile Views",
-                      sublabel: "This month",
-                      value: monthViews.toLocaleString(),
+                      label: "Total Clients",
+                      sublabel: "Unique customers",
+                      value: totalClients.toString(),
                       icon: (
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                       ),
                     },
@@ -2296,10 +2347,10 @@ export default function ProDashboardPage() {
                       ),
                     },
                   ].map(({ label, sublabel, value, icon }) => (
-                    <div key={label} className="bg-white border border-[#2E4A8B]/12 rounded-xl p-5">
+                    <div key={label} className="bg-white border border-[var(--color-primary)]/12 rounded-xl p-5">
                       <div className="flex items-center justify-between mb-3">
                         <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{label}</p>
-                        <div className="w-8 h-8 rounded-lg bg-[#2E4A8B]/8 flex items-center justify-center text-[#2E4A8B]">
+                        <div className="w-8 h-8 rounded-lg bg-[var(--color-primary)]/8 flex items-center justify-center text-[var(--color-primary)]">
                           {icon}
                         </div>
                       </div>
@@ -2311,7 +2362,7 @@ export default function ProDashboardPage() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
                   {/* Most Popular Services */}
-                  <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-5">
+                  <div className="bg-white border border-[var(--color-primary)]/12 rounded-xl p-5">
                     <h3 className="font-semibold text-gray-900 mb-4 text-sm">Most Booked Services</h3>
                     {topServices.length === 0 ? (
                       <p className="text-sm text-gray-400">No bookings yet — services will appear here.</p>
@@ -2328,7 +2379,7 @@ export default function ProDashboardPage() {
                                 className="h-full rounded-full"
                                 style={{
                                   width: `${(count / maxSvcCount) * 100}%`,
-                                  background: "linear-gradient(135deg, #2E4A8B, #4A6BC0)",
+                                  background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-light))",
                                 }}
                               />
                             </div>
@@ -2339,24 +2390,24 @@ export default function ProDashboardPage() {
                   </div>
 
                   {/* Profile Completion */}
-                  <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-5">
+                  <div className="bg-white border border-[var(--color-primary)]/12 rounded-xl p-5">
                     <div className="flex items-center justify-between mb-3">
                       <h3 className="font-semibold text-gray-900 text-sm">Profile Strength</h3>
-                      <span className="text-xs font-bold text-[#2E4A8B]">{doneCount}/{checks.length}</span>
+                      <span className="text-xs font-bold text-[var(--color-primary)]">{doneCount}/{checks.length}</span>
                     </div>
                     <div className="h-1.5 bg-gray-100 rounded-full mb-4 overflow-hidden">
                       <div
                         className="h-full rounded-full transition-all"
                         style={{
                           width: `${(doneCount / checks.length) * 100}%`,
-                          background: "linear-gradient(135deg, #2E4A8B, #4A6BC0)",
+                          background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-light))",
                         }}
                       />
                     </div>
                     <div className="space-y-2">
                       {checks.map(({ label, done }) => (
                         <div key={label} className="flex items-center gap-2.5">
-                          <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${done ? "border-[#2E4A8B] bg-[#2E4A8B]" : "border-gray-300"}`}>
+                          <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${done ? "border-[var(--color-primary)] bg-[var(--color-primary)]" : "border-gray-300"}`}>
                             {done && <svg className="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
                           </div>
                           <span className={`text-xs ${done ? "line-through text-gray-400" : "text-gray-600"}`}>{label}</span>
@@ -2370,7 +2421,7 @@ export default function ProDashboardPage() {
                 </div>
 
                 {/* Recent Activity */}
-                <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-5">
+                <div className="bg-white border border-[var(--color-primary)]/12 rounded-xl p-5">
                   <h3 className="font-semibold text-gray-900 mb-4 text-sm">Recent Bookings</h3>
                   {recentBookings.length === 0 ? (
                     <p className="text-sm text-gray-400">No bookings yet. Share your profile to get started!</p>
@@ -2381,9 +2432,9 @@ export default function ProDashboardPage() {
                         const isPast = d < now;
                         return (
                           <div key={b.id} className="flex items-center gap-4 py-2.5 border-b border-gray-100 last:border-b-0">
-                            <div className="w-10 h-10 rounded-xl bg-[#2E4A8B]/8 flex flex-col items-center justify-center shrink-0">
-                              <p className="text-[9px] font-bold text-[#2E4A8B] uppercase leading-none">{d.toLocaleDateString("en-US", { month: "short" })}</p>
-                              <p className="text-sm font-heading font-bold text-[#2E4A8B] leading-none mt-0.5">{d.getDate()}</p>
+                            <div className="w-10 h-10 rounded-xl bg-[var(--color-primary)]/8 flex flex-col items-center justify-center shrink-0">
+                              <p className="text-[9px] font-bold text-[var(--color-primary)] uppercase leading-none">{d.toLocaleDateString("en-US", { month: "short" })}</p>
+                              <p className="text-sm font-heading font-bold text-[var(--color-primary)] leading-none mt-0.5">{d.getDate()}</p>
                             </div>
                             <div className="flex-1 min-w-0">
                               <p className="text-sm font-semibold text-gray-900">{b.userName}</p>
@@ -2399,25 +2450,6 @@ export default function ProDashboardPage() {
                   )}
                 </div>
 
-                {/* Conversion insight */}
-                <div className="mt-5 bg-gradient-to-br from-[#2E4A8B]/5 to-[#4A6BC0]/5 border border-[#2E4A8B]/15 rounded-xl p-5">
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-[#2E4A8B]/10 flex items-center justify-center shrink-0 text-[#2E4A8B]">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-gray-900">Booking conversion rate</p>
-                      <p className="text-xs text-gray-500 mt-0.5">
-                        {conversionRate !== "—"
-                          ? `${conversionRate}% of profile views this month led to a booking`
-                          : "Add your availability to start getting bookings"}
-                      </p>
-                    </div>
-                    <p className="font-heading font-bold text-xl text-[#2E4A8B] shrink-0 ml-auto">{conversionRate}{conversionRate !== "—" ? "%" : ""}</p>
-                  </div>
-                </div>
               </div>
             );
           })()}

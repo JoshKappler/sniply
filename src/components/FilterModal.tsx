@@ -24,13 +24,12 @@ const LANGUAGES = ["English", "Spanish", "French", "Portuguese", "Mandarin", "Hi
 
 export default function FilterModal({ onClose, onApply, initialFilters }: FilterModalProps) {
   const [filters, setFilters] = useState<Record<string, string[]>>(initialFilters);
-  // All sections start collapsed when the modal opens
   const [expanded, setExpanded] = useState<Record<string, boolean>>({
     profileType: false,
-    specialty: false,
+    specialty: true,
     hairType: false,
-    price: false,
-    rating: false,
+    price: true,
+    rating: true,
     languages: false,
   });
 
@@ -73,7 +72,7 @@ export default function FilterModal({ onClose, onApply, initialFilters }: Filter
         type="checkbox"
         checked={(filters[group] || []).includes(value)}
         onChange={() => toggleCheck(group, value)}
-        className="w-4 h-4 rounded border-gray-300 accent-[#2E4A8B] cursor-pointer shrink-0"
+        className="w-4 h-4 rounded border-gray-300 accent-[var(--color-primary)] cursor-pointer shrink-0"
       />
       <span className="text-sm text-gray-700">{value}</span>
     </label>
@@ -91,7 +90,7 @@ export default function FilterModal({ onClose, onApply, initialFilters }: Filter
           // Allow deselecting by clicking selected radio
           if ((filters[group] || [])[0] === value) setRadio(group, value);
         }}
-        className="w-4 h-4 border-gray-300 accent-[#2E4A8B] cursor-pointer shrink-0"
+        className="w-4 h-4 border-gray-300 accent-[var(--color-primary)] cursor-pointer shrink-0"
       />
       <span className="text-sm text-gray-700">{value}</span>
     </label>
@@ -105,7 +104,7 @@ export default function FilterModal({ onClose, onApply, initialFilters }: Filter
       <div className="flex items-center gap-2">
         <span className="text-[15px] font-semibold text-gray-800">{label}</span>
         {count != null && count > 0 && (
-          <span className="text-xs font-bold bg-[#2E4A8B] text-white px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+          <span className="text-xs font-bold bg-[var(--color-primary)] text-white px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
             {count}
           </span>
         )}
@@ -131,17 +130,12 @@ export default function FilterModal({ onClose, onApply, initialFilters }: Filter
 
       {/* Modal panel */}
       <div className="relative w-full md:w-[460px] bg-white md:rounded-2xl rounded-t-2xl shadow-[0_20px_60px_rgba(0,0,0,0.3)] flex flex-col max-h-[92vh] md:max-h-[85vh]">
-        {/* Mobile drag handle */}
-        <div className="md:hidden flex justify-center pt-3 pb-1">
-          <div className="w-10 h-1 rounded-full bg-gray-300" />
-        </div>
-
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4">
           <div className="flex items-center gap-2.5">
             <h2 className="font-heading font-bold text-gray-900 text-xl">Filters</h2>
             {filterCount > 0 && (
-              <span className="text-xs font-bold bg-[#2E4A8B] text-white px-2 py-0.5 rounded-full">
+              <span className="text-xs font-bold bg-[var(--color-primary)] text-white px-2 py-0.5 rounded-full">
                 {filterCount}
               </span>
             )}

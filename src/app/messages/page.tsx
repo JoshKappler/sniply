@@ -63,7 +63,9 @@ export default function MessagesPage() {
           proThreads.find((t) => t.customerId === user.id) ??
           proThreads.find((t) => t.customerName === user.name);
         if (thread) result.push({ ref, thread });
-      } catch {}
+      } catch (err) {
+        console.error("sniply/messages: failed to fetch thread for pro", err);
+      }
     }
     return result;
   };
@@ -175,7 +177,7 @@ export default function MessagesPage() {
       <div className="min-h-screen bg-gray-50">
         <Navbar />
         <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="w-8 h-8 border-2 border-[#2E4A8B]/20 border-t-[#2E4A8B] rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[var(--color-primary)]/20 border-t-[var(--color-primary)] rounded-full animate-spin" />
         </div>
       </div>
     );
@@ -190,8 +192,8 @@ export default function MessagesPage() {
         {loadedThreads.length === 0 ? (
           /* Empty state */
           <div className="text-center py-20">
-            <div className="w-16 h-16 rounded-2xl bg-[#2E4A8B]/8 flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-[#2E4A8B]/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-16 h-16 rounded-2xl bg-[var(--color-primary)]/8 flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-[var(--color-primary)]/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
             </div>
@@ -224,7 +226,7 @@ export default function MessagesPage() {
                     selectedIdx === idx ? "bg-blue-50" : ""
                   }`}
                 >
-                  <div className="w-9 h-9 rounded-full bg-[#2E4A8B]/10 text-[#2E4A8B] font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-9 h-9 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                     {proInitials(lt.ref.proName)}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -233,7 +235,7 @@ export default function MessagesPage() {
                         {lt.ref.proName}
                       </p>
                       <div className="flex items-center gap-1.5 shrink-0">
-                        {lt.ref.unread && <span className="w-2 h-2 rounded-full bg-[#2E4A8B]" />}
+                        {lt.ref.unread && <span className="w-2 h-2 rounded-full bg-[var(--color-primary)]" />}
                         <span className="text-xs text-gray-400">{formatTimestamp(lt.ref.timestamp)}</span>
                       </div>
                     </div>
@@ -258,7 +260,7 @@ export default function MessagesPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
                   </button>
-                  <div className="w-9 h-9 rounded-full bg-[#2E4A8B]/10 text-[#2E4A8B] font-bold text-xs flex items-center justify-center shrink-0">
+                  <div className="w-9 h-9 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold text-xs flex items-center justify-center shrink-0">
                     {proInitials(selectedItem.ref.proName)}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -266,7 +268,7 @@ export default function MessagesPage() {
                   </div>
                   <Link
                     href={`/barber/${selectedItem.ref.proProfileId}`}
-                    className="text-xs font-semibold text-[#2E4A8B] hover:underline shrink-0"
+                    className="text-xs font-semibold text-[var(--color-primary)] hover:underline shrink-0"
                   >
                     View Profile →
                   </Link>
@@ -284,7 +286,7 @@ export default function MessagesPage() {
                         <div
                           className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
                             msg.from === "customer"
-                              ? "bg-[#2E4A8B] text-white rounded-br-sm"
+                              ? "bg-[var(--color-primary)] text-white rounded-br-sm"
                               : "bg-gray-100 text-gray-800 rounded-bl-sm"
                           }`}
                         >
@@ -307,12 +309,12 @@ export default function MessagesPage() {
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
                     onKeyDown={(e) => { if (e.key === "Enter") sendMessage(); }}
-                    className="flex-1 border border-gray-200 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-[#2E4A8B] focus:ring-2 focus:ring-[#2E4A8B]/20"
+                    className="flex-1 border border-gray-200 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20"
                   />
                   <button
                     onClick={sendMessage}
                     disabled={!replyText.trim()}
-                    className="w-9 h-9 rounded-full bg-[#2E4A8B] text-white flex items-center justify-center hover:bg-[#243A6F] transition-colors shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="w-9 h-9 rounded-full bg-[var(--color-primary)] text-white flex items-center justify-center hover:bg-[#243A6F] transition-colors shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />

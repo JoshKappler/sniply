@@ -157,7 +157,9 @@ export default function SettingsPage() {
       ]);
       data.bookings = bookings;
       data.favorites = favorites;
-    } catch {}
+    } catch (err) {
+      console.error("sniply/settings: failed to fetch bookings/favorites for export", err);
+    }
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -173,7 +175,9 @@ export default function SettingsPage() {
     // Mark user as deleted via API (soft delete by clearing key fields)
     try {
       await apiUpdateUser(user.id, { username: `deleted-${user.id}`, password: "" });
-    } catch {}
+    } catch (err) {
+      console.error("sniply/settings: failed to soft-delete user via API", err);
+    }
     // Clear session localStorage
     localStorage.removeItem("sniply_current_user");
     localStorage.removeItem("sniply_role");
@@ -188,7 +192,7 @@ export default function SettingsPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-[#2E4A8B]/20 border-t-[#2E4A8B] rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[var(--color-primary)]/20 border-t-[var(--color-primary)] rounded-full animate-spin" />
           <p className="text-sm text-gray-400">Loading settings...</p>
         </div>
       </div>
@@ -196,20 +200,20 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#d6e4f7] dark:bg-black">
+    <div className="min-h-screen bg-[var(--color-page-bg)] dark:bg-black">
       <Navbar />
-      <main className="max-w-[560px] mx-auto px-4 sm:px-6 py-10">
+      <main className="max-w-[560px] mx-auto px-4 sm:px-6 py-10 animate-fade-in-up">
         <h1 className="font-heading font-bold text-gray-900 text-3xl mb-8">Account Settings</h1>
 
         {/* Username (read-only) */}
-        <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-4 sm:p-6 mb-5">
+        <div className="bg-white border border-[var(--color-primary)]/12 rounded-xl p-4 sm:p-6 mb-5">
           <h2 className="font-semibold text-gray-900 mb-4">Account Info</h2>
           <div className="space-y-3">
             <div>
               <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
                 Username
               </label>
-              <p className="text-sm text-gray-800 bg-[#e4edf8] dark:bg-[#1a1a1a] border border-[#2E4A8B]/12 rounded-lg px-4 py-2.5">
+              <p className="text-sm text-gray-800 bg-[var(--color-section-bg)] dark:bg-[#1a1a1a] border border-[var(--color-primary)]/12 rounded-lg px-4 py-2.5">
                 @{user?.username}
               </p>
               <p className="text-xs text-gray-400 mt-1">Usernames cannot be changed.</p>
@@ -218,7 +222,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Display name */}
-        <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-4 sm:p-6 mb-5">
+        <div className="bg-white border border-[var(--color-primary)]/12 rounded-xl p-4 sm:p-6 mb-5">
           <h2 className="font-semibold text-gray-900 mb-4">Display Name</h2>
           <div className="space-y-3">
             <div>
@@ -248,65 +252,67 @@ export default function SettingsPage() {
         </div>
 
         {/* Change password */}
-        <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-4 sm:p-6 mb-5">
+        <div className="bg-white border border-[var(--color-primary)]/12 rounded-xl p-4 sm:p-6 mb-5">
           <h2 className="font-semibold text-gray-900 mb-4">Change Password</h2>
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
-              <div className="relative">
-                <input
-                  type={showCurrent ? "text" : "password"}
-                  value={currentPassword}
-                  onChange={(e) => {
-                    setCurrentPassword(e.target.value);
-                    setErrors((err) => ({ ...err, currentPassword: "" }));
-                  }}
-                  className={`input-field pr-11 ${errors.currentPassword ? "border-[#EF4444] focus:border-[#EF4444]" : ""}`}
-                  placeholder="Enter current password"
-                />
-                <EyeToggle show={showCurrent} onToggle={() => setShowCurrent((v) => !v)} />
+            <div className="bg-gray-50 rounded-xl p-4 space-y-4 border border-[var(--color-primary)]/06">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                <div className="relative">
+                  <input
+                    type={showCurrent ? "text" : "password"}
+                    value={currentPassword}
+                    onChange={(e) => {
+                      setCurrentPassword(e.target.value);
+                      setErrors((err) => ({ ...err, currentPassword: "" }));
+                    }}
+                    className={`input-field pr-11 ${errors.currentPassword ? "border-[#EF4444] focus:border-[#EF4444]" : ""}`}
+                    placeholder="Enter current password"
+                  />
+                  <EyeToggle show={showCurrent} onToggle={() => setShowCurrent((v) => !v)} />
+                </div>
+                {errors.currentPassword && (
+                  <p className="text-xs text-[#EF4444] mt-1">{errors.currentPassword}</p>
+                )}
               </div>
-              {errors.currentPassword && (
-                <p className="text-xs text-[#EF4444] mt-1">{errors.currentPassword}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
-              <div className="relative">
-                <input
-                  type={showNew ? "text" : "password"}
-                  value={newPassword}
-                  onChange={(e) => {
-                    setNewPassword(e.target.value);
-                    setErrors((err) => ({ ...err, newPassword: "" }));
-                  }}
-                  className={`input-field pr-11 ${errors.newPassword ? "border-[#EF4444] focus:border-[#EF4444]" : ""}`}
-                  placeholder="Min. 6 characters"
-                />
-                <EyeToggle show={showNew} onToggle={() => setShowNew((v) => !v)} />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                <div className="relative">
+                  <input
+                    type={showNew ? "text" : "password"}
+                    value={newPassword}
+                    onChange={(e) => {
+                      setNewPassword(e.target.value);
+                      setErrors((err) => ({ ...err, newPassword: "" }));
+                    }}
+                    className={`input-field pr-11 ${errors.newPassword ? "border-[#EF4444] focus:border-[#EF4444]" : ""}`}
+                    placeholder="Min. 6 characters"
+                  />
+                  <EyeToggle show={showNew} onToggle={() => setShowNew((v) => !v)} />
+                </div>
+                {errors.newPassword && (
+                  <p className="text-xs text-[#EF4444] mt-1">{errors.newPassword}</p>
+                )}
               </div>
-              {errors.newPassword && (
-                <p className="text-xs text-[#EF4444] mt-1">{errors.newPassword}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
-              <div className="relative">
-                <input
-                  type={showConfirm ? "text" : "password"}
-                  value={confirmPassword}
-                  onChange={(e) => {
-                    setConfirmPassword(e.target.value);
-                    setErrors((err) => ({ ...err, confirmPassword: "" }));
-                  }}
-                  className={`input-field pr-11 ${errors.confirmPassword ? "border-[#EF4444] focus:border-[#EF4444]" : ""}`}
-                  placeholder="Repeat new password"
-                />
-                <EyeToggle show={showConfirm} onToggle={() => setShowConfirm((v) => !v)} />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Confirm New Password</label>
+                <div className="relative">
+                  <input
+                    type={showConfirm ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(e) => {
+                      setConfirmPassword(e.target.value);
+                      setErrors((err) => ({ ...err, confirmPassword: "" }));
+                    }}
+                    className={`input-field pr-11 ${errors.confirmPassword ? "border-[#EF4444] focus:border-[#EF4444]" : ""}`}
+                    placeholder="Repeat new password"
+                  />
+                  <EyeToggle show={showConfirm} onToggle={() => setShowConfirm((v) => !v)} />
+                </div>
+                {errors.confirmPassword && (
+                  <p className="text-xs text-[#EF4444] mt-1">{errors.confirmPassword}</p>
+                )}
               </div>
-              {errors.confirmPassword && (
-                <p className="text-xs text-[#EF4444] mt-1">{errors.confirmPassword}</p>
-              )}
             </div>
             {passwordSuccess && (
               <div className="bg-green-50 border border-green-200 rounded-lg px-4 py-3 text-sm text-green-700">
@@ -324,7 +330,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Notification preferences */}
-        <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-4 sm:p-6 mb-5">
+        <div className="bg-white border border-[var(--color-primary)]/12 rounded-xl p-4 sm:p-6 mb-5">
           <h2 className="font-semibold text-gray-900 mb-1">Notifications</h2>
           <p className="text-xs text-gray-400 mb-5">Choose what you&apos;d like to be notified about.</p>
           <div className="space-y-4">
@@ -343,7 +349,7 @@ export default function SettingsPage() {
                     className="sr-only"
                   />
                   <div
-                    className={`w-10 h-6 rounded-full transition-colors duration-200 ${notifPrefs[key] ? "bg-[#2E4A8B]" : "bg-gray-300"}`}
+                    className={`w-10 h-6 rounded-full transition-colors duration-200 ${notifPrefs[key] ? "bg-[var(--color-primary)]" : "bg-gray-300"}`}
                   >
                     <div
                       className="absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200"
@@ -371,12 +377,12 @@ export default function SettingsPage() {
         </div>
 
         {/* Data & Privacy */}
-        <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-4 sm:p-6 mb-5">
+        <div className="bg-white border border-[var(--color-primary)]/12 rounded-xl p-4 sm:p-6 mb-5">
           <h2 className="font-semibold text-gray-900 mb-1">Data & Privacy</h2>
           <p className="text-xs text-gray-400 mb-5">Download or manage your personal data.</p>
           <button
             onClick={() => void handleDownloadData()}
-            className="w-full flex items-center justify-center gap-2 h-11 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:border-[#2E4A8B] hover:text-[#2E4A8B] transition-all"
+            className="w-full flex items-center justify-center gap-2 h-11 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-all"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />

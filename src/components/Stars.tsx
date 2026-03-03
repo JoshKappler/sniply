@@ -7,7 +7,7 @@ export function StarFill({ pct }: { pct: number }) {
       ★
       <span
         className="absolute top-0 left-0 overflow-hidden leading-none"
-        style={{ width: `${pct}%`, color: "#FF9500", whiteSpace: "nowrap" }}
+        style={{ width: `${pct}%`, color: "var(--color-accent)", whiteSpace: "nowrap" }}
       >
         ★
       </span>
@@ -30,7 +30,7 @@ export function Stars({ rating, size = "md" }: { rating: number; size?: "sm" | "
             ★
             <span
               className="absolute top-0 left-0 overflow-hidden leading-none"
-              style={{ width: `${pct}%`, color: "#FF9500", whiteSpace: "nowrap" }}
+              style={{ width: `${pct}%`, color: "var(--color-accent)", whiteSpace: "nowrap" }}
             >
               ★
             </span>

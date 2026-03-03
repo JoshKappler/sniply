@@ -190,9 +190,31 @@ export async function migrate(): Promise<void> {
   const { rows } = await db.query("SELECT COUNT(*) FROM barbers");
   if (parseInt(rows[0].count, 10) === 0) {
     await seedBarbers(db);
+  } else {
+    await repairBarberImages(db);
   }
 
   migrated = true;
+}
+
+async function repairBarberImages(db: Pool): Promise<void> {
+  try {
+    const seedPath = path.join(process.cwd(), "data-seed", "barbers.json");
+    const raw = fs.readFileSync(seedPath, "utf-8");
+    const { barbers } = JSON.parse(raw) as { barbers: Barber[] };
+
+    for (const b of barbers) {
+      await db.query(
+        `UPDATE barbers
+         SET hero_image = $1, profile_image = $2, portfolio_images = $3
+         WHERE id = $4
+           AND (hero_image != $1 OR profile_image != $2)`,
+        [b.heroImage ?? null, b.profileImage ?? null, b.portfolioImages ?? [], b.id]
+      );
+    }
+  } catch (err) {
+    console.warn("Sniply: could not repair barber images:", err);
+  }
 }
 
 async function seedBarbers(db: Pool): Promise<void> {

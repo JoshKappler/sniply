@@ -17,7 +17,7 @@ export default function PrivacyPage() {
 
       {/* Hero */}
       <section className="border-b border-gray-100 py-20 text-center px-6">
-        <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[#2E4A8B] mb-5">Legal</p>
+        <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[var(--color-primary)] mb-5">Legal</p>
         <h1 className="font-heading text-4xl md:text-5xl text-gray-900 mb-4">Privacy Policy</h1>
         <p className="text-gray-400 text-sm">Effective January 1, 2025 · Sniply, Inc.</p>
       </section>
@@ -99,7 +99,7 @@ export default function PrivacyPage() {
             </ul>
             <p>
               To exercise these rights, contact us at{" "}
-              <a href="mailto:privacy@sniply.com" className="text-[#2E4A8B] hover:underline">privacy@sniply.com</a>.
+              <a href="mailto:privacy@sniply.com" className="text-[var(--color-primary)] hover:underline">privacy@sniply.com</a>.
               We will respond to all requests within 30 days.
             </p>
           </Section>
@@ -114,7 +114,7 @@ export default function PrivacyPage() {
             <p>
               No system is perfectly secure. If you believe your account has been compromised, please
               contact us immediately at{" "}
-              <a href="mailto:support@sniply.com" className="text-[#2E4A8B] hover:underline">support@sniply.com</a>.
+              <a href="mailto:support@sniply.com" className="text-[var(--color-primary)] hover:underline">support@sniply.com</a>.
             </p>
           </Section>
 
@@ -124,7 +124,7 @@ export default function PrivacyPage() {
               collect personal information from children. If we learn that we have inadvertently
               collected such information, we will delete it promptly. If you believe a child has
               provided us with personal information, please contact us at{" "}
-              <a href="mailto:privacy@sniply.com" className="text-[#2E4A8B] hover:underline">privacy@sniply.com</a>.
+              <a href="mailto:privacy@sniply.com" className="text-[var(--color-primary)] hover:underline">privacy@sniply.com</a>.
             </p>
           </Section>
 
@@ -145,7 +145,7 @@ export default function PrivacyPage() {
             <address className="not-italic bg-gray-50 rounded-xl p-4 text-sm text-gray-600">
               Sniply, Inc. — Privacy Team<br />
               Atlanta, GA<br />
-              <a href="mailto:privacy@sniply.com" className="text-[#2E4A8B] hover:underline">privacy@sniply.com</a>
+              <a href="mailto:privacy@sniply.com" className="text-[var(--color-primary)] hover:underline">privacy@sniply.com</a>
             </address>
           </Section>
 

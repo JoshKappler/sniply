@@ -40,7 +40,7 @@ const ICONS: Record<ToastType, React.ReactNode> = {
 const TOAST_STYLES: Record<ToastType, { container: string; icon: string }> = {
   success: { container: "border-green-200", icon: "text-green-500" },
   error: { container: "border-red-200", icon: "text-red-500" },
-  info: { container: "border-[#2E4A8B]/25", icon: "text-[#2E4A8B]" },
+  info: { container: "border-[var(--color-primary)]/25", icon: "text-[var(--color-primary)]" },
 };
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {

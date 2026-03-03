@@ -66,7 +66,9 @@ async function writeCustomerThreadRef(
     if (idx >= 0) refs[idx] = entry;
     else refs.unshift(entry);
     await apiUpdateCustomerThreads(customerId, refs);
-  } catch {}
+  } catch (err) {
+    console.error("sniply/barber: failed to write customer thread ref", err);
+  }
 }
 
 // ── Schedule types ────────────────────────────────────────────────────────────
@@ -318,7 +320,11 @@ function BookingModal({
         await apiDeleteBooking(rescheduleBookingId);
       }
       await apiCreateBooking(booking);
-    } catch {}
+    } catch (err) {
+      console.error("sniply/booking: failed to save booking", err);
+      setValidationError("Booking could not be saved. Please try again.");
+      return;
+    }
     setConfirmed(true);
     if (rescheduleBookingId) onRescheduled?.();
     else onBooked?.();
@@ -335,7 +341,7 @@ function BookingModal({
         className="relative bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="bg-[#2E4A8B] px-6 py-5">
+        <div className="bg-[var(--color-primary)] px-6 py-5">
           <h2 className="font-heading font-bold text-white text-xl">
             {confirmed ? (rescheduleBookingId ? "Rescheduled!" : "Booking Confirmed!") : (rescheduleBookingId ? "Reschedule Appointment" : "Book Appointment")}
           </h2>
@@ -390,7 +396,7 @@ function BookingModal({
           <div className="px-6 py-6 space-y-5">
             {selectedSlot && (
               <div className="bg-gray-50 rounded-xl px-4 py-3 flex items-center gap-3">
-                <svg className="w-5 h-5 text-[#2E4A8B] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-[var(--color-primary)] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 <div>
@@ -408,12 +414,12 @@ function BookingModal({
                 /* Service already chosen — show summary only */
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Service</label>
-                  <div className="flex items-center justify-between bg-[#2E4A8B]/5 border-2 border-[#2E4A8B]/30 rounded-xl px-4 py-3">
+                  <div className="flex items-center justify-between bg-[var(--color-primary)]/5 border-2 border-[var(--color-primary)]/30 rounded-xl px-4 py-3">
                     <div>
                       <p className="text-sm font-semibold text-gray-900">{selectedService}</p>
                       <p className="text-xs text-gray-500 mt-0.5">{selectedServiceObj.duration} min</p>
                     </div>
-                    <span className="text-sm font-bold text-[#2E4A8B]">${selectedServiceObj.price}</span>
+                    <span className="text-sm font-bold text-[var(--color-primary)]">${selectedServiceObj.price}</span>
                   </div>
                 </div>
               ) : (
@@ -426,7 +432,7 @@ function BookingModal({
                         key={svc.name}
                         className={`flex items-center justify-between p-3 rounded-xl border-2 cursor-pointer transition-all ${
                           selectedService === svc.name
-                            ? "border-[#2E4A8B] bg-[#2E4A8B]/5"
+                            ? "border-[var(--color-primary)] bg-[var(--color-primary)]/5"
                             : "border-gray-200 hover:border-gray-300"
                         }`}
                       >
@@ -437,14 +443,14 @@ function BookingModal({
                             value={svc.name}
                             checked={selectedService === svc.name}
                             onChange={() => setSelectedService(svc.name)}
-                            className="accent-[#2E4A8B]"
+                            className="accent-[var(--color-primary)]"
                           />
                           <div>
                             <p className="text-sm font-medium text-gray-900">{svc.name}</p>
                             <p className="text-xs text-gray-400">{svc.duration} min</p>
                           </div>
                         </div>
-                        <span className="text-sm font-bold text-[#2E4A8B]">${svc.price}</span>
+                        <span className="text-sm font-bold text-[var(--color-primary)]">${svc.price}</span>
                       </label>
                     ))}
                   </div>
@@ -466,7 +472,7 @@ function BookingModal({
                 placeholder="e.g. First time client, looking for a tapered fade with a hard part..."
                 value={bookingNotes}
                 onChange={(e) => { if (e.target.value.length <= 200) setBookingNotes(e.target.value); }}
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#2E4A8B] focus:ring-2 focus:ring-[#2E4A8B]/20 resize-none"
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 resize-none"
                 style={{ height: "80px" }}
               />
               <span className="text-xs text-gray-400">{bookingNotes.length} / 200</span>
@@ -594,7 +600,9 @@ function ReviewForm({ barber, existingReviews, onSubmit, hasBooked = false }: Re
     };
     try {
       await apiPostReview(barber.id, { userId: user.id, userName: user.name, rating, text: text.trim(), date: "Just now" });
-    } catch {}
+    } catch (err) {
+      console.error("sniply/review: failed to persist review to API", err);
+    }
     onSubmit(review);
     setSubmitted(true);
   };
@@ -628,7 +636,7 @@ function ReviewForm({ barber, existingReviews, onSubmit, hasBooked = false }: Re
               onMouseEnter={() => setHovered(star)}
               onMouseLeave={() => setHovered(0)}
               className="text-2xl leading-none transition-colors"
-              style={{ color: star <= (hovered || rating) ? "#FF9500" : "#D1D5DB" }}
+              style={{ color: star <= (hovered || rating) ? "var(--color-accent)" : "#D1D5DB" }}
             >
               ★
             </button>
@@ -642,7 +650,7 @@ function ReviewForm({ barber, existingReviews, onSubmit, hasBooked = false }: Re
           placeholder="Share your experience..."
           value={text}
           onChange={(e) => { if (e.target.value.length <= 500) setText(e.target.value); }}
-          className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#2E4A8B] focus:ring-2 focus:ring-[#2E4A8B]/20 resize-none"
+          className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 resize-none"
           style={{ height: "100px" }}
         />
         <span className="text-xs text-gray-400">{text.length} / 500</span>
@@ -669,9 +677,9 @@ function ReviewForm({ barber, existingReviews, onSubmit, hasBooked = false }: Re
             </div>
           ))}
           {reviewPhotos.length < 3 && (
-            <label className="w-20 h-20 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:border-[#2E4A8B]/50 hover:bg-gray-50 transition-colors">
+            <label className="w-20 h-20 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:border-[var(--color-primary)]/50 hover:bg-gray-50 transition-colors">
               {photoUploading ? (
-                <div className="w-5 h-5 border-2 border-[#2E4A8B]/20 border-t-[#2E4A8B] rounded-full animate-spin" />
+                <div className="w-5 h-5 border-2 border-[var(--color-primary)]/20 border-t-[var(--color-primary)] rounded-full animate-spin" />
               ) : (
                 <>
                   <svg className="w-5 h-5 text-gray-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -828,7 +836,7 @@ function MessageModal({ barber, currentUser, onClose }: MessageModalProps) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="bg-[#2E4A8B] px-5 py-4 flex items-center gap-3 shrink-0">
+        <div className="bg-[var(--color-primary)] px-5 py-4 flex items-center gap-3 shrink-0">
           <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white font-bold text-sm shrink-0">
             {avatarInitial}
           </div>
@@ -847,8 +855,8 @@ function MessageModal({ barber, currentUser, onClose }: MessageModalProps) {
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 min-h-[200px]" style={{ maxHeight: "340px" }}>
           {!thread || thread.messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full py-8 text-center">
-              <div className="w-12 h-12 rounded-2xl bg-[#2E4A8B]/8 flex items-center justify-center mb-3">
-                <svg className="w-6 h-6 text-[#2E4A8B]/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-12 h-12 rounded-2xl bg-[var(--color-primary)]/8 flex items-center justify-center mb-3">
+                <svg className="w-6 h-6 text-[var(--color-primary)]/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
               </div>
@@ -861,7 +869,7 @@ function MessageModal({ barber, currentUser, onClose }: MessageModalProps) {
                 <div
                   className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
                     msg.from === "customer"
-                      ? "bg-[#2E4A8B] text-white rounded-br-sm"
+                      ? "bg-[var(--color-primary)] text-white rounded-br-sm"
                       : "bg-gray-100 text-gray-800 rounded-bl-sm"
                   }`}
                 >
@@ -881,14 +889,14 @@ function MessageModal({ barber, currentUser, onClose }: MessageModalProps) {
             onChange={(e) => { if (e.target.value.length <= 500) setDraftText(e.target.value); }}
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
             placeholder={`Message ${barber.name.split(" ")[0]}…`}
-            className="flex-1 border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#2E4A8B] focus:ring-2 focus:ring-[#2E4A8B]/20 resize-none"
+            className="flex-1 border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 resize-none"
             style={{ minHeight: "40px", maxHeight: "120px" }}
             rows={1}
           />
           <button
             onClick={sendMessage}
             disabled={!draftText.trim()}
-            className="w-10 h-10 rounded-xl bg-[#2E4A8B] flex items-center justify-center shrink-0 disabled:opacity-40 hover:bg-[#243A6F] transition-colors"
+            className="w-10 h-10 rounded-xl bg-[var(--color-primary)] flex items-center justify-center shrink-0 disabled:opacity-40 hover:bg-[#243A6F] transition-colors"
           >
             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
@@ -1210,7 +1218,7 @@ export default function BarberProfilePage({
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-[#2E4A8B]/20 border-t-[#2E4A8B] rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[var(--color-primary)]/20 border-t-[var(--color-primary)] rounded-full animate-spin" />
           <p className="text-sm text-gray-400">Loading profile...</p>
         </div>
       </div>
@@ -1242,7 +1250,7 @@ export default function BarberProfilePage({
 
 
       {/* Profile header */}
-      <div ref={heroRef} className="bg-[#e4edf8] dark:bg-[#141414] border-b border-[#2E4A8B]/15">
+      <div ref={heroRef} className="bg-[var(--color-section-bg)] dark:bg-[#141414] border-b border-[var(--color-primary)]/15">
         <div className="max-w-[1200px] mx-auto px-6 py-8">
           <div className="flex items-start gap-5 flex-wrap">
             <div className="relative w-24 h-24 shrink-0">
@@ -1265,11 +1273,11 @@ export default function BarberProfilePage({
                 </span>
               </div>
               <div className="flex items-center flex-wrap gap-2 mt-2">
-                <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${barber.type === "independent" ? "bg-[#2E4A8B] text-white" : "bg-gray-100 text-gray-700"}`}>
+                <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${barber.type === "independent" ? "bg-[var(--color-primary)] text-white" : "bg-gray-100 text-gray-700"}`}>
                   {barber.type === "independent" ? "Independent" : "Shop"}
                 </span>
                 {barber.matchPercent && (
-                  <span className="text-xs font-bold bg-[#FF9500] text-white px-2.5 py-1 rounded-full">
+                  <span className="text-xs font-bold bg-[var(--color-accent)] text-white px-2.5 py-1 rounded-full">
                     {barber.matchPercent}% match
                   </span>
                 )}
@@ -1329,7 +1337,7 @@ export default function BarberProfilePage({
             <div className="w-full sm:w-auto sm:shrink-0 flex flex-col items-start sm:items-end gap-3">
               <div className="text-left sm:text-right">
                 <p className="text-xs text-gray-400">Starting from</p>
-                <p className="font-bold text-2xl text-[#2E4A8B]">${barber.startingPrice}</p>
+                <p className="font-bold text-2xl text-[var(--color-primary)]">${barber.startingPrice}</p>
               </div>
               {!isOwnProfile && (
                 <div className="flex flex-col items-stretch sm:items-end gap-2 w-full sm:w-auto">
@@ -1341,7 +1349,7 @@ export default function BarberProfilePage({
                         calendarRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
                       }, 80);
                     }}
-                    className="flex items-center justify-center gap-2 text-sm font-semibold text-white bg-[#2E4A8B] hover:bg-[#243A6F] transition-colors px-5 h-11 rounded-xl shadow-sm w-full sm:w-auto"
+                    className="flex items-center justify-center gap-2 text-sm font-semibold text-white bg-[var(--color-primary)] hover:bg-[#243A6F] transition-colors px-5 h-11 rounded-xl shadow-sm w-full sm:w-auto"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -1355,7 +1363,7 @@ export default function BarberProfilePage({
                       if (!user) { router.push("/login"); return; }
                       setShowMessageModal(true);
                     }}
-                    className="flex items-center justify-center gap-2 text-sm font-semibold text-white bg-[#2E4A8B] hover:bg-[#243A6F] transition-colors px-5 h-11 rounded-xl shadow-sm w-full sm:w-auto"
+                    className="flex items-center justify-center gap-2 text-sm font-semibold text-white bg-[var(--color-primary)] hover:bg-[#243A6F] transition-colors px-5 h-11 rounded-xl shadow-sm w-full sm:w-auto"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -1367,11 +1375,11 @@ export default function BarberProfilePage({
                     onClick={() => void toggleSaved()}
                     className={`flex items-center justify-center gap-2 text-sm font-semibold h-11 px-5 rounded-xl border-2 transition-all w-full sm:w-auto ${
                       saved
-                        ? "text-[#FF9500] border-[#FF9500]/40 bg-[#FF9500]/8 hover:bg-[#FF9500]/15"
-                        : "text-gray-600 border-gray-200 hover:border-[#2E4A8B]/40 hover:text-[#2E4A8B] bg-white"
+                        ? "text-[var(--color-accent)] border-[var(--color-accent)]/40 bg-[var(--color-accent)]/8 hover:bg-[var(--color-accent)]/15"
+                        : "text-gray-600 border-gray-200 hover:border-[var(--color-primary)]/40 hover:text-[var(--color-primary)] bg-white"
                     }`}
                   >
-                    <svg className="w-4 h-4" fill={saved ? "#FF9500" : "none"} stroke={saved ? "#FF9500" : "currentColor"} viewBox="0 0 24 24">
+                    <svg className="w-4 h-4" fill={saved ? "var(--color-accent)" : "none"} stroke={saved ? "var(--color-accent)" : "currentColor"} viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                     </svg>
                     {saved ? "Saved" : "Save"}
@@ -1384,13 +1392,13 @@ export default function BarberProfilePage({
           {/* Shop info for shop-based barbers */}
           {barber.type === "shop" && barber.shopName && barber.shopImage && (
             <div className="mt-6">
-              <div className="flex items-center gap-4 bg-gray-50 border border-gray-200 rounded-xl p-4 hover:border-[#2E4A8B]/30 hover:bg-[#2E4A8B]/5 transition-all cursor-pointer group">
+              <div className="flex items-center gap-4 bg-gray-50 border border-gray-200 rounded-xl p-4 hover:border-[var(--color-primary)]/30 hover:bg-[var(--color-primary)]/5 transition-all cursor-pointer group">
                 <div className="relative w-20 h-20 rounded-lg overflow-hidden shrink-0">
                   <Image src={barber.shopImage} alt={barber.shopName} fill className="object-cover" sizes="80px" />
                 </div>
                 <div className="flex-1">
                   <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Works at</p>
-                  <p className="font-heading font-bold text-gray-900 text-base group-hover:text-[#2E4A8B] transition-colors">
+                  <p className="font-heading font-bold text-gray-900 text-base group-hover:text-[var(--color-primary)] transition-colors">
                     {barber.shopName}
                   </p>
                   <p className="text-sm text-gray-500 flex items-center gap-1 mt-0.5">
@@ -1400,7 +1408,7 @@ export default function BarberProfilePage({
                     {barber.shopAddress}
                   </p>
                 </div>
-                <svg className="w-4 h-4 text-gray-300 group-hover:text-[#2E4A8B] transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-gray-300 group-hover:text-[var(--color-primary)] transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </div>
@@ -1411,7 +1419,7 @@ export default function BarberProfilePage({
       </div>
 
       {/* Tab nav */}
-      <div className="sticky top-[68px] z-30 bg-[#e4edf8] dark:bg-[#111111] border-b border-[#2E4A8B]/15">
+      <div className="sticky top-[68px] z-30 bg-[var(--color-section-bg)] dark:bg-[#111111] border-b border-[var(--color-primary)]/15">
         <div className="max-w-[1200px] mx-auto px-6 flex overflow-x-auto">
           {TABS.map(({ key, label }) => (
             <button
@@ -1419,8 +1427,8 @@ export default function BarberProfilePage({
               onClick={() => setTab(key)}
               className={`px-3 sm:px-5 py-3 sm:py-4 text-sm sm:text-[15px] font-semibold whitespace-nowrap border-b-[3px] transition-all duration-200 ${
                 tab === key
-                  ? "text-gray-900 border-[#2E4A8B]"
-                  : "text-gray-400 border-transparent hover:text-[#2E4A8B] hover:border-[#2E4A8B]/30"
+                  ? "text-gray-900 border-[var(--color-primary)]"
+                  : "text-gray-400 border-transparent hover:text-[var(--color-primary)] hover:border-[var(--color-primary)]/30"
               }`}
             >
               {label}
@@ -1462,12 +1470,12 @@ export default function BarberProfilePage({
                       {barber.credentials
                         ? barber.credentials.filter(c => c.text).map((c, i) => (
                           <li key={i} className="text-sm text-gray-800 flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#2E4A8B] shrink-0" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)] shrink-0" />
                             <span className="flex-1">{c.text}</span>
                             {c.fileData && (
                               <button
                                 onClick={() => { const w = window.open(); if (w) { w.document.write(`<iframe src="${c.fileData}" style="width:100%;height:100vh;border:none;"></iframe>`); } }}
-                                className="text-xs font-semibold text-[#2E4A8B] hover:underline shrink-0 ml-1"
+                                className="text-xs font-semibold text-[var(--color-primary)] hover:underline shrink-0 ml-1"
                               >
                                 View
                               </button>
@@ -1476,7 +1484,7 @@ export default function BarberProfilePage({
                         ))
                         : ((barber as ProProfile).certifications ?? []).filter(Boolean).map((cert, i) => (
                           <li key={i} className="text-sm text-gray-800 flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#2E4A8B] shrink-0" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)] shrink-0" />
                             {cert}
                           </li>
                         ))
@@ -1524,13 +1532,13 @@ export default function BarberProfilePage({
             <div className="max-w-[680px]">
               {/* Reschedule banner */}
               {rescheduleBookingId && (
-                <div className="mb-6 bg-[#2E4A8B]/8 border border-[#2E4A8B]/20 rounded-xl px-5 py-4 flex items-start gap-3">
-                  <svg className="w-5 h-5 text-[#2E4A8B] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="mb-6 bg-[var(--color-primary)]/8 border border-[var(--color-primary)]/20 rounded-xl px-5 py-4 flex items-start gap-3">
+                  <svg className="w-5 h-5 text-[var(--color-primary)] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                   <div>
-                    <p className="text-sm font-semibold text-[#2E4A8B]">Rescheduling your appointment</p>
-                    <p className="text-xs text-[#2E4A8B]/70 mt-0.5">
+                    <p className="text-sm font-semibold text-[var(--color-primary)]">Rescheduling your appointment</p>
+                    <p className="text-xs text-[var(--color-primary)]/70 mt-0.5">
                       Select a new date and time below.{rescheduleOriginalService && <> Your current <strong>{rescheduleOriginalService}</strong> appointment</>} will be cancelled when you confirm.
                     </p>
                   </div>
@@ -1553,7 +1561,7 @@ export default function BarberProfilePage({
                             </svg>
                             {svc.duration} min
                             <span className="mx-1.5 text-gray-300">·</span>
-                            <span className="text-[#2E4A8B] font-bold">${svc.price}</span>
+                            <span className="text-[var(--color-primary)] font-bold">${svc.price}</span>
                           </div>
                         </div>
                         {!isOwnProfile && (
@@ -1610,7 +1618,7 @@ export default function BarberProfilePage({
                   {preselectedService && (
                     <div className="flex items-center gap-2 mb-3">
                       <span className="text-sm text-gray-500">Booking:</span>
-                      <span className="text-sm font-semibold text-[#2E4A8B] bg-[#2E4A8B]/8 px-3 py-1 rounded-full">{preselectedService}</span>
+                      <span className="text-sm font-semibold text-[var(--color-primary)] bg-[var(--color-primary)]/8 px-3 py-1 rounded-full">{preselectedService}</span>
                       <button
                         onClick={() => setPreselectedService(null)}
                         className="text-xs text-gray-400 hover:text-gray-600 underline"
@@ -1669,11 +1677,11 @@ export default function BarberProfilePage({
                                 disabled={isPast || !hasSlots}
                                 onClick={() => setSelectedDate(date)}
                                 className={`h-9 rounded-lg text-sm font-medium transition-all w-full
-                                  ${isSelected ? "bg-[#2E4A8B] text-white shadow-sm" : ""}
-                                  ${!isSelected && hasSlots && !isPast ? "hover:bg-[#2E4A8B]/10 text-gray-800" : ""}
+                                  ${isSelected ? "bg-[var(--color-primary)] text-white shadow-sm" : ""}
+                                  ${!isSelected && hasSlots && !isPast ? "hover:bg-[var(--color-primary)]/10 text-gray-800" : ""}
                                   ${isPast ? "text-gray-300 cursor-not-allowed" : ""}
                                   ${!hasSlots && !isPast ? "text-gray-300 cursor-not-allowed" : ""}
-                                  ${isCalToday && !isSelected ? "ring-2 ring-[#2E4A8B]/50 font-bold text-[#2E4A8B]" : ""}
+                                  ${isCalToday && !isSelected ? "ring-2 ring-[var(--color-primary)]/50 font-bold text-[var(--color-primary)]" : ""}
                                 `}
                               >
                                 {day}
@@ -1687,7 +1695,7 @@ export default function BarberProfilePage({
                     {/* Legend */}
                     <div className="flex items-center gap-5 mt-4 pt-3 border-t border-gray-100 text-[11px] text-gray-400">
                       <span className="flex items-center gap-1.5">
-                        <span className="w-2.5 h-2.5 rounded-full bg-[#2E4A8B] inline-block" />
+                        <span className="w-2.5 h-2.5 rounded-full bg-[var(--color-primary)] inline-block" />
                         Available
                       </span>
                       <span className="flex items-center gap-1.5">
@@ -1756,7 +1764,7 @@ export default function BarberProfilePage({
                                   return (
                                     <div
                                       key={i}
-                                      className="absolute inset-y-0 bg-[#2E4A8B]"
+                                      className="absolute inset-y-0 bg-[var(--color-primary)]"
                                       style={{ left: `${left}%`, width: `${width}%` }}
                                     />
                                   );
@@ -1821,7 +1829,7 @@ export default function BarberProfilePage({
                               {/* Legend */}
                               <div className="flex items-center gap-4 mt-3 pt-2.5 border-t border-gray-100 text-[10px] text-gray-400">
                                 <span className="flex items-center gap-1.5">
-                                  <span className="inline-block w-3 h-3 rounded-sm bg-[#2E4A8B]" />Free
+                                  <span className="inline-block w-3 h-3 rounded-sm bg-[var(--color-primary)]" />Free
                                 </span>
                                 <span className="flex items-center gap-1.5">
                                   <span className="inline-block w-3 h-3 rounded-sm bg-rose-400" />Booked
@@ -1844,7 +1852,7 @@ export default function BarberProfilePage({
                           <div className="space-y-3">
                             {preServiceDur > 0 && (
                               <p className="text-xs text-gray-400 mb-2">
-                                Booking <span className="font-semibold text-[#2E4A8B]">{preselectedService}</span> ({preServiceDur} min) —
+                                Booking <span className="font-semibold text-[var(--color-primary)]">{preselectedService}</span> ({preServiceDur} min) —
                                 only windows long enough are open below.
                               </p>
                             )}
@@ -1874,8 +1882,8 @@ export default function BarberProfilePage({
                                     !fits
                                       ? "border-gray-200 bg-gray-50/80 opacity-60 cursor-not-allowed"
                                       : isOpen
-                                      ? "border-[#2E4A8B] bg-white shadow-md"
-                                      : "border-gray-200 bg-white hover:border-[#2E4A8B]/50 hover:shadow-sm cursor-pointer"
+                                      ? "border-[var(--color-primary)] bg-white shadow-md"
+                                      : "border-gray-200 bg-white hover:border-[var(--color-primary)]/50 hover:shadow-sm cursor-pointer"
                                   }`}
                                 >
                                   {/* Tile header */}
@@ -1892,11 +1900,11 @@ export default function BarberProfilePage({
                                         {/* Proportional width bar */}
                                         <div className="w-20 h-1.5 rounded-full bg-gray-100 overflow-hidden">
                                           <div
-                                            className={`h-full rounded-full ${fits ? "bg-[#2E4A8B]/50" : "bg-gray-300"}`}
+                                            className={`h-full rounded-full ${fits ? "bg-[var(--color-primary)]/50" : "bg-gray-300"}`}
                                             style={{ width: `${Math.min(100, segDur / maxFreeLen * 100)}%` }}
                                           />
                                         </div>
-                                        <p className={`text-xs font-medium ${fits ? "text-[#2E4A8B]" : "text-gray-400"}`}>
+                                        <p className={`text-xs font-medium ${fits ? "text-[var(--color-primary)]" : "text-gray-400"}`}>
                                           {fmtDuration(segDur)} free
                                         </p>
                                         {!fits && preServiceDur > 0 && (
@@ -1928,7 +1936,7 @@ export default function BarberProfilePage({
                                             <button
                                               key={slotTime}
                                               onClick={() => handleSlotClick(selectedDate, slotTime)}
-                                              className="px-4 py-2 min-h-[44px] sm:min-h-0 rounded-xl border-2 border-gray-200 text-sm font-semibold text-gray-700 hover:border-[#2E4A8B] hover:text-[#2E4A8B] hover:bg-[#2E4A8B]/5 transition-all"
+                                              className="px-4 py-2 min-h-[44px] sm:min-h-0 rounded-xl border-2 border-gray-200 text-sm font-semibold text-gray-700 hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-primary)]/5 transition-all"
                                             >
                                               {slotTime}
                                             </button>
@@ -1970,7 +1978,7 @@ export default function BarberProfilePage({
                       <div key={i} className="bg-white border border-gray-200 rounded-xl p-5">
                         <div className="flex items-center gap-2 mb-1">
                           <Stars rating={rev.rating} />
-                          <span className="text-[#FF9500] font-bold text-sm ml-1">{rev.rating}.0</span>
+                          <span className="text-[var(--color-accent)] font-bold text-sm ml-1">{rev.rating}.0</span>
                         </div>
                         <p className="text-sm text-gray-500">
                           <span className="font-semibold text-gray-700">{rev.name}</span>
@@ -1994,8 +2002,8 @@ export default function BarberProfilePage({
 
                         {/* Pro reply */}
                         {existingReply && !isReplying && (
-                          <div className="mt-3 pl-4 border-l-2 border-[#2E4A8B]/20 bg-[#2E4A8B]/4 rounded-r-lg p-3">
-                            <p className="text-xs font-bold text-[#2E4A8B] mb-1">Response from {barber.name.split(" ")[0]}</p>
+                          <div className="mt-3 pl-4 border-l-2 border-[var(--color-primary)]/20 bg-[var(--color-primary)]/4 rounded-r-lg p-3">
+                            <p className="text-xs font-bold text-[var(--color-primary)] mb-1">Response from {barber.name.split(" ")[0]}</p>
                             <p className="text-sm text-gray-700 leading-relaxed">{existingReply}</p>
                           </div>
                         )}
@@ -2010,7 +2018,7 @@ export default function BarberProfilePage({
                                 onChange={(e) => setReplyDraft(e.target.value)}
                                 placeholder="Write a response to this review…"
                                 rows={3}
-                                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#2E4A8B] focus:ring-1 focus:ring-[#2E4A8B]/30 resize-none"
+                                className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)]/30 resize-none"
                               />
                               <div className="flex gap-2">
                                 <button
@@ -2039,7 +2047,7 @@ export default function BarberProfilePage({
                           ) : (
                             <button
                               onClick={() => { setReplyingTo(replyKey); setReplyDraft(existingReply ?? ""); }}
-                              className="mt-2 text-xs font-semibold text-[#2E4A8B] hover:underline"
+                              className="mt-2 text-xs font-semibold text-[var(--color-primary)] hover:underline"
                             >
                               {existingReply ? "Edit response" : "Reply"}
                             </button>

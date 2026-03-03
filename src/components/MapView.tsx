@@ -86,7 +86,7 @@ function barberPinHtml(color: string) {
 
 const USER_PIN_HTML = `<div style="width:20px;height:20px;">
   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
-    <circle cx="10" cy="10" r="8" fill="#FF9500" stroke="white" stroke-width="2.5"/>
+    <circle cx="10" cy="10" r="8" fill="var(--color-accent)" stroke="white" stroke-width="2.5"/>
     <circle cx="10" cy="10" r="3.5" fill="white"/>
   </svg>
 </div>`;
@@ -169,11 +169,11 @@ export default function MapView({ barbers, center, userPin }: MapViewProps) {
     barbers.forEach((barber) => {
       if (barber.lat == null || barber.lng == null) return;
 
-      const badgeColor = barber.type === "shop" ? "#D97706" : "#2E4A8B";
+      const badgeColor = barber.type === "shop" ? "#D97706" : "var(--color-primary)";
       const badgeLabel = barber.type === "shop" ? "Shop" : "Independent";
 
       const icon = L.divIcon({
-        html: barberPinHtml("#2E4A8B"),
+        html: barberPinHtml("var(--color-primary)"),
         className: "",
         iconSize: [30, 38],
         iconAnchor: [15, 38],
@@ -185,7 +185,7 @@ export default function MapView({ barbers, center, userPin }: MapViewProps) {
           <div style="font-weight:700;font-size:14px;color:#111827;margin-bottom:5px;line-height:1.35;">${barber.name}</div>
           <div style="display:inline-flex;align-items:center;background:${badgeColor}18;color:${badgeColor};font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;margin-bottom:8px;">${badgeLabel}</div>
           <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px;">
-            <span style="color:#FF9500;font-size:12px;line-height:1;">${starStr(barber.rating)}</span>
+            <span style="color:var(--color-accent);font-size:12px;line-height:1;">${starStr(barber.rating)}</span>
             <span style="color:#111827;font-size:12px;font-weight:600;">${barber.rating}</span>
             <span style="color:#9ca3af;font-size:11px;">(${barber.reviewCount})</span>
           </div>
@@ -248,7 +248,7 @@ export default function MapView({ barbers, center, userPin }: MapViewProps) {
     <div className="relative w-full h-full rounded-2xl overflow-hidden shadow-sm border border-gray-200">
       {!ready && (
         <div className="absolute inset-0 bg-gray-100 flex items-center justify-center z-10">
-          <div className="w-8 h-8 border-2 border-[#2E4A8B]/20 border-t-[#2E4A8B] rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[var(--color-primary)]/20 border-t-[var(--color-primary)] rounded-full animate-spin" />
         </div>
       )}
       <div ref={containerRef} className="w-full h-full" />

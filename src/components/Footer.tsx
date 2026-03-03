@@ -44,7 +44,7 @@ export default function Footer() {
             <div className="flex items-center gap-2 mb-1.5">
               <div
                 className="w-7 h-7 rounded-lg flex items-center justify-center"
-                style={{ background: "linear-gradient(135deg, #2E4A8B 0%, #4A6BC0 100%)" }}
+                style={{ background: "linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%)" }}
               >
                 <ScissorsIcon className="w-3.5 h-3.5 text-white" />
               </div>

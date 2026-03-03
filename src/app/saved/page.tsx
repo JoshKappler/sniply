@@ -12,7 +12,7 @@ function LoadingSpinner() {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="flex flex-col items-center gap-3">
-        <div className="w-8 h-8 border-2 border-[#2E4A8B]/20 border-t-[#2E4A8B] rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[var(--color-primary)]/20 border-t-[var(--color-primary)] rounded-full animate-spin" />
         <p className="text-sm text-gray-400">Loading saved pros...</p>
       </div>
     </div>
@@ -57,7 +57,7 @@ export default function SavedPage() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="min-h-screen bg-[#d6e4f7] dark:bg-black">
+    <div className="min-h-screen bg-[var(--color-page-bg)] dark:bg-black">
       <Navbar />
 
       <div className="max-w-[1200px] mx-auto px-6 py-10">
@@ -76,9 +76,9 @@ export default function SavedPage() {
         </div>
 
         {savedBarbers.length === 0 ? (
-          <div className="bg-white border border-[#2E4A8B]/12 rounded-2xl p-16 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-[#2E4A8B]/8 flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-[#2E4A8B]/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="bg-white border border-[var(--color-primary)]/12 rounded-2xl p-16 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-[var(--color-primary)]/8 flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-[var(--color-primary)]/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
               </svg>
             </div>
@@ -112,7 +112,7 @@ export default function SavedPage() {
                   className="absolute top-3 right-3 w-8 h-8 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-sm transition-colors z-10 group/btn"
                   title="Remove from saved"
                 >
-                  <svg className="w-4 h-4 text-[#FF9500] group-hover/btn:text-gray-400 transition-colors" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-4 h-4 text-[var(--color-accent)] group-hover/btn:text-gray-400 transition-colors" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
                   </svg>
                 </button>

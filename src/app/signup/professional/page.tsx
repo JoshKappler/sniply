@@ -349,7 +349,7 @@ export default function ProfessionalProfileSetupPage() {
           <button type="button" onClick={() => profilePhotoRef.current?.click()} className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity text-white text-xs font-medium">Change</button>
         </div>
       ) : (
-        <div onClick={() => profilePhotoRef.current?.click()} className="border-2 border-dashed border-gray-200 rounded-lg bg-gray-50 flex flex-col items-center justify-center cursor-pointer hover:border-[#2E4A8B] hover:bg-blue-50/30 transition-colors" style={{ height: "140px" }}>
+        <div onClick={() => profilePhotoRef.current?.click()} className="border-2 border-dashed border-gray-200 rounded-lg bg-gray-50 flex flex-col items-center justify-center cursor-pointer hover:border-[var(--color-primary)] hover:bg-blue-50/30 transition-colors" style={{ height: "140px" }}>
           <svg className="w-9 h-9 text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -377,8 +377,8 @@ export default function ProfessionalProfileSetupPage() {
                 </div>
               </div>
             ) : (
-              <div onClick={() => portfolioInputRefs.current[i]?.click()} className="w-full h-full border-2 border-dashed border-gray-200 rounded-xl bg-gray-50 flex flex-col items-center justify-center cursor-pointer hover:border-[#2E4A8B] hover:bg-blue-50/30 transition-colors group">
-                <svg className="w-6 h-6 text-gray-300 group-hover:text-[#2E4A8B]/40 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div onClick={() => portfolioInputRefs.current[i]?.click()} className="w-full h-full border-2 border-dashed border-gray-200 rounded-xl bg-gray-50 flex flex-col items-center justify-center cursor-pointer hover:border-[var(--color-primary)] hover:bg-blue-50/30 transition-colors group">
+                <svg className="w-6 h-6 text-gray-300 group-hover:text-[var(--color-primary)]/40 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
                 </svg>
                 <span className="text-xs text-gray-400 mt-1">{i < 6 ? `Photo ${i + 1}` : "+"}</span>
@@ -387,7 +387,7 @@ export default function ProfessionalProfileSetupPage() {
           </div>
         ))}
       </div>
-      <button type="button" onClick={addPortfolioSlot} className="mt-4 flex items-center gap-2 text-sm text-[#2E4A8B] font-medium hover:underline">
+      <button type="button" onClick={addPortfolioSlot} className="mt-4 flex items-center gap-2 text-sm text-[var(--color-primary)] font-medium hover:underline">
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
         </svg>
@@ -405,8 +405,8 @@ export default function ProfessionalProfileSetupPage() {
           {(["independent", "shop"] as const).map(t => (
             <button key={t} type="button"
               onClick={() => { setBarberType(t); if (errors.barberType) setErrors(p => ({ ...p, barberType: "" })); }}
-              className={`p-4 rounded-xl border-2 text-left transition-all ${barberType === t ? "border-[#2E4A8B] bg-[#2E4A8B]/5" : "border-gray-200 hover:border-gray-300"}`}>
-              <p className={`font-semibold text-sm ${barberType === t ? "text-[#2E4A8B]" : "text-gray-700"}`}>
+              className={`p-4 rounded-xl border-2 text-left transition-all ${barberType === t ? "border-[var(--color-primary)] bg-[var(--color-primary)]/5" : "border-gray-200 hover:border-gray-300"}`}>
+              <p className={`font-semibold text-sm ${barberType === t ? "text-[var(--color-primary)]" : "text-gray-700"}`}>
                 {t === "independent" ? "Independent Barber / Stylist" : "Shop-based"}
               </p>
               <p className="text-xs text-gray-400 mt-1">
@@ -444,7 +444,7 @@ export default function ProfessionalProfileSetupPage() {
         <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1">
           {LANGUAGES.map(lang => (
             <label key={lang} className="flex items-center gap-2.5 py-2 px-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-              <input type="checkbox" checked={languages.includes(lang)} onChange={() => toggleArr(languages, setLanguages, lang)} className="w-5 h-5 rounded border-gray-300 accent-[#2E4A8B] cursor-pointer" />
+              <input type="checkbox" checked={languages.includes(lang)} onChange={() => toggleArr(languages, setLanguages, lang)} className="w-5 h-5 rounded border-gray-300 accent-[var(--color-primary)] cursor-pointer" />
               <span className="text-sm text-gray-700">{lang}</span>
             </label>
           ))}
@@ -460,7 +460,7 @@ export default function ProfessionalProfileSetupPage() {
         <div className="flex flex-wrap gap-2">
           {HAIR_TYPES.map(ht => (
             <button key={ht} type="button" onClick={() => toggleArr(hairTypes, setHairTypes, ht)}
-              className={`px-4 py-2 rounded-full text-sm font-medium border transition-all ${hairTypes.includes(ht) ? "bg-[#2E4A8B] text-white border-[#2E4A8B]" : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"}`}>
+              className={`px-4 py-2 rounded-full text-sm font-medium border transition-all ${hairTypes.includes(ht) ? "bg-[var(--color-primary)] text-white border-[var(--color-primary)]" : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"}`}>
               {ht}
             </button>
           ))}
@@ -471,12 +471,12 @@ export default function ProfessionalProfileSetupPage() {
         <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1">
           {visibleSpecialties.map(s => (
             <label key={s} className="flex items-center gap-2.5 py-2 px-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-              <input type="checkbox" checked={specialties.includes(s)} onChange={() => toggleArr(specialties, setSpecialties, s)} className="w-5 h-5 rounded border-gray-300 accent-[#2E4A8B] cursor-pointer" />
+              <input type="checkbox" checked={specialties.includes(s)} onChange={() => toggleArr(specialties, setSpecialties, s)} className="w-5 h-5 rounded border-gray-300 accent-[var(--color-primary)] cursor-pointer" />
               <span className="text-sm text-gray-700">{s}</span>
             </label>
           ))}
         </div>
-        <button type="button" onClick={() => setShowMoreSpecialties(!showMoreSpecialties)} className="mt-3 text-sm text-[#2E4A8B] font-medium hover:underline">
+        <button type="button" onClick={() => setShowMoreSpecialties(!showMoreSpecialties)} className="mt-3 text-sm text-[var(--color-primary)] font-medium hover:underline">
           {showMoreSpecialties ? "− Show Less" : "+ Show More"}
         </button>
       </div>
@@ -513,7 +513,7 @@ export default function ProfessionalProfileSetupPage() {
         ))}
       </div>
       {errors.services && <p className="text-xs text-[#EF4444] mt-2">{errors.services}</p>}
-      <button type="button" onClick={addService} className="mt-4 flex items-center gap-2 text-sm text-[#2E4A8B] font-medium hover:underline">
+      <button type="button" onClick={addService} className="mt-4 flex items-center gap-2 text-sm text-[var(--color-primary)] font-medium hover:underline">
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
         </svg>
@@ -543,7 +543,7 @@ export default function ProfessionalProfileSetupPage() {
                   <button type="button" onClick={() => setCredentials(prev => prev.map((c, i) => i === idx ? { ...c, fileName: undefined, fileData: undefined } : c))} className="ml-auto text-gray-400 hover:text-red-500 shrink-0">×</button>
                 </div>
               ) : (
-                <label htmlFor={`cred-file-${idx}`} className="flex items-center gap-2 text-sm text-[#2E4A8B] cursor-pointer hover:underline">
+                <label htmlFor={`cred-file-${idx}`} className="flex items-center gap-2 text-sm text-[var(--color-primary)] cursor-pointer hover:underline">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
                   </svg>
@@ -554,7 +554,7 @@ export default function ProfessionalProfileSetupPage() {
           </div>
         ))}
       </div>
-      <button type="button" onClick={addCredential} className="mt-4 flex items-center gap-2 text-sm text-[#2E4A8B] font-medium hover:underline">
+      <button type="button" onClick={addCredential} className="mt-4 flex items-center gap-2 text-sm text-[var(--color-primary)] font-medium hover:underline">
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
         </svg>
@@ -569,7 +569,7 @@ export default function ProfessionalProfileSetupPage() {
       <div className="min-h-screen bg-white flex flex-col">
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-8 h-8 border-2 border-[#2E4A8B]/20 border-t-[#2E4A8B] rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[var(--color-primary)]/20 border-t-[var(--color-primary)] rounded-full animate-spin" />
         </div>
       </div>
     );
@@ -617,7 +617,7 @@ export default function ProfessionalProfileSetupPage() {
                 <div className="relative">
                   <textarea placeholder="e.g., Precision fades and natural hair specialist with 8 years of experience..."
                     value={bio} onChange={e => { if (e.target.value.length <= 300) setBio(e.target.value); }}
-                    className="w-full border border-gray-200 rounded-lg px-4 py-3 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#2E4A8B] focus:ring-2 focus:ring-[#2E4A8B]/20 resize-none"
+                    className="w-full border border-gray-200 rounded-lg px-4 py-3 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 resize-none"
                     style={{ height: "100px" }} />
                   <span className="absolute bottom-2.5 right-3 text-xs text-gray-400">{bio.length} / 300</span>
                 </div>
@@ -671,11 +671,11 @@ export default function ProfessionalProfileSetupPage() {
         <div className="max-w-[700px] mx-auto px-6 py-3">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-medium text-gray-500">Step {step} of {TOTAL_STEPS}</span>
-            <span className="text-xs font-semibold text-[#2E4A8B]">{STEP_TITLES[step - 1]}</span>
+            <span className="text-xs font-semibold text-[var(--color-primary)]">{STEP_TITLES[step - 1]}</span>
           </div>
           <div className="flex gap-1">
             {STEP_TITLES.map((_, i) => (
-              <div key={i} className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${i < step ? "bg-[#2E4A8B]" : "bg-gray-200"}`} />
+              <div key={i} className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${i < step ? "bg-[var(--color-primary)]" : "bg-gray-200"}`} />
             ))}
           </div>
         </div>
@@ -772,7 +772,7 @@ export default function ProfessionalProfileSetupPage() {
                 <div className="relative">
                   <textarea placeholder="e.g., Precision fades and natural hair specialist with 8 years of experience..."
                     value={bio} onChange={e => { if (e.target.value.length <= 300) setBio(e.target.value); }}
-                    className="w-full border border-gray-200 rounded-lg px-4 py-3 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#2E4A8B] focus:ring-2 focus:ring-[#2E4A8B]/20 resize-none"
+                    className="w-full border border-gray-200 rounded-lg px-4 py-3 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 resize-none"
                     style={{ height: "100px" }} />
                   <span className="absolute bottom-2.5 right-3 text-xs text-gray-400">{bio.length} / 300</span>
                 </div>
@@ -848,7 +848,7 @@ export default function ProfessionalProfileSetupPage() {
               </button>
             )}
             {OPTIONAL_STEPS.has(step) && step < TOTAL_STEPS && (
-              <button type="button" onClick={skipStep} className="text-xs text-gray-400 hover:text-[#2E4A8B] hover:underline transition-colors">
+              <button type="button" onClick={skipStep} className="text-xs text-gray-400 hover:text-[var(--color-primary)] hover:underline transition-colors">
                 Skip this step
               </button>
             )}
@@ -859,7 +859,7 @@ export default function ProfessionalProfileSetupPage() {
           <div className="text-center mt-6 space-y-2">
             <p className="text-sm text-gray-400">
               Already have an account?{" "}
-              <Link href="/login" className="text-[#2E4A8B] font-medium hover:underline">Sign in</Link>
+              <Link href="/login" className="text-[var(--color-primary)] font-medium hover:underline">Sign in</Link>
             </p>
             <button type="button"
               onClick={() => { localStorage.setItem("sniply_onboarded", "true"); localStorage.setItem("sniply_role", "pro"); router.push("/pro/dashboard"); }}

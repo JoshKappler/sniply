@@ -94,7 +94,7 @@ export default function Navbar({ variant = "default", showBack = false, onBack }
   // Close mobile drawer on route change
   useEffect(() => {
     setMobileDrawerOpen(false);
-  }, []);
+  }, [pathname]);
 
   const toggleDark = () => {
     const next = !isDark;
@@ -122,7 +122,7 @@ export default function Navbar({ variant = "default", showBack = false, onBack }
     : "?";
 
   const proMenuItems = [
-    { label: "Pro Dashboard", href: "/pro/dashboard" },
+    { label: "Account Settings", href: "/settings" },
   ];
 
   const customerMenuItems = [
@@ -165,7 +165,7 @@ export default function Navbar({ variant = "default", showBack = false, onBack }
           background: isDark ? "rgba(10,10,10,0.93)" : "rgba(214,228,247,0.97)",
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
-          borderBottom: isDark ? "1px solid rgba(42,42,42,0.7)" : "1px solid rgba(46,74,139,0.14)",
+          borderBottom: isDark ? "1px solid rgba(42,42,42,0.7)" : "1px solid rgba(var(--color-primary-rgb),0.14)",
           boxShadow: isDark
             ? "0 1px 0 rgba(255,255,255,0.03)"
             : "0 1px 0 rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.03)",
@@ -190,14 +190,14 @@ export default function Navbar({ variant = "default", showBack = false, onBack }
             <Link href="/" className="flex items-center gap-2 group">
               <div
                 className="w-8 h-8 rounded-lg flex items-center justify-center"
-                style={{ background: "linear-gradient(135deg, #2E4A8B 0%, #4A6BC0 100%)" }}
+                style={{ background: "linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%)" }}
               >
                 <ScissorsIcon className="w-4 h-4 text-white" />
               </div>
               <span
                 className="font-heading font-bold text-xl"
                 style={{
-                  background: "linear-gradient(135deg, #1E3573 0%, #2E4A8B 100%)",
+                  background: "linear-gradient(135deg, #1E3573 0%, var(--color-primary) 100%)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
@@ -212,16 +212,7 @@ export default function Navbar({ variant = "default", showBack = false, onBack }
                 {pathname !== "/browse" && (
                   <Link
                     href="/browse"
-                    className="hidden md:flex items-center text-sm font-medium transition-all ml-5 px-3 py-1.5 rounded-lg"
-                    style={{ color: isDark ? "#a3a3a3" : "#6B7280" }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.color = "#2E4A8B";
-                      (e.currentTarget as HTMLElement).style.background = "rgba(46,74,139,0.06)";
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLElement).style.color = isDark ? "#a3a3a3" : "#6B7280";
-                      (e.currentTarget as HTMLElement).style.background = "transparent";
-                    }}
+                    className="hidden md:flex items-center text-sm font-medium ml-5 px-3 py-1.5 rounded-lg nav-link"
                   >
                     Browse Pros
                   </Link>
@@ -229,21 +220,29 @@ export default function Navbar({ variant = "default", showBack = false, onBack }
                 {user?.role === "customer" && (
                   <Link
                     href="/messages"
-                    className="hidden md:flex items-center gap-1.5 text-sm font-medium transition-all ml-1 px-3 py-1.5 rounded-lg relative"
-                    style={{ color: isDark ? "#a3a3a3" : "#6B7280" }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.color = "#2E4A8B";
-                      (e.currentTarget as HTMLElement).style.background = "rgba(46,74,139,0.06)";
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLElement).style.color = isDark ? "#a3a3a3" : "#6B7280";
-                      (e.currentTarget as HTMLElement).style.background = "transparent";
-                    }}
+                    className="hidden md:flex items-center gap-1.5 text-sm font-medium ml-1 px-3 py-1.5 rounded-lg relative nav-link"
                   >
                     Messages
                     {customerUnreadCount > 0 && (
                       <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
                     )}
+                  </Link>
+                )}
+                {user?.role === "pro" && (
+                  <Link
+                    href="/pro/dashboard"
+                    className="hidden md:inline-flex items-center gap-1.5 text-sm font-semibold ml-2 px-4 py-1.5 rounded-lg transition-all"
+                    style={{
+                      background: pathname === "/pro/dashboard"
+                        ? "var(--color-primary)"
+                        : "rgba(var(--color-primary-rgb),0.10)",
+                      color: pathname === "/pro/dashboard" ? "#fff" : "var(--color-primary)",
+                    }}
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                    </svg>
+                    Dashboard
                   </Link>
                 )}
               </>
@@ -256,17 +255,8 @@ export default function Navbar({ variant = "default", showBack = false, onBack }
               {/* Dark mode toggle */}
               <button
                 onClick={toggleDark}
-                className="w-10 h-10 flex items-center justify-center rounded-full transition-all"
-                style={{ color: isDark ? "#a3a3a3" : "#6B7280" }}
+                className="w-10 h-10 flex items-center justify-center rounded-full nav-icon-btn"
                 aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.color = isDark ? "#ffffff" : "#1F2937";
-                  (e.currentTarget as HTMLElement).style.background = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.05)";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.color = isDark ? "#a3a3a3" : "#6B7280";
-                  (e.currentTarget as HTMLElement).style.background = "transparent";
-                }}
               >
                 {isDark ? <SunIcon /> : <MoonIcon />}
               </button>
@@ -307,14 +297,14 @@ export default function Navbar({ variant = "default", showBack = false, onBack }
                           alt={user.name}
                           className="w-9 h-9 rounded-full object-cover transition-all"
                           style={{
-                            border: "2px solid rgba(46,74,139,0.2)",
-                            boxShadow: "0 0 0 0 rgba(46,74,139,0)",
+                            border: "2px solid rgba(var(--color-primary-rgb),0.2)",
+                            boxShadow: "0 0 0 0 rgba(var(--color-primary-rgb),0)",
                           }}
                         />
                       ) : (
                         <div
                           className="w-9 h-9 rounded-full text-white font-semibold flex items-center justify-center text-sm transition-all"
-                          style={{ background: "linear-gradient(135deg, #2E4A8B 0%, #4A6BC0 100%)" }}
+                          style={{ background: "linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%)" }}
                         >
                           {initials}
                         </div>
@@ -344,7 +334,7 @@ export default function Navbar({ variant = "default", showBack = false, onBack }
                             : "0 4px 6px rgba(0,0,0,0.04), 0 20px 40px rgba(0,0,0,0.10)",
                         }}
                       >
-                        <div className="px-4 py-3" style={{ borderBottom: isDark ? "1px solid #1e1e1e" : "1px solid rgba(46,74,139,0.07)" }}>
+                        <div className="px-4 py-3" style={{ borderBottom: isDark ? "1px solid #1e1e1e" : "1px solid rgba(var(--color-primary-rgb),0.07)" }}>
                           <p className="text-sm font-semibold" style={{ color: isDark ? "#ffffff" : "#111827" }}>{user?.name}</p>
                           <p className="text-xs" style={{ color: isDark ? "#5a5a5a" : "#9CA3AF" }}>@{user?.username}</p>
                         </div>
@@ -352,29 +342,16 @@ export default function Navbar({ variant = "default", showBack = false, onBack }
                           <Link
                             key={item.href}
                             href={item.href}
-                            className="block px-4 py-2.5 text-sm transition-colors"
-                            style={{ color: isDark ? "#d4d4d4" : "#374151" }}
+                            className="dropdown-item block px-4 py-2.5 text-sm"
                             onClick={() => setMenuOpen(false)}
-                            onMouseEnter={(e) => {
-                              (e.currentTarget as HTMLElement).style.background = isDark ? "#1a1a1a" : "rgba(46,74,139,0.05)";
-                            }}
-                            onMouseLeave={(e) => {
-                              (e.currentTarget as HTMLElement).style.background = "transparent";
-                            }}
                           >
                             {item.label}
                           </Link>
                         ))}
-                        <div style={{ borderTop: isDark ? "1px solid #1e1e1e" : "1px solid rgba(46,74,139,0.07)", margin: "4px 0" }} />
+                        <div style={{ borderTop: isDark ? "1px solid #1e1e1e" : "1px solid rgba(var(--color-primary-rgb),0.07)", margin: "4px 0" }} />
                         <button
                           onClick={handleLogout}
-                          className="w-full text-left px-4 py-2.5 text-sm text-red-500 transition-colors"
-                          onMouseEnter={(e) => {
-                            (e.currentTarget as HTMLElement).style.background = isDark ? "#2a0a0a" : "#fff5f5";
-                          }}
-                          onMouseLeave={(e) => {
-                            (e.currentTarget as HTMLElement).style.background = "transparent";
-                          }}
+                          className="w-full text-left px-4 py-2.5 text-sm text-red-500 transition-colors hover:bg-red-50"
                         >
                           Sign Out
                         </button>
@@ -435,19 +412,19 @@ export default function Navbar({ variant = "default", showBack = false, onBack }
             {/* Drawer header */}
             <div
               className="flex items-center justify-between px-5 py-4"
-              style={{ borderBottom: isDark ? "1px solid #1e1e1e" : "1px solid rgba(46,74,139,0.07)" }}
+              style={{ borderBottom: isDark ? "1px solid #1e1e1e" : "1px solid rgba(var(--color-primary-rgb),0.07)" }}
             >
               <div className="flex items-center gap-2">
                 <div
                   className="w-7 h-7 rounded-lg flex items-center justify-center"
-                  style={{ background: "linear-gradient(135deg, #2E4A8B 0%, #4A6BC0 100%)" }}
+                  style={{ background: "linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%)" }}
                 >
                   <ScissorsIcon className="w-3.5 h-3.5 text-white" />
                 </div>
                 <span
                   className="font-heading font-bold text-lg"
                   style={{
-                    background: "linear-gradient(135deg, #1E3573 0%, #2E4A8B 100%)",
+                    background: "linear-gradient(135deg, #1E3573 0%, var(--color-primary) 100%)",
                     WebkitBackgroundClip: "text",
                     WebkitTextFillColor: "transparent",
                     backgroundClip: "text",
@@ -471,14 +448,14 @@ export default function Navbar({ variant = "default", showBack = false, onBack }
             {isLoggedIn && (
               <div
                 className="px-5 py-4 flex items-center gap-3"
-                style={{ borderBottom: isDark ? "1px solid #1e1e1e" : "1px solid rgba(46,74,139,0.07)" }}
+                style={{ borderBottom: isDark ? "1px solid #1e1e1e" : "1px solid rgba(var(--color-primary-rgb),0.07)" }}
               >
                 {user?.avatar ? (
                   <img src={user.avatar} alt={user?.name} className="w-10 h-10 rounded-full object-cover" />
                 ) : (
                   <div
                     className="w-10 h-10 rounded-full text-white font-semibold flex items-center justify-center text-sm"
-                    style={{ background: "linear-gradient(135deg, #2E4A8B 0%, #4A6BC0 100%)" }}
+                    style={{ background: "linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%)" }}
                   >
                     {initials}
                   </div>
@@ -502,22 +479,13 @@ export default function Navbar({ variant = "default", showBack = false, onBack }
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileDrawerOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl mb-1 text-sm font-medium transition-colors"
-                  style={{ color: isDark ? "#d4d4d4" : "#374151" }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.background = isDark ? "#1a1a1a" : "#f9fafb";
-                    (e.currentTarget as HTMLElement).style.color = "#2E4A8B";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.background = "transparent";
-                    (e.currentTarget as HTMLElement).style.color = isDark ? "#d4d4d4" : "#374151";
-                  }}
+                  className="drawer-nav-link flex items-center gap-3 px-4 py-3 rounded-xl mb-1 text-sm font-medium"
                 >
                   <div
                     className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                    style={{ background: "rgba(46,74,139,0.08)" }}
+                    style={{ background: "rgba(var(--color-primary-rgb),0.08)" }}
                   >
-                    <svg className="w-4 h-4 text-[#2E4A8B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-[var(--color-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={link.icon} />
                     </svg>
                   </div>
@@ -529,12 +497,12 @@ export default function Navbar({ variant = "default", showBack = false, onBack }
             {/* Footer: dark mode toggle + sign out */}
             <div
               className="px-5 py-4 space-y-3"
-              style={{ borderTop: isDark ? "1px solid #1e1e1e" : "1px solid rgba(46,74,139,0.07)" }}
+              style={{ borderTop: isDark ? "1px solid #1e1e1e" : "1px solid rgba(var(--color-primary-rgb),0.07)" }}
             >
               <button
                 onClick={toggleDark}
                 className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors"
-                style={{ color: isDark ? "#d4d4d4" : "#374151", background: isDark ? "#1a1a1a" : "rgba(46,74,139,0.05)" }}
+                style={{ color: isDark ? "#d4d4d4" : "#374151", background: isDark ? "#1a1a1a" : "rgba(var(--color-primary-rgb),0.05)" }}
               >
                 {isDark ? (
                   <><SunIcon /> Light Mode</>

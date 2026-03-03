@@ -76,7 +76,7 @@ async function geocodeQuery(
   return null;
 }
 
-function computeMatchPercent(barber: Barber, profile: CustomerProfile | null): number | undefined {
+function computeMatchScore(barber: Barber, profile: CustomerProfile | null): number | undefined {
   if (!profile) return undefined;
   const { hairType, stylePrefs = [] } = profile;
   const mappedHair = HAIR_TYPE_MAP[hairType] ?? null;
@@ -292,7 +292,9 @@ function BrowseContent() {
       sessionStorage.setItem(BROWSE_SESSION_KEY, JSON.stringify({
         search, sortBy, activeFilters, locationQuery, locationPin, userGpsPin, searchRadius, viewMode,
       }));
-    } catch {}
+    } catch (err) {
+      console.error("sniply/browse: failed to persist browse state to sessionStorage", err);
+    }
   }, [search, sortBy, activeFilters, locationQuery, locationPin, userGpsPin, searchRadius, viewMode]);
 
   useEffect(() => {
@@ -309,7 +311,9 @@ function BrowseContent() {
             const p = JSON.parse(profileRaw);
             setCustomerProfile({ hairType: p.hairType || "", stylePrefs: p.stylePrefs || [] });
           }
-        } catch {}
+        } catch (err) {
+          console.error("sniply/browse: failed to parse customer profile from localStorage", err);
+        }
       }
     }
     // Load all barbers from API (seed + user-created pros)
@@ -336,7 +340,7 @@ function BrowseContent() {
   }, [allBarbers]);
 
   const barbersWithMatch = useMemo(
-    () => allBarbers.map((b) => ({ ...b, matchPercent: computeMatchPercent(b, customerProfile) })),
+    () => allBarbers.map((b) => ({ ...b, matchPercent: computeMatchScore(b, customerProfile) })),
     [allBarbers, customerProfile]
   );
 
@@ -468,16 +472,16 @@ function BrowseContent() {
   );
 
   return (
-    <div className="min-h-screen bg-[#d6e4f7] dark:bg-black">
+    <div className="min-h-screen bg-[var(--color-page-bg)] dark:bg-black">
       <Navbar />
 
       {/* Unified search sticky bar */}
-      <div className="sticky top-[68px] z-30 bg-[#e4edf8] dark:bg-[#141414] border-b border-[#2E4A8B]/15">
+      <div className="sticky top-[68px] z-30 bg-[var(--color-section-bg)] dark:bg-[#141414] border-b border-[var(--color-primary)]/15">
         <div className="max-w-[1200px] mx-auto px-6 py-3">
           <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-3">
 
             {/* ── Unified search bar ─────────────────────────────────── */}
-            <div className="flex-1 min-w-0 flex items-stretch h-[44px] rounded-xl border border-[#2E4A8B]/15 bg-white overflow-hidden transition-colors focus-within:border-[#2E4A8B]">
+            <div className="flex-1 min-w-0 flex items-stretch h-[44px] rounded-xl border border-[var(--color-primary)]/15 bg-white overflow-hidden transition-colors focus-within:border-[var(--color-primary)]">
 
               {/* Left: keyword — name / specialty / style */}
               <div className="flex items-center px-3 gap-2 flex-1 min-w-0">
@@ -513,8 +517,8 @@ function BrowseContent() {
                   title="Use my current location"
                   className={`shrink-0 flex items-center justify-center w-7 h-7 rounded-lg transition-colors ${
                     userGpsPin
-                      ? "bg-[#2E4A8B] text-white"
-                      : "text-gray-400 hover:text-[#2E4A8B]"
+                      ? "bg-[var(--color-primary)] text-white"
+                      : "text-gray-400 hover:text-[var(--color-primary)]"
                   }`}
                 >
                   {geocoding ? (
@@ -554,7 +558,7 @@ function BrowseContent() {
                       <select
                         value={searchRadius}
                         onChange={(e) => setSearchRadius(Number(e.target.value))}
-                        className="appearance-none h-8 pl-2 pr-6 rounded-lg border border-gray-200 text-xs font-medium text-gray-700 bg-white focus:outline-none focus:border-[#2E4A8B] cursor-pointer"
+                        className="appearance-none h-8 pl-2 pr-6 rounded-lg border border-gray-200 text-xs font-medium text-gray-700 bg-white focus:outline-none focus:border-[var(--color-primary)] cursor-pointer"
                       >
                         {RADIUS_OPTIONS.map((r) => (
                           <option key={r} value={r}>{r} mi</option>
@@ -572,7 +576,7 @@ function BrowseContent() {
               <button
                 onClick={() => handleGeoSearch(locationQuery)}
                 disabled={geocoding || !locationQuery.trim()}
-                className="shrink-0 self-stretch px-5 bg-[#2E4A8B] text-white text-sm font-semibold disabled:opacity-40 hover:bg-[#243A6F] transition-colors"
+                className="shrink-0 self-stretch px-5 bg-[var(--color-primary)] text-white text-sm font-semibold disabled:opacity-40 hover:bg-[#243A6F] transition-colors"
               >
                 Search
               </button>
@@ -586,7 +590,7 @@ function BrowseContent() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as SortKey)}
-                  className="appearance-none w-full h-[44px] pl-4 pr-9 rounded-xl border border-[#2E4A8B]/15 text-sm font-medium text-gray-700 bg-white focus:outline-none focus:border-[#2E4A8B] focus:ring-2 focus:ring-[#2E4A8B]/20 cursor-pointer"
+                  className="appearance-none w-full h-[44px] pl-4 pr-9 rounded-xl border border-[var(--color-primary)]/15 text-sm font-medium text-gray-700 bg-white focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 cursor-pointer"
                 >
                   {SORT_OPTIONS.map((o) => (
                     <option key={o.value} value={o.value}>{getSortLabel(o, !!customerProfile)}</option>
@@ -602,8 +606,8 @@ function BrowseContent() {
                 onClick={() => setFilterOpen(true)}
                 className={`flex items-center gap-2 px-3 md:px-4 h-[44px] rounded-xl border text-sm font-semibold transition-all shrink-0 ${
                   filterCount > 0
-                    ? "bg-[#2E4A8B] text-white border-[#2E4A8B] hover:bg-[#243A6F]"
-                    : "bg-white text-gray-700 border-[#2E4A8B]/15 hover:border-[#2E4A8B]/40 hover:text-gray-900"
+                    ? "bg-[var(--color-primary)] text-white border-[var(--color-primary)] hover:bg-[#243A6F]"
+                    : "bg-white text-gray-700 border-[var(--color-primary)]/15 hover:border-[var(--color-primary)]/40 hover:text-gray-900"
                 }`}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -611,19 +615,19 @@ function BrowseContent() {
                 </svg>
                 Filters
                 {filterCount > 0 && (
-                  <span className="bg-white text-[#2E4A8B] text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center shrink-0">
+                  <span className="bg-white text-[var(--color-primary)] text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center shrink-0">
                     {filterCount}
                   </span>
                 )}
               </button>
 
               {/* List / Map toggle */}
-              <div className="flex shrink-0 rounded-xl border border-[#2E4A8B]/15 overflow-hidden h-[44px]">
+              <div className="flex shrink-0 rounded-xl border border-[var(--color-primary)]/15 overflow-hidden h-[44px]">
                 <button
                   onClick={() => setViewMode("list")}
                   className={`flex items-center gap-1.5 px-4 text-sm font-semibold transition-colors ${
                     viewMode === "list"
-                      ? "bg-[#2E4A8B] text-white"
+                      ? "bg-[var(--color-primary)] text-white"
                       : "bg-white text-gray-600 hover:bg-gray-100"
                   }`}
                 >
@@ -637,7 +641,7 @@ function BrowseContent() {
                   onClick={() => setViewMode("map")}
                   className={`flex items-center gap-1.5 px-4 text-sm font-semibold transition-colors ${
                     viewMode === "map"
-                      ? "bg-[#2E4A8B] text-white"
+                      ? "bg-[var(--color-primary)] text-white"
                       : "bg-white text-gray-600 hover:bg-gray-100"
                   }`}
                 >
@@ -656,14 +660,14 @@ function BrowseContent() {
 
       {/* Active filter pills */}
       {activeEntries.length > 0 && (
-        <div className="bg-[#e4edf8] dark:bg-[#141414] border-b border-[#2E4A8B]/15">
+        <div className="bg-[var(--color-section-bg)] dark:bg-[#141414] border-b border-[var(--color-primary)]/15">
           <div className="max-w-[1200px] mx-auto px-6 py-2.5 flex items-center gap-2 flex-wrap">
             <span className="text-xs text-gray-400 font-medium shrink-0">Active:</span>
             {activeEntries.map(({ key, val }) => (
               <button
                 key={`${key}-${val}`}
                 onClick={() => removeFilter(key, val)}
-                className="flex items-center gap-1.5 bg-[#2E4A8B]/10 text-[#2E4A8B] text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-[#2E4A8B]/20 transition-colors"
+                className="flex items-center gap-1.5 bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-[var(--color-primary)]/20 transition-colors"
               >
                 {val}
                 <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -682,7 +686,7 @@ function BrowseContent() {
       )}
 
       {/* Main content */}
-      <main className="max-w-[1200px] mx-auto px-6 py-8">
+      <main className="max-w-[1200px] mx-auto px-6 py-8 animate-fade-in-up">
 
         {/* Geocoding error */}
         {geoError && (
@@ -696,17 +700,17 @@ function BrowseContent() {
 
         {/* Profile banners */}
         {!loading && userRole === "customer" && !customerProfile && !bannerDismissed && (
-          <div className="mb-6 flex items-center gap-3 bg-[#2E4A8B]/6 border border-[#2E4A8B]/20 rounded-xl px-5 py-3.5">
-            <svg className="w-5 h-5 text-[#2E4A8B] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="mb-6 flex items-center gap-3 bg-[var(--color-primary)]/6 border border-[var(--color-primary)]/20 rounded-xl px-5 py-3.5">
+            <svg className="w-5 h-5 text-[var(--color-primary)] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <p className="text-sm text-[#2E4A8B] flex-1">
+            <p className="text-sm text-[var(--color-primary)] flex-1">
               Get personalized matches →{" "}
               <Link href="/customer/profile-setup" className="font-semibold underline underline-offset-2 hover:opacity-80">
                 Complete your hair profile
               </Link>
             </p>
-            <button onClick={() => setBannerDismissed(true)} className="text-[#2E4A8B]/50 hover:text-[#2E4A8B] transition-colors shrink-0" aria-label="Dismiss">
+            <button onClick={() => setBannerDismissed(true)} className="text-[var(--color-primary)]/50 hover:text-[var(--color-primary)] transition-colors shrink-0" aria-label="Dismiss">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
               </svg>
@@ -747,7 +751,7 @@ function BrowseContent() {
                 {(search || filterCount > 0) && (
                   <button
                     onClick={() => { setSearch(""); setActiveFilters({}); }}
-                    className="ml-3 text-[#2E4A8B] font-medium hover:underline"
+                    className="ml-3 text-[var(--color-primary)] font-medium hover:underline"
                   >
                     Clear search & filters
                   </button>
@@ -758,7 +762,7 @@ function BrowseContent() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as SortKey)}
-                  className="appearance-none h-9 pl-3 pr-8 rounded-lg border border-[#2E4A8B]/15 text-xs font-medium text-gray-700 bg-white focus:outline-none cursor-pointer"
+                  className="appearance-none h-9 pl-3 pr-8 rounded-lg border border-[var(--color-primary)]/15 text-xs font-medium text-gray-700 bg-white focus:outline-none cursor-pointer"
                 >
                   {SORT_OPTIONS.map((o) => (
                     <option key={o.value} value={o.value}>{getSortLabel(o, !!customerProfile)}</option>
@@ -904,7 +908,7 @@ function BrowseContent() {
 export default function BrowsePage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#d6e4f7] dark:bg-black">
+      <div className="min-h-screen bg-[var(--color-page-bg)] dark:bg-black">
         <div className="max-w-[1200px] mx-auto px-6 py-8 mt-[144px]">
           <SkeletonGrid count={9} />
         </div>

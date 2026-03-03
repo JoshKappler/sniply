@@ -106,7 +106,7 @@ export default function LoginPage() {
       {/* ── Left panel: brand + testimonial ── */}
       <div
         className="hidden lg:flex lg:w-[46%] flex-col justify-between p-14 relative overflow-hidden"
-        style={{ background: "linear-gradient(145deg, #111E4A 0%, #1E3573 45%, #2E4A8B 80%, #3D5FA8 100%)" }}
+        style={{ background: "linear-gradient(145deg, #111E4A 0%, #1E3573 45%, var(--color-primary) 80%, #3D5FA8 100%)" }}
       >
         {/* Dot grid */}
         <div
@@ -165,10 +165,10 @@ export default function LoginPage() {
         {/* Mobile logo */}
         <div className="lg:hidden p-6" style={{ borderBottom: "1px solid #f3f4f6" }}>
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "linear-gradient(135deg, #2E4A8B, #4A6BC0)" }}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-light))" }}>
               <ScissorsIcon className="w-4 h-4 text-white" />
             </div>
-            <span className="font-heading font-bold text-xl" style={{ color: "#2E4A8B" }}>Sniply</span>
+            <span className="font-heading font-bold text-xl" style={{ color: "var(--color-primary)" }}>Sniply</span>
           </Link>
         </div>
 
@@ -250,7 +250,7 @@ export default function LoginPage() {
 
             <p className="text-center text-sm text-gray-500 mt-8">
               Don&apos;t have an account?{" "}
-              <Link href="/signup/role-selection" className="font-semibold hover:underline" style={{ color: "#2E4A8B" }}>
+              <Link href="/signup/role-selection" className="font-semibold hover:underline" style={{ color: "var(--color-primary)" }}>
                 Sign up free
               </Link>
             </p>

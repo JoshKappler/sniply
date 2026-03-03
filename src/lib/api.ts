@@ -61,6 +61,10 @@ export async function apiLogin(username: string, password: string): Promise<User
   return apiFetch("/api/auth/login", { method: "POST", body: JSON.stringify({ username, password }) });
 }
 
+export async function apiLogout(): Promise<void> {
+  await apiFetch("/api/auth/logout", { method: "POST" });
+}
+
 // ── Bookings ──────────────────────────────────────────────────────────────────
 
 export async function apiGetBookings(filter?: { userId?: string; barberId?: string }): Promise<Booking[]> {

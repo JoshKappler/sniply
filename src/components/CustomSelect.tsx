@@ -92,7 +92,7 @@ export function CustomSelect({
               }}
               className={`w-full text-left px-4 py-3 text-sm border-b last:border-b-0 border-gray-50 transition-colors hover:bg-gray-50 ${
                 value === opt.value
-                  ? "font-semibold text-[#2E4A8B] bg-[#2E4A8B]/5"
+                  ? "font-semibold text-[var(--color-primary)] bg-[var(--color-primary)]/5"
                   : "text-gray-700"
               }`}
             >

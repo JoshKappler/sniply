@@ -17,7 +17,7 @@ export default function TermsPage() {
 
       {/* Hero */}
       <section className="border-b border-gray-100 py-20 text-center px-6">
-        <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[#2E4A8B] mb-5">Legal</p>
+        <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[var(--color-primary)] mb-5">Legal</p>
         <h1 className="font-heading text-4xl md:text-5xl text-gray-900 mb-4">Terms of Service</h1>
         <p className="text-gray-400 text-sm">Effective January 1, 2025 · Sniply, Inc.</p>
       </section>
@@ -66,7 +66,7 @@ export default function TermsPage() {
             <p>
               You are responsible for safeguarding your account credentials. You agree not to share
               your password or allow others to access your account. You must notify us immediately at{" "}
-              <a href="mailto:support@sniply.com" className="text-[#2E4A8B] hover:underline">support@sniply.com</a>{" "}
+              <a href="mailto:support@sniply.com" className="text-[var(--color-primary)] hover:underline">support@sniply.com</a>{" "}
               if you suspect any unauthorized use of your account.
             </p>
             <p>
@@ -193,7 +193,7 @@ export default function TermsPage() {
             <address className="not-italic bg-gray-50 rounded-xl p-4 text-sm text-gray-600">
               Sniply, Inc.<br />
               Atlanta, GA<br />
-              <a href="mailto:legal@sniply.com" className="text-[#2E4A8B] hover:underline">legal@sniply.com</a>
+              <a href="mailto:legal@sniply.com" className="text-[var(--color-primary)] hover:underline">legal@sniply.com</a>
             </address>
           </Section>
 

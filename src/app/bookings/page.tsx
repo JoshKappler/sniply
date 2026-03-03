@@ -12,7 +12,7 @@ function LoadingSpinner() {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="flex flex-col items-center gap-3">
-        <div className="w-8 h-8 border-2 border-[#2E4A8B]/20 border-t-[#2E4A8B] rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[var(--color-primary)]/20 border-t-[var(--color-primary)] rounded-full animate-spin" />
         <p className="text-sm text-gray-400">Loading bookings...</p>
       </div>
     </div>
@@ -74,6 +74,17 @@ export default function BookingsPage() {
   const { addToast } = useToast();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
+  const [storageWarningDismissed, setStorageWarningDismissed] = useState(false);
+
+  useEffect(() => {
+    try {
+      if (localStorage.getItem("sniply_storage_warn_dismissed") === "1") {
+        setStorageWarningDismissed(true);
+      }
+    } catch (err) {
+      console.error("sniply/bookings: failed to read storage warning state", err);
+    }
+  }, []);
 
   useEffect(() => {
     const user = getCurrentUser();
@@ -89,7 +100,7 @@ export default function BookingsPage() {
 
     apiGetBookings({ userId: user.id })
       .then((bks) => setBookings(bks))
-      .catch(() => {})
+      .catch((err) => console.error("sniply/bookings: failed to load bookings", err))
       .finally(() => setLoading(false));
   }, [router]);
 
@@ -109,15 +120,39 @@ export default function BookingsPage() {
   const past = bookings.filter((b) => new Date(b.date) < new Date());
 
   return (
-    <div className="min-h-screen bg-[#d6e4f7] dark:bg-black">
+    <div className="min-h-screen bg-[var(--color-page-bg)] dark:bg-black">
       <Navbar />
-      <main className="max-w-[720px] mx-auto px-6 py-10">
-        <h1 className="font-heading font-bold text-gray-900 text-2xl sm:text-3xl mb-8">My Bookings</h1>
+      <main className="max-w-[720px] mx-auto px-6 py-10 animate-fade-in-up">
+        <h1 className="font-heading font-bold text-gray-900 text-2xl sm:text-3xl mb-6">My Bookings</h1>
+
+        {/* localStorage volatility warning (one-time) */}
+        {!storageWarningDismissed && (
+          <div className="mb-6 flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl px-5 py-3.5">
+            <svg className="w-5 h-5 text-amber-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-sm text-amber-700 flex-1">
+              Your data is saved locally in this browser. Use the same browser and device to access your bookings.
+            </p>
+            <button
+              onClick={() => {
+                setStorageWarningDismissed(true);
+                try { localStorage.setItem("sniply_storage_warn_dismissed", "1"); } catch (err) { console.error("sniply/bookings: failed to persist storage warning dismissed state", err); }
+              }}
+              className="text-amber-400 hover:text-amber-600 transition-colors shrink-0"
+              aria-label="Dismiss"
+            >
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        )}
 
         {bookings.length === 0 ? (
-          <div className="bg-white border border-[#2E4A8B]/12 rounded-2xl p-14 text-center">
-            <div className="w-16 h-16 rounded-2xl bg-[#2E4A8B]/8 flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-[#2E4A8B]/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="bg-white border border-[var(--color-primary)]/12 rounded-2xl p-14 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-[var(--color-primary)]/8 flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-[var(--color-primary)]/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
             </div>
@@ -195,18 +230,18 @@ function BookingCard({
   const cancelLocked = isUpcoming && isWithin24Hours(b.date, b.time);
 
   return (
-    <div className="bg-white border border-[#2E4A8B]/12 rounded-xl overflow-hidden hover:shadow-sm transition-shadow">
+    <div className="bg-white border border-[var(--color-primary)]/12 rounded-xl overflow-hidden hover:shadow-sm transition-shadow">
       {/* Main row */}
       <div
         className="p-5 flex items-center gap-4 cursor-pointer"
         onClick={() => setExpanded((x) => !x)}
       >
         {/* Date block */}
-        <div className="w-14 h-14 rounded-xl bg-[#2E4A8B]/8 flex flex-col items-center justify-center shrink-0">
-          <p className="text-xs font-bold text-[#2E4A8B] uppercase">
+        <div className="w-14 h-14 rounded-xl bg-[var(--color-primary)]/8 flex flex-col items-center justify-center shrink-0">
+          <p className="text-xs font-bold text-[var(--color-primary)] uppercase">
             {date.toLocaleDateString("en-US", { month: "short" })}
           </p>
-          <p className="text-xl font-heading font-bold text-[#2E4A8B] leading-none">
+          <p className="text-xl font-bold text-[var(--color-primary)] leading-none tabular-nums">
             {date.getDate()}
           </p>
         </div>
@@ -248,12 +283,12 @@ function BookingCard({
 
       {/* Expanded detail panel */}
       {expanded && (
-        <div className="px-5 pb-5 border-t border-[#2E4A8B]/08 pt-4 space-y-4">
+        <div className="px-5 pb-5 border-t border-[var(--color-primary)]/08 pt-4 space-y-4">
           {/* Service details */}
           {(serviceDuration || servicePrice) && (
             <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-[#2E4A8B]/8 flex items-center justify-center shrink-0">
-                <svg className="w-4 h-4 text-[#2E4A8B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-8 h-8 rounded-lg bg-[var(--color-primary)]/8 flex items-center justify-center shrink-0">
+                <svg className="w-4 h-4 text-[var(--color-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
@@ -263,7 +298,7 @@ function BookingCard({
                 <p className="text-xs text-gray-500">
                   {serviceDuration ? `${serviceDuration} min` : ""}
                   {serviceDuration && servicePrice ? " · " : ""}
-                  {servicePrice ? <span className="font-semibold text-[#2E4A8B]">${servicePrice}</span> : ""}
+                  {servicePrice ? <span className="font-semibold text-[var(--color-primary)]">${servicePrice}</span> : ""}
                 </p>
               </div>
             </div>
@@ -272,8 +307,8 @@ function BookingCard({
           {/* Notes */}
           {b.notes && (
             <div className="flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-[#2E4A8B]/8 flex items-center justify-center shrink-0">
-                <svg className="w-4 h-4 text-[#2E4A8B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-8 h-8 rounded-lg bg-[var(--color-primary)]/8 flex items-center justify-center shrink-0">
+                <svg className="w-4 h-4 text-[var(--color-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
               </div>
@@ -308,7 +343,7 @@ function BookingCard({
             {/* Message barber */}
             <Link
               href={`/barber/${b.barberId}?tab=booking`}
-              className="flex items-center gap-1.5 text-sm font-semibold text-[#2E4A8B] hover:text-[#243A6F] transition-colors"
+              className="flex items-center gap-1.5 text-sm font-semibold text-[var(--color-primary)] hover:text-[#243A6F] transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -373,7 +408,7 @@ function BookingCard({
                 </Link>
                 <Link
                   href={`/barber/${b.barberId}?review=1`}
-                  className="flex items-center gap-1 text-xs font-semibold text-[#2E4A8B] hover:underline"
+                  className="flex items-center gap-1 text-xs font-semibold text-[var(--color-primary)] hover:underline"
                 >
                   <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />

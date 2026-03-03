@@ -8,7 +8,12 @@ export interface User {
   avatar?: string;    // base64 data URL
   // Customer preference fields:
   hairType?: string;
+  hairSubtype?: string;
+  hairTexture?: string;
+  hairColor?: string;
   stylePrefs?: string[];
+  concerns?: string[];
+  notes?: string;
   gender?: string;
   location?: string;
 }
@@ -32,7 +37,9 @@ export function setCurrentUser(user: User): void {
     try {
       const { avatar: _a, ...slim } = user;
       localStorage.setItem("sniply_current_user", JSON.stringify(slim));
-    } catch {}
+    } catch (err) {
+      console.error("sniply/auth: failed to persist user session to localStorage", err);
+    }
   }
 }
 
@@ -40,4 +47,6 @@ export function logout(): void {
   localStorage.removeItem("sniply_current_user");
   localStorage.removeItem("sniply_role");
   localStorage.removeItem("sniply_onboarded");
+  // Clear the server-side session cookie (fire-and-forget)
+  fetch("/api/auth/logout", { method: "POST" }).catch(() => undefined);
 }

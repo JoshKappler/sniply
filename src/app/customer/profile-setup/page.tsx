@@ -177,16 +177,26 @@ export default function CustomerProfileSetupPage() {
         lastName: nameParts.slice(1).join(" ") || "",
         gender: cu.gender || "",
         hairType: cu.hairType || "",
+        hairSubtype: cu.hairSubtype || "",
+        hairTexture: cu.hairTexture || "",
+        hairColor: cu.hairColor || "",
         stylePrefs: cu.stylePrefs || [],
+        concerns: cu.concerns || [],
+        notes: cu.notes || "",
       };
-      // Load additional fields from legacy localStorage (reference photos, etc.)
+      // Load additional fields from localStorage (profile photo, reference photos, and any missing fields)
       try {
         const raw = localStorage.getItem("sniply_customer_profile");
         if (raw) {
           const saved = JSON.parse(raw);
           if (!patch.hairType && saved.hairType) patch.hairType = saved.hairType;
+          if (!patch.hairSubtype && saved.hairSubtype) patch.hairSubtype = saved.hairSubtype;
+          if (!patch.hairTexture && saved.hairTexture) patch.hairTexture = saved.hairTexture;
+          if (!patch.hairColor && saved.hairColor) patch.hairColor = saved.hairColor;
           if (!patch.gender && saved.gender) patch.gender = saved.gender;
           if (!patch.stylePrefs?.length && saved.stylePrefs?.length) patch.stylePrefs = saved.stylePrefs;
+          if (!patch.concerns?.length && saved.concerns?.length) patch.concerns = saved.concerns;
+          if (!patch.notes && saved.notes) patch.notes = saved.notes;
           if (saved.profilePhoto) setProfilePhoto(saved.profilePhoto);
           if (saved.referencePhotos?.length) {
             const photos: (string | null)[] = Array(6).fill(null);
@@ -196,7 +206,9 @@ export default function CustomerProfileSetupPage() {
             setReferencePhotos(photos);
           }
         }
-      } catch {}
+      } catch (err) {
+        console.error("sniply/profile-setup: failed to parse saved profile from localStorage", err);
+      }
       setForm((prev) => ({ ...prev, ...patch }));
     }
 
@@ -304,7 +316,12 @@ export default function CustomerProfileSetupPage() {
         name,
         gender: form.gender,
         hairType: form.hairType,
+        hairSubtype: form.hairSubtype,
+        hairTexture: form.hairTexture,
+        hairColor: form.hairColor,
         stylePrefs: form.stylePrefs,
+        concerns: form.concerns,
+        notes: form.notes,
         avatar: profilePhoto ?? undefined,
       };
 
@@ -329,13 +346,19 @@ export default function CustomerProfileSetupPage() {
           try {
             const updated = await apiUpdateUser(existing.id, prefPatch);
             setCurrentUser({ ...existing, ...updated });
-          } catch {}
+          } catch (err) {
+            console.error("sniply/profile-setup: failed to save preferences to API", err);
+          }
         }
       }
 
-      // Keep localStorage profile for legacy reference photo display (pro dashboard)
+      // Keep localStorage profile for reference photo display and field persistence
       localStorage.setItem("sniply_customer_profile", JSON.stringify({
-        name, gender: form.gender, hairType: form.hairType, stylePrefs: form.stylePrefs,
+        name, gender: form.gender,
+        hairType: form.hairType, hairSubtype: form.hairSubtype,
+        hairTexture: form.hairTexture, hairColor: form.hairColor,
+        stylePrefs: form.stylePrefs, concerns: form.concerns, notes: form.notes,
+        profilePhoto: profilePhoto ?? null,
         referencePhotos: referencePhotos.filter(Boolean),
       }));
 
@@ -367,7 +390,7 @@ export default function CustomerProfileSetupPage() {
           <button type="button" onClick={() => profilePhotoRef.current?.click()} className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity text-white text-xs font-medium">Change</button>
         </div>
       ) : (
-        <div onClick={() => profilePhotoRef.current?.click()} className="border-2 border-dashed border-gray-200 rounded-lg bg-gray-50 flex flex-col items-center justify-center cursor-pointer hover:border-[#2E4A8B] hover:bg-blue-50/30 transition-colors" style={{ height: "140px" }}>
+        <div onClick={() => profilePhotoRef.current?.click()} className="border-2 border-dashed border-gray-200 rounded-lg bg-gray-50 flex flex-col items-center justify-center cursor-pointer hover:border-[var(--color-primary)] hover:bg-blue-50/30 transition-colors" style={{ height: "140px" }}>
           <svg className="w-9 h-9 text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -394,11 +417,11 @@ export default function CustomerProfileSetupPage() {
               </div>
             </div>
           ) : (
-            <div onClick={() => refPhotoRefs.current[i]?.click()} className="w-full h-full border-2 border-dashed border-gray-200 rounded-xl bg-gray-50 flex flex-col items-center justify-center cursor-pointer hover:border-[#2E4A8B] hover:bg-blue-50/30 transition-colors group">
-              <svg className="w-7 h-7 text-gray-300 group-hover:text-[#2E4A8B]/40 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div onClick={() => refPhotoRefs.current[i]?.click()} className="w-full h-full border-2 border-dashed border-gray-200 rounded-xl bg-gray-50 flex flex-col items-center justify-center cursor-pointer hover:border-[var(--color-primary)] hover:bg-blue-50/30 transition-colors group">
+              <svg className="w-7 h-7 text-gray-300 group-hover:text-[var(--color-primary)]/40 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
               </svg>
-              <span className="text-xs text-gray-400 mt-1.5 group-hover:text-[#2E4A8B]/60">Add photo</span>
+              <span className="text-xs text-gray-400 mt-1.5 group-hover:text-[var(--color-primary)]/60">Add photo</span>
             </div>
           )}
         </div>
@@ -412,7 +435,7 @@ export default function CustomerProfileSetupPage() {
       <div className="min-h-screen bg-white flex flex-col">
         <Navbar />
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-8 h-8 border-2 border-[#2E4A8B]/20 border-t-[#2E4A8B] rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-[var(--color-primary)]/20 border-t-[var(--color-primary)] rounded-full animate-spin" />
         </div>
       </div>
     );
@@ -498,12 +521,12 @@ export default function CustomerProfileSetupPage() {
             <div className="grid grid-cols-2 md:grid-cols-3 gap-x-2 md:gap-x-4 gap-y-1">
               {visibleStyles.map(style => (
                 <label key={style} className="flex items-center gap-2.5 py-2 px-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                  <input type="checkbox" checked={form.stylePrefs.includes(style)} onChange={() => toggleArray("stylePrefs", style)} className="w-5 h-5 rounded border-gray-300 text-[#2E4A8B] accent-[#2E4A8B] cursor-pointer" />
+                  <input type="checkbox" checked={form.stylePrefs.includes(style)} onChange={() => toggleArray("stylePrefs", style)} className="w-5 h-5 rounded border-gray-300 text-[var(--color-primary)] accent-[var(--color-primary)] cursor-pointer" />
                   <span className="text-sm text-gray-700">{style}</span>
                 </label>
               ))}
             </div>
-            <button type="button" onClick={() => setShowMoreStyles(!showMoreStyles)} className="mt-3 text-sm text-[#2E4A8B] font-medium hover:underline">
+            <button type="button" onClick={() => setShowMoreStyles(!showMoreStyles)} className="mt-3 text-sm text-[var(--color-primary)] font-medium hover:underline">
               {showMoreStyles ? "− Show Less" : "+ Show More"}
             </button>
           </section>
@@ -514,7 +537,7 @@ export default function CustomerProfileSetupPage() {
             <div className="grid grid-cols-2 md:grid-cols-3 gap-x-2 md:gap-x-4 gap-y-1 mt-4">
               {HAIR_CONCERNS.map(concern => (
                 <label key={concern} className="flex items-center gap-2.5 py-2 px-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                  <input type="checkbox" checked={form.concerns.includes(concern)} onChange={() => toggleArray("concerns", concern)} className="w-5 h-5 rounded border-gray-300 text-[#2E4A8B] accent-[#2E4A8B] cursor-pointer" />
+                  <input type="checkbox" checked={form.concerns.includes(concern)} onChange={() => toggleArray("concerns", concern)} className="w-5 h-5 rounded border-gray-300 text-[var(--color-primary)] accent-[var(--color-primary)] cursor-pointer" />
                   <span className="text-sm text-gray-700">{concern}</span>
                 </label>
               ))}
@@ -528,7 +551,7 @@ export default function CustomerProfileSetupPage() {
             <div className="relative">
               <textarea placeholder="e.g., I prefer shorter fades, sensitive scalp, growing out my hair..."
                 value={form.notes} onChange={e => { if (e.target.value.length <= 500) updateField("notes", e.target.value); }}
-                className="w-full border border-gray-200 rounded-lg px-4 py-3 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#2E4A8B] focus:ring-2 focus:ring-[#2E4A8B]/20 resize-none"
+                className="w-full border border-gray-200 rounded-lg px-4 py-3 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 resize-none"
                 style={{ height: "120px" }} />
               <span className="absolute bottom-2.5 right-3 text-xs text-gray-400">{form.notes.length} / 500</span>
             </div>
@@ -548,21 +571,21 @@ export default function CustomerProfileSetupPage() {
       <Navbar />
 
       {/* Progress bar */}
-      <div className="fixed top-[72px] left-0 right-0 z-40 bg-white border-b border-gray-100">
+      <div className="sticky top-[68px] left-0 right-0 z-40 bg-white border-b border-gray-100">
         <div className="max-w-[700px] mx-auto px-6 py-3">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-medium text-gray-500">Step {step} of {TOTAL_STEPS}</span>
-            <span className="text-xs font-semibold text-[#2E4A8B]">{STEP_TITLES[step - 1]}</span>
+            <span className="text-xs font-semibold text-[var(--color-primary)]">{STEP_TITLES[step - 1]}</span>
           </div>
           <div className="flex gap-1">
             {STEP_TITLES.map((_, i) => (
-              <div key={i} className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${i < step ? "bg-[#2E4A8B]" : "bg-gray-200"}`} />
+              <div key={i} className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${i < step ? "bg-[var(--color-primary)]" : "bg-gray-200"}`} />
             ))}
           </div>
         </div>
       </div>
 
-      <div className="max-w-[700px] mx-auto px-6 pt-[140px] pb-24">
+      <div className="max-w-[700px] mx-auto px-6 pt-10 pb-24">
         {submitError && (
           <div className="mb-6 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700">{submitError}</div>
         )}
@@ -668,7 +691,7 @@ export default function CustomerProfileSetupPage() {
                   <CustomSelect value={form.hairSubtype} onChange={v => updateField("hairSubtype", v)} options={subtypeOptions} placeholder={`Select subtype (e.g., ${subtypeOptions[0]?.value})...`} />
                   <p className="text-xs text-gray-400 mt-1">
                     Not sure?{" "}
-                    <a href="https://www.naturallycurly.com/hair-types" target="_blank" rel="noopener noreferrer" className="text-[#2E4A8B] hover:underline">
+                    <a href="https://www.naturallycurly.com/hair-types" target="_blank" rel="noopener noreferrer" className="text-[var(--color-primary)] hover:underline">
                       Browse hair type charts
                     </a>{" "}
                     to find your exact subtype.
@@ -702,12 +725,12 @@ export default function CustomerProfileSetupPage() {
               <div className="grid grid-cols-2 md:grid-cols-3 gap-x-2 md:gap-x-4 gap-y-1">
                 {visibleStyles.map(style => (
                   <label key={style} className="flex items-center gap-2.5 py-2 px-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                    <input type="checkbox" checked={form.stylePrefs.includes(style)} onChange={() => toggleArray("stylePrefs", style)} className="w-5 h-5 rounded border-gray-300 text-[#2E4A8B] accent-[#2E4A8B] cursor-pointer" />
+                    <input type="checkbox" checked={form.stylePrefs.includes(style)} onChange={() => toggleArray("stylePrefs", style)} className="w-5 h-5 rounded border-gray-300 text-[var(--color-primary)] accent-[var(--color-primary)] cursor-pointer" />
                     <span className="text-sm text-gray-700">{style}</span>
                   </label>
                 ))}
               </div>
-              <button type="button" onClick={() => setShowMoreStyles(!showMoreStyles)} className="mt-3 text-sm text-[#2E4A8B] font-medium hover:underline">
+              <button type="button" onClick={() => setShowMoreStyles(!showMoreStyles)} className="mt-3 text-sm text-[var(--color-primary)] font-medium hover:underline">
                 {showMoreStyles ? "− Show Less" : "+ Show More"}
               </button>
             </div>
@@ -720,7 +743,7 @@ export default function CustomerProfileSetupPage() {
               <div className="grid grid-cols-2 md:grid-cols-3 gap-x-2 md:gap-x-4 gap-y-1">
                 {HAIR_CONCERNS.map(concern => (
                   <label key={concern} className="flex items-center gap-2.5 py-2 px-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                    <input type="checkbox" checked={form.concerns.includes(concern)} onChange={() => toggleArray("concerns", concern)} className="w-5 h-5 rounded border-gray-300 text-[#2E4A8B] accent-[#2E4A8B] cursor-pointer" />
+                    <input type="checkbox" checked={form.concerns.includes(concern)} onChange={() => toggleArray("concerns", concern)} className="w-5 h-5 rounded border-gray-300 text-[var(--color-primary)] accent-[var(--color-primary)] cursor-pointer" />
                     <span className="text-sm text-gray-700">{concern}</span>
                   </label>
                 ))}
@@ -753,7 +776,7 @@ export default function CustomerProfileSetupPage() {
               <div className="relative">
                 <textarea placeholder="e.g., I prefer shorter fades, sensitive scalp, growing out my hair..."
                   value={form.notes} onChange={e => { if (e.target.value.length <= 500) updateField("notes", e.target.value); }}
-                  className="w-full border border-gray-200 rounded-lg px-4 py-3 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#2E4A8B] focus:ring-2 focus:ring-[#2E4A8B]/20 resize-none"
+                  className="w-full border border-gray-200 rounded-lg px-4 py-3 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 resize-none"
                   style={{ height: "120px" }} />
                 <span className="absolute bottom-2.5 right-3 text-xs text-gray-400">{form.notes.length} / 500</span>
               </div>
@@ -783,7 +806,7 @@ export default function CustomerProfileSetupPage() {
               </button>
             )}
             {OPTIONAL_STEPS.has(step) && step < TOTAL_STEPS && (
-              <button type="button" onClick={skipStep} className="text-xs text-gray-400 hover:text-[#2E4A8B] hover:underline transition-colors">
+              <button type="button" onClick={skipStep} className="text-xs text-gray-400 hover:text-[var(--color-primary)] hover:underline transition-colors">
                 Skip this step
               </button>
             )}
@@ -794,7 +817,7 @@ export default function CustomerProfileSetupPage() {
           <div className="text-center mt-6 space-y-2">
             <p className="text-sm text-gray-400">
               Already have an account?{" "}
-              <Link href="/login" className="text-[#2E4A8B] font-medium hover:underline">Sign in</Link>
+              <Link href="/login" className="text-[var(--color-primary)] font-medium hover:underline">Sign in</Link>
             </p>
             <button type="button"
               onClick={() => { localStorage.setItem("sniply_onboarded", "true"); router.push("/browse"); }}

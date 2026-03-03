@@ -45,7 +45,7 @@ export default function AboutPage() {
 
       {/* Hero */}
       <section className="border-b border-gray-100 py-20 text-center px-6">
-        <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[#2E4A8B] mb-5">About Sniply</p>
+        <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[var(--color-primary)] mb-5">About Sniply</p>
         <h1 className="font-heading text-4xl md:text-5xl text-gray-900 leading-tight max-w-2xl mx-auto mb-6">
           The modern way to book a great cut
         </h1>
@@ -59,8 +59,8 @@ export default function AboutPage() {
         {/* Our story */}
         <section className="py-16 px-6">
           <div className="max-w-[760px] mx-auto">
-            <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[#2E4A8B] mb-4">Our story</p>
-            <div className="w-8 h-[2px] bg-[#2E4A8B] mb-6" />
+            <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[var(--color-primary)] mb-4">Our story</p>
+            <div className="w-8 h-[2px] bg-[var(--color-primary)] mb-6" />
             <h2 className="font-heading text-2xl md:text-3xl text-gray-900 mb-6">
               Founded in 2024 to close the gap between great talent and the people looking for it
             </h2>
@@ -115,13 +115,13 @@ export default function AboutPage() {
         {/* How it works */}
         <section className="py-16 px-6">
           <div className="max-w-[760px] mx-auto">
-            <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[#2E4A8B] mb-4">How it works</p>
-            <div className="w-8 h-[2px] bg-[#2E4A8B] mb-8" />
+            <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[var(--color-primary)] mb-4">How it works</p>
+            <div className="w-8 h-[2px] bg-[var(--color-primary)] mb-8" />
             <div className="space-y-8">
               {steps.map((step) => (
                 <div key={step.num} className="flex gap-6">
-                  <div className="shrink-0 w-10 h-10 rounded-xl bg-[#2E4A8B]/6 flex items-center justify-center">
-                    <span className="text-[11px] font-bold text-[#2E4A8B] tracking-wider">{step.num}</span>
+                  <div className="shrink-0 w-10 h-10 rounded-xl bg-[var(--color-primary)]/6 flex items-center justify-center">
+                    <span className="text-[11px] font-bold text-[var(--color-primary)] tracking-wider">{step.num}</span>
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 mb-1">{step.heading}</h3>
@@ -141,12 +141,12 @@ export default function AboutPage() {
         {/* Values */}
         <section className="py-16 px-6">
           <div className="max-w-[760px] mx-auto">
-            <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[#2E4A8B] mb-4">Our values</p>
-            <div className="w-8 h-[2px] bg-[#2E4A8B] mb-8" />
+            <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[var(--color-primary)] mb-4">Our values</p>
+            <div className="w-8 h-[2px] bg-[var(--color-primary)] mb-8" />
             <div className="space-y-8">
               {values.map((v) => (
                 <div key={v.title} className="flex gap-6">
-                  <div className="shrink-0 w-10 h-10 rounded-xl bg-[#2E4A8B]/6 flex items-center justify-center text-[#2E4A8B]">
+                  <div className="shrink-0 w-10 h-10 rounded-xl bg-[var(--color-primary)]/6 flex items-center justify-center text-[var(--color-primary)]">
                     {v.icon}
                   </div>
                   <div>
@@ -160,13 +160,13 @@ export default function AboutPage() {
         </section>
 
         {/* CTA */}
-        <section className="py-16 px-6 bg-[#2E4A8B]/4">
+        <section className="py-16 px-6 bg-[var(--color-primary)]/4">
           <div className="max-w-[760px] mx-auto text-center">
             <h2 className="font-heading text-2xl text-gray-900 mb-3">Ready to find your pro?</h2>
             <p className="text-gray-500 mb-8">Browse hundreds of barbers and stylists near you.</p>
             <a
               href="/browse"
-              className="inline-block bg-[#2E4A8B] text-white text-sm font-semibold px-7 py-3 rounded-xl hover:bg-[#243d75] transition-colors"
+              className="inline-block bg-[var(--color-primary)] text-white text-sm font-semibold px-7 py-3 rounded-xl hover:bg-[#243d75] transition-colors"
             >
               Browse Barbers
             </a>

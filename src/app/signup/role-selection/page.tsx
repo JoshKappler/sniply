@@ -11,21 +11,19 @@ const roles = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
       </svg>
     ),
-    iconGradient: "linear-gradient(135deg, #2E4A8B 0%, #5B7FCC 100%)",
-    iconShadow: "0 4px 16px rgba(46,74,139,0.30)",
-    badgeBg: "rgba(46,74,139,0.08)",
-    badgeColor: "#2E4A8B",
+    iconGradient: "linear-gradient(135deg, var(--color-primary) 0%, #5B7FCC 100%)",
+    iconShadow: "0 4px 16px rgba(var(--color-primary-rgb),0.30)",
+    badgeBg: "rgba(var(--color-primary-rgb),0.08)",
+    badgeColor: "var(--color-primary)",
     badgeLabel: "Most popular",
-    accentColor: "#2E4A8B",
+    accentColor: "var(--color-primary)",
     title: "Customer",
     description: "Find and book barbers that understand your hair type and style goals.",
     perks: ["Filter by specialty & hair type", "Browse real portfolio work", "Book instantly online"],
     href: "/customer/profile-setup",
     cta: "Join as Customer",
     ctaGradient: "linear-gradient(135deg, #3050A0 0%, #1E3573 100%)",
-    ctaShadow: "0 4px 16px rgba(46,74,139,0.30)",
-    borderHoverColor: "rgba(46,74,139,0.4)",
-    shadowHover: "0 12px 40px rgba(46,74,139,0.14)",
+    ctaShadow: "0 4px 16px rgba(var(--color-primary-rgb),0.30)",
   },
   {
     id: "pro",
@@ -50,8 +48,6 @@ const roles = [
     cta: "Join as Professional",
     ctaGradient: "linear-gradient(135deg, #D97706 0%, #B45309 100%)",
     ctaShadow: "0 4px 16px rgba(217,119,6,0.30)",
-    borderHoverColor: "rgba(217,119,6,0.4)",
-    shadowHover: "0 12px 40px rgba(217,119,6,0.12)",
   },
 ];
 
@@ -66,12 +62,12 @@ export default function RoleSelectionPage() {
         {/* Background decoration */}
         <div className="absolute inset-0 pointer-events-none"
           style={{
-            backgroundImage: "radial-gradient(circle, rgba(46,74,139,0.035) 1.5px, transparent 1.5px)",
+            backgroundImage: "radial-gradient(circle, rgba(var(--color-primary-rgb),0.035) 1.5px, transparent 1.5px)",
             backgroundSize: "28px 28px",
           }}
         />
         <div className="absolute pointer-events-none"
-          style={{ top: "-200px", left: "-100px", width: "500px", height: "500px", borderRadius: "50%", background: "rgba(46,74,139,0.05)", filter: "blur(80px)" }}
+          style={{ top: "-200px", left: "-100px", width: "500px", height: "500px", borderRadius: "50%", background: "rgba(var(--color-primary-rgb),0.05)", filter: "blur(80px)" }}
         />
         <div className="absolute pointer-events-none"
           style={{ bottom: "-150px", right: "-80px", width: "400px", height: "400px", borderRadius: "50%", background: "rgba(217,119,6,0.04)", filter: "blur(80px)" }}
@@ -93,30 +89,8 @@ export default function RoleSelectionPage() {
               <div
                 key={role.id}
                 onClick={() => router.push(role.href)}
-                className="cursor-pointer rounded-2xl p-8 transition-all duration-250 bg-white flex flex-col"
-                style={{
-                  border: "1.5px solid rgba(0,0,0,0.08)",
-                  boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
-                  minHeight: "360px",
-                }}
-                onMouseEnter={(e) => {
-                  const el = e.currentTarget as HTMLElement;
-                  el.style.borderColor = role.borderHoverColor;
-                  el.style.boxShadow = role.shadowHover;
-                  el.style.transform = "translateY(-2px)";
-                }}
-                onMouseLeave={(e) => {
-                  const el = e.currentTarget as HTMLElement;
-                  el.style.borderColor = "rgba(0,0,0,0.08)";
-                  el.style.boxShadow = "0 4px 20px rgba(0,0,0,0.06)";
-                  el.style.transform = "translateY(0)";
-                }}
-                onMouseDown={(e) => {
-                  (e.currentTarget as HTMLElement).style.transform = "translateY(0) scale(0.99)";
-                }}
-                onMouseUp={(e) => {
-                  (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
-                }}
+                className={`cursor-pointer rounded-2xl p-8 bg-white flex flex-col role-card role-card-${role.id}`}
+                style={{ minHeight: "360px" }}
               >
                 {/* Badge */}
                 <div
@@ -175,7 +149,7 @@ export default function RoleSelectionPage() {
 
           <p className="text-center text-sm text-gray-500 mt-8">
             Already have an account?{" "}
-            <Link href="/login" className="font-semibold hover:underline" style={{ color: "#2E4A8B" }}>
+            <Link href="/login" className="font-semibold hover:underline" style={{ color: "var(--color-primary)" }}>
               Sign In
             </Link>
           </p>

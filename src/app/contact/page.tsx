@@ -48,7 +48,7 @@ export default function ContactPage() {
 
       {/* Hero */}
       <section className="border-b border-gray-100 py-20 text-center px-6">
-        <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[#2E4A8B] mb-5">Get in touch</p>
+        <p className="text-xs font-semibold tracking-[0.18em] uppercase text-[var(--color-primary)] mb-5">Get in touch</p>
         <h1 className="font-heading text-4xl md:text-5xl text-gray-900 mb-4">Contact Us</h1>
         <p className="text-gray-500 text-lg max-w-md mx-auto leading-relaxed">
           We&apos;re here to help. Send us a message and we&apos;ll get back to you within one business day.
@@ -63,7 +63,7 @@ export default function ContactPage() {
             <div>
               {submitted ? (
                 <div className="text-center py-12">
-                  <div className="w-14 h-14 rounded-2xl bg-[#2E4A8B]/8 flex items-center justify-center text-[#2E4A8B] mx-auto mb-5">
+                  <div className="w-14 h-14 rounded-2xl bg-[var(--color-primary)]/8 flex items-center justify-center text-[var(--color-primary)] mx-auto mb-5">
                     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
                     </svg>
@@ -72,7 +72,7 @@ export default function ContactPage() {
                   <p className="text-gray-500 leading-relaxed">Thanks for reaching out, {form.name.split(" ")[0]}. We&apos;ll reply to <strong className="font-medium text-gray-700">{form.email}</strong> within one business day.</p>
                   <button
                     onClick={() => { setForm({ name: "", email: "", subject: "", message: "" }); setSubmitted(false); }}
-                    className="mt-6 text-sm text-[#2E4A8B] font-medium hover:underline"
+                    className="mt-6 text-sm text-[var(--color-primary)] font-medium hover:underline"
                   >
                     Send another message
                   </button>
@@ -124,7 +124,7 @@ export default function ContactPage() {
                       onChange={(e) => update("message", e.target.value)}
                       placeholder="Describe your issue or question…"
                       rows={6}
-                      className={`w-full border rounded-xl px-4 py-3 text-sm text-gray-900 resize-none outline-none transition-all focus:ring-2 focus:ring-[#2E4A8B]/20 focus:border-[#2E4A8B] ${errors.message ? "border-red-400 focus:border-red-400 focus:ring-red-100" : "border-gray-200"}`}
+                      className={`w-full border rounded-xl px-4 py-3 text-sm text-gray-900 resize-none outline-none transition-all focus:ring-2 focus:ring-[var(--color-primary)]/20 focus:border-[var(--color-primary)] ${errors.message ? "border-red-400 focus:border-red-400 focus:ring-red-100" : "border-gray-200"}`}
                     />
                     {errors.message && <p className="text-xs text-red-500 mt-1">{errors.message}</p>}
                   </div>
@@ -139,27 +139,27 @@ export default function ContactPage() {
             {/* Sidebar */}
             <div className="space-y-8">
               <div>
-                <p className="text-xs font-semibold tracking-[0.15em] uppercase text-[#2E4A8B] mb-3">Email</p>
-                <div className="w-6 h-[2px] bg-[#2E4A8B] mb-3" />
-                <a href="mailto:support@sniply.com" className="text-sm text-gray-700 hover:text-[#2E4A8B] transition-colors">
+                <p className="text-xs font-semibold tracking-[0.15em] uppercase text-[var(--color-primary)] mb-3">Email</p>
+                <div className="w-6 h-[2px] bg-[var(--color-primary)] mb-3" />
+                <a href="mailto:support@sniply.com" className="text-sm text-gray-700 hover:text-[var(--color-primary)] transition-colors">
                   support@sniply.com
                 </a>
                 <p className="text-xs text-gray-400 mt-1">Response within 1 business day</p>
               </div>
 
               <div>
-                <p className="text-xs font-semibold tracking-[0.15em] uppercase text-[#2E4A8B] mb-3">Hours</p>
-                <div className="w-6 h-[2px] bg-[#2E4A8B] mb-3" />
+                <p className="text-xs font-semibold tracking-[0.15em] uppercase text-[var(--color-primary)] mb-3">Hours</p>
+                <div className="w-6 h-[2px] bg-[var(--color-primary)] mb-3" />
                 <p className="text-sm text-gray-700">Monday – Friday</p>
                 <p className="text-sm text-gray-700">9 AM – 6 PM ET</p>
               </div>
 
               <div>
-                <p className="text-xs font-semibold tracking-[0.15em] uppercase text-[#2E4A8B] mb-3">Are you a Pro?</p>
-                <div className="w-6 h-[2px] bg-[#2E4A8B] mb-3" />
+                <p className="text-xs font-semibold tracking-[0.15em] uppercase text-[var(--color-primary)] mb-3">Are you a Pro?</p>
+                <div className="w-6 h-[2px] bg-[var(--color-primary)] mb-3" />
                 <p className="text-sm text-gray-500 leading-relaxed">
                   For Pro-specific inquiries — payouts, profile help, or onboarding — email us at{" "}
-                  <a href="mailto:pros@sniply.com" className="text-[#2E4A8B] hover:underline">pros@sniply.com</a>.
+                  <a href="mailto:pros@sniply.com" className="text-[var(--color-primary)] hover:underline">pros@sniply.com</a>.
                 </p>
               </div>
             </div>

@@ -38,9 +38,9 @@ export default function BarberCard({
           ) : (
             <div
               className="w-full h-full flex items-center justify-center"
-              style={{ background: "linear-gradient(135deg, rgba(46,74,139,0.06) 0%, rgba(91,127,204,0.08) 100%)" }}
+              style={{ background: "linear-gradient(135deg, rgba(var(--color-primary-rgb),0.06) 0%, rgba(91,127,204,0.08) 100%)" }}
             >
-              <svg className="w-14 h-14 text-[#2E4A8B]/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-14 h-14 text-[var(--color-primary)]/20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
@@ -69,14 +69,14 @@ export default function BarberCard({
               <div
                 className="text-white text-xs font-bold px-2.5 py-1 rounded-full cursor-default"
                 style={{
-                  background: "linear-gradient(135deg, #FF9500, #FF6B00)",
+                  background: "linear-gradient(135deg, var(--color-accent), #FF6B00)",
                   boxShadow: "0 2px 8px rgba(255,107,0,0.35)",
                 }}
               >
                 {matchPercent}% match
               </div>
               <div className="absolute right-0 top-full mt-2 w-48 bg-gray-900 text-white text-xs rounded-xl px-3 py-2.5 opacity-0 group-hover/match:opacity-100 transition-opacity pointer-events-none z-20 leading-relaxed shadow-xl">
-                Based on your hair type &amp; style preferences
+                How well this pro&apos;s listed specialties match your hair profile
                 <div className="absolute -top-1 right-4 w-2 h-2 bg-gray-900 rotate-45" />
               </div>
             </div>
@@ -98,7 +98,7 @@ export default function BarberCard({
             </svg>
             {location}
             {distance != null && (
-              <span className="ml-1 text-[#2E4A8B] font-medium">· {distance.toFixed(1)} mi</span>
+              <span className="ml-1 text-[var(--color-primary)] font-medium">· {distance.toFixed(1)} mi</span>
             )}
           </p>
 
@@ -106,7 +106,7 @@ export default function BarberCard({
             {type === "independent" ? (
               <span
                 className="text-xs font-semibold px-3 py-1 rounded-full text-white"
-                style={{ background: "linear-gradient(135deg, #2E4A8B, #4A6BC0)", boxShadow: "0 1px 4px rgba(46,74,139,0.3)" }}
+                style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-light))", boxShadow: "0 1px 4px rgba(var(--color-primary-rgb),0.3)" }}
               >
                 Independent
               </span>
@@ -124,9 +124,9 @@ export default function BarberCard({
                 key={s}
                 className="text-xs font-medium px-2.5 py-0.5 rounded-full"
                 style={{
-                  color: "#2E4A8B",
-                  background: "rgba(46,74,139,0.07)",
-                  border: "1px solid rgba(46,74,139,0.14)",
+                  color: "var(--color-primary)",
+                  background: "rgba(var(--color-primary-rgb),0.07)",
+                  border: "1px solid rgba(var(--color-primary-rgb),0.14)",
                 }}
               >
                 {s}
@@ -144,7 +144,7 @@ export default function BarberCard({
             ) : (
               <span />
             )}
-            <span className="flex items-center gap-1 text-sm font-semibold transition-all group-hover:gap-2" style={{ color: "#2E4A8B" }}>
+            <span className="flex items-center gap-1 text-sm font-semibold transition-all group-hover:gap-2" style={{ color: "var(--color-primary)" }}>
               <span className="hidden sm:inline">View profile</span>
               <svg className="w-4 h-4 translate-x-0 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
