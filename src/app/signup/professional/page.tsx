@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, ChangeEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getCurrentUser, setCurrentUser, type User } from "@/lib/auth";
-import { apiRegisterUser, apiUpdateUser, apiCreateBarber, apiUpdateBarber, apiGetBarber } from "@/lib/api";
+import { apiRegisterUser, apiUpdateUser, apiCreateBarber, apiUpdateBarber, apiGetBarber, apiLogin } from "@/lib/api";
 import { CustomSelect } from "@/components/CustomSelect";
 import Navbar from "@/components/Navbar";
 
@@ -312,6 +312,8 @@ export default function ProfessionalProfileSetupPage() {
             id: `user-${Date.now()}`, username: username.trim(), password,
             name: profile.name, role: "pro", profileId: id, avatar: profilePhoto ?? undefined,
           });
+          // Establish the server-side session cookie so authenticated API calls work
+          await apiLogin(username.trim(), password);
           setCurrentUser(newUser);
         } catch (err) {
           const msg = err instanceof Error ? err.message : "Registration failed";

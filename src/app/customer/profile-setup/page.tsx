@@ -3,7 +3,7 @@ import { useState, useCallback, useRef, ChangeEvent, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getCurrentUser, setCurrentUser, type User } from "@/lib/auth";
-import { apiRegisterUser, apiUpdateUser } from "@/lib/api";
+import { apiRegisterUser, apiUpdateUser, apiLogin } from "@/lib/api";
 import { CustomSelect } from "@/components/CustomSelect";
 import Navbar from "@/components/Navbar";
 
@@ -334,6 +334,8 @@ export default function CustomerProfileSetupPage() {
             role: "customer",
             ...prefPatch,
           });
+          // Establish the server-side session cookie so authenticated API calls work
+          await apiLogin(username.trim(), password);
           setCurrentUser(newUser);
         } catch (err) {
           setErrors({ username: err instanceof Error ? err.message : "Registration failed" });
