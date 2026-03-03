@@ -8,12 +8,14 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "node scripts/init-data.mjs && next start",
+    "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
+    "@types/pg": "^8.18.0",
     "leaflet": "^1.9.4",
     "next": "16.1.6",
+    "pg": "^8.19.0",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },

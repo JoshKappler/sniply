@@ -1,15 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readJson, writeJson } from "@/lib/db";
-
-type FavoritesDb = Record<string, string[]>;
+import { query, pool } from "@/lib/db";
+import { getSession, unauthorized, forbidden } from "@/lib/server-auth";
 
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ userId: string }> }
 ) {
   const { userId } = await params;
-  const db = readJson<FavoritesDb>("favorites.json", {});
-  return NextResponse.json(db[userId] ?? []);
+  const rows = await query(
+    `SELECT barber_id FROM favorites WHERE user_id = $1 ORDER BY barber_id`,
+    [userId]
+  );
+  return NextResponse.json(rows.map((r) => r.barber_id as string));
 }
 
 export async function PUT(
@@ -17,9 +19,21 @@ export async function PUT(
   { params }: { params: Promise<{ userId: string }> }
 ) {
   const { userId } = await params;
+  const session = getSession(req);
+  if (!session) return unauthorized();
+  if (session.userId !== userId) return forbidden();
+
   const ids = await req.json() as string[];
-  const db = readJson<FavoritesDb>("favorites.json", {});
-  db[userId] = ids;
-  writeJson("favorites.json", db);
+
+  // Replace all favorites for this user
+  await pool().query(`DELETE FROM favorites WHERE user_id = $1`, [userId]);
+
+  for (const barberId of ids) {
+    await pool().query(
+      `INSERT INTO favorites (user_id, barber_id) VALUES ($1,$2) ON CONFLICT DO NOTHING`,
+      [userId, barberId]
+    );
+  }
+
   return NextResponse.json(ids);
 }
