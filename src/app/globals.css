@@ -409,9 +409,18 @@ html.dark .hero-gradient-text {
   background-clip: text;
 }
 
-/* ── Dark mode: pro CTA band ── */
-html.dark .bg-\[\#2E4A8B\] {
-  background-color: #1a2b5c;
+/* Selected / hover highlight (e.g. messages thread list) */
+html.dark .bg-blue-50 {
+  background-color: #1a1a1a;
+}
+html.dark .hover\:bg-blue-50:hover {
+  background-color: #222222;
+}
+
+/* Home page section gradient overlays (inline style — needs !important) */
+html.dark .section-bg-gradient {
+  background: #0a0a0a !important;
+  border-top-color: #1e1e1e !important;
 }
 
 /* ── Footer nav links ── */
@@ -525,4 +534,15 @@ button:focus-visible {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ── Mobile responsive additions ── */
+.map-container { height: 520px; }
+.barber-card-image { height: 220px; }
+
+@media (max-width: 767px) {
+  .map-container { height: 300px; }
+}
+@media (max-width: 639px) {
+  .barber-card-image { height: 180px; }
 }

@@ -256,7 +256,7 @@ export default function Navbar({ variant = "default", showBack = false, onBack }
               {/* Dark mode toggle */}
               <button
                 onClick={toggleDark}
-                className="w-9 h-9 flex items-center justify-center rounded-full transition-all"
+                className="w-10 h-10 flex items-center justify-center rounded-full transition-all"
                 style={{ color: isDark ? "#a3a3a3" : "#6B7280" }}
                 aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
                 onMouseEnter={(e) => {
@@ -273,7 +273,7 @@ export default function Navbar({ variant = "default", showBack = false, onBack }
 
               {/* Mobile hamburger — shown on small screens */}
               <button
-                className="md:hidden w-9 h-9 flex items-center justify-center rounded-full transition-all"
+                className="md:hidden w-10 h-10 flex items-center justify-center rounded-full transition-all"
                 style={{ color: isDark ? "#a3a3a3" : "#6B7280" }}
                 onClick={() => setMobileDrawerOpen(true)}
                 aria-label="Open menu"
@@ -426,7 +426,7 @@ export default function Navbar({ variant = "default", showBack = false, onBack }
           />
           {/* Drawer */}
           <div
-            className="fixed top-0 right-0 bottom-0 z-[70] w-72 flex flex-col"
+            className="fixed top-0 right-0 bottom-0 z-[70] w-72 max-w-[calc(100%-2rem)] flex flex-col"
             style={{
               background: isDark ? "#111111" : "#ffffff",
               boxShadow: "-4px 0 32px rgba(0,0,0,0.15)",

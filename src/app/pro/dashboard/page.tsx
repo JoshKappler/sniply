@@ -980,23 +980,23 @@ export default function ProDashboardPage() {
     </div>
   );
 
-  const TABS: { key: TabKey; label: string }[] = [
-    { key: "profile",      label: "My Profile"    },
-    { key: "services",     label: "Services"      },
-    { key: "appointments", label: "Appointments"  },
-    { key: "messages",     label: "Messages"      },
-    { key: "analytics",    label: "Analytics"     },
+  const TABS: { key: TabKey; label: string; shortLabel: string }[] = [
+    { key: "profile",      label: "My Profile",   shortLabel: "Profile"   },
+    { key: "services",     label: "Services",     shortLabel: "Services"  },
+    { key: "appointments", label: "Appointments", shortLabel: "Appts"     },
+    { key: "messages",     label: "Messages",     shortLabel: "Messages"  },
+    { key: "analytics",    label: "Analytics",    shortLabel: "Analytics" },
   ];
 
   const todayKey = toISODate(new Date());
 
   return (
-    <div className="min-h-screen bg-[#d6e4f7]" onClick={() => { setActiveBlock(null); setActiveBookingId(null); }}>
+    <div className="min-h-screen bg-[#d6e4f7] dark:bg-black" onClick={() => { setActiveBlock(null); setActiveBookingId(null); }}>
       <Navbar />
       <div className="max-w-[1200px] mx-auto flex min-h-[calc(100vh-72px)]">
 
         {/* Sidebar */}
-        <aside className="hidden lg:flex flex-col w-[240px] shrink-0 border-r border-[#2E4A8B]/12 bg-[#e4edf8] pt-8 pb-4 px-4">
+        <aside className="hidden lg:flex flex-col w-[240px] shrink-0 border-r border-[#2E4A8B]/12 bg-[#e4edf8] dark:bg-[#111111] pt-8 pb-4 px-4">
           <nav className="space-y-1 flex-1">
             {TABS.map(({ key, label }) => (
               <button key={key} onClick={() => setTab(key)}
@@ -1016,12 +1016,15 @@ export default function ProDashboardPage() {
         </aside>
 
         {/* Mobile tabs */}
-        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#e4edf8] border-t border-[#2E4A8B]/12">
+        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#e4edf8] dark:bg-[#111111] border-t border-[#2E4A8B]/12">
           <div className="flex">
-            {TABS.map(({ key, label }) => (
+            {TABS.map(({ key, label, shortLabel }) => (
               <button key={key} onClick={() => setTab(key)}
                 className={`flex-1 py-3 text-xs font-semibold whitespace-nowrap border-t-2 transition-all ${tab === key ? "border-[#2E4A8B] text-[#2E4A8B]" : "border-transparent text-gray-400 hover:text-gray-600"}`}
-              >{label}</button>
+              >
+                <span className="sm:hidden">{shortLabel}</span>
+                <span className="hidden sm:inline">{label}</span>
+              </button>
             ))}
           </div>
         </div>
@@ -1068,9 +1071,9 @@ export default function ProDashboardPage() {
             <div className="max-w-[660px]">
               <div className="flex items-center justify-between mb-6">
                 <h1 className="font-heading font-bold text-gray-900 text-2xl">My Profile</h1>
-                <div className="flex gap-2">
-                  <Link href="/signup/professional" className="btn-primary text-sm" style={{ height: 40, padding: "0 16px", display: "flex", alignItems: "center" }}>Edit Profile</Link>
-                  {profile && <Link href={`/barber/${profile.id}`} className="btn-secondary text-sm" style={{ height: 40, padding: "0 16px", display: "flex", alignItems: "center" }}>View Public Profile</Link>}
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Link href="/signup/professional" className="btn-primary text-sm" style={{ height: 40, padding: "0 16px", display: "flex", alignItems: "center", justifyContent: "center" }}>Edit Profile</Link>
+                  {profile && <Link href={`/barber/${profile.id}`} className="btn-secondary text-sm" style={{ height: 40, padding: "0 16px", display: "flex", alignItems: "center", justifyContent: "center" }}>View Public Profile</Link>}
                 </div>
               </div>
               <OnboardingChecklist profile={profile} hasAvailability={Object.keys(schedData).length > 0} />
@@ -1506,7 +1509,7 @@ export default function ProDashboardPage() {
                           } catch {}
                           const bookingNotes = (b as Booking & { notes?: string }).notes;
                           return (
-                            <div key={b.id} className="bg-[#e4edf8] rounded-xl border border-[#2E4A8B]/10 overflow-hidden">
+                            <div key={b.id} className="bg-[#e4edf8] dark:bg-[#1e1e1e] rounded-xl border border-[#2E4A8B]/10 overflow-hidden">
                               <div className="flex items-center gap-3 px-4 py-3">
                                 {avatar
                                   ? <img src={avatar} alt={b.userName} className="w-9 h-9 rounded-full object-cover shrink-0" />

@@ -109,10 +109,10 @@ export default function BookingsPage() {
   const past = bookings.filter((b) => new Date(b.date) < new Date());
 
   return (
-    <div className="min-h-screen bg-[#d6e4f7]">
+    <div className="min-h-screen bg-[#d6e4f7] dark:bg-black">
       <Navbar />
       <main className="max-w-[720px] mx-auto px-6 py-10">
-        <h1 className="font-heading font-bold text-gray-900 text-3xl mb-8">My Bookings</h1>
+        <h1 className="font-heading font-bold text-gray-900 text-2xl sm:text-3xl mb-8">My Bookings</h1>
 
         {bookings.length === 0 ? (
           <div className="bg-white border border-[#2E4A8B]/12 rounded-2xl p-14 text-center">
@@ -288,14 +288,14 @@ function BookingCard({
           {isUpcoming && (
             cancelLocked ? (
               <div className="bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-xs text-red-700 flex items-center gap-2">
-                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
                 <span><span className="font-semibold">Cancellation unavailable</span> — appointment is within 24 hours</span>
               </div>
             ) : cancellationDeadline ? (
               <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-xs text-amber-700 flex items-center gap-2">
-                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <span><span className="font-semibold">Cancel by</span> {cancellationDeadline} for a full refund</span>
@@ -304,7 +304,7 @@ function BookingCard({
           )}
 
           {/* Action buttons */}
-          <div className="flex flex-wrap items-center gap-3 pt-1">
+          <div className="flex flex-wrap items-center gap-3 gap-y-2 pt-1">
             {/* Message barber */}
             <Link
               href={`/barber/${b.barberId}?tab=booking`}

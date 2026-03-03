@@ -380,7 +380,7 @@ export default function CustomerProfileSetupPage() {
   );
 
   const referencePhotosGrid = (
-    <div className="grid grid-cols-3 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
       {referencePhotos.map((img, i) => (
         <div key={i} className="relative aspect-square">
           <input type="file" accept="image/*" className="hidden"
@@ -495,7 +495,7 @@ export default function CustomerProfileSetupPage() {
           <section className="mb-10">
             <h2 className="text-xl font-bold text-gray-900 mb-2">Style Preferences</h2>
             <p className="text-sm text-gray-500 mb-5">What styles are you interested in? (Select all that apply)</p>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-2 md:gap-x-4 gap-y-1">
               {visibleStyles.map(style => (
                 <label key={style} className="flex items-center gap-2.5 py-2 px-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
                   <input type="checkbox" checked={form.stylePrefs.includes(style)} onChange={() => toggleArray("stylePrefs", style)} className="w-5 h-5 rounded border-gray-300 text-[#2E4A8B] accent-[#2E4A8B] cursor-pointer" />
@@ -511,7 +511,7 @@ export default function CustomerProfileSetupPage() {
           <hr className="border-gray-100 mb-10" />
           <section className="mb-10">
             <h2 className="text-xl font-bold text-gray-900 mb-2">Hair Concerns <span className="text-gray-400 font-normal text-base">(Optional)</span></h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1 mt-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-2 md:gap-x-4 gap-y-1 mt-4">
               {HAIR_CONCERNS.map(concern => (
                 <label key={concern} className="flex items-center gap-2.5 py-2 px-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
                   <input type="checkbox" checked={form.concerns.includes(concern)} onChange={() => toggleArray("concerns", concern)} className="w-5 h-5 rounded border-gray-300 text-[#2E4A8B] accent-[#2E4A8B] cursor-pointer" />
@@ -699,7 +699,7 @@ export default function CustomerProfileSetupPage() {
             <div className="mb-8">
               <h3 className="text-base font-semibold text-gray-900 mb-1">Style Preferences</h3>
               <p className="text-sm text-gray-500 mb-4">What styles are you interested in? (Select all that apply)</p>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-x-2 md:gap-x-4 gap-y-1">
                 {visibleStyles.map(style => (
                   <label key={style} className="flex items-center gap-2.5 py-2 px-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
                     <input type="checkbox" checked={form.stylePrefs.includes(style)} onChange={() => toggleArray("stylePrefs", style)} className="w-5 h-5 rounded border-gray-300 text-[#2E4A8B] accent-[#2E4A8B] cursor-pointer" />
@@ -717,7 +717,7 @@ export default function CustomerProfileSetupPage() {
             <div>
               <h3 className="text-base font-semibold text-gray-900 mb-1">Hair Concerns <span className="text-gray-400 font-normal text-sm">(Optional)</span></h3>
               <p className="text-sm text-gray-500 mb-4">Any specific concerns you&rsquo;d like addressed?</p>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-x-2 md:gap-x-4 gap-y-1">
                 {HAIR_CONCERNS.map(concern => (
                   <label key={concern} className="flex items-center gap-2.5 py-2 px-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
                     <input type="checkbox" checked={form.concerns.includes(concern)} onChange={() => toggleArray("concerns", concern)} className="w-5 h-5 rounded border-gray-300 text-[#2E4A8B] accent-[#2E4A8B] cursor-pointer" />

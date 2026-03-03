@@ -44,7 +44,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#d6e4f7]">
+    <div className="min-h-screen flex flex-col bg-[#d6e4f7] dark:bg-black">
       <Navbar />
 
       <main className="flex-1 relative overflow-hidden">
@@ -97,7 +97,7 @@ export default function HomePage() {
             }}
           />
 
-          <div className="relative max-w-[960px] mx-auto px-6 pt-24 pb-24 text-center">
+          <div className="relative max-w-[960px] mx-auto px-4 pt-16 pb-16 md:px-6 md:pt-24 md:pb-24 text-center">
             {/* Badge pill */}
             <div className="inline-flex items-center gap-2 mb-8 px-4 py-1.5 rounded-full"
               style={{
@@ -188,10 +188,11 @@ export default function HomePage() {
             style={{ borderTop: "1px solid rgba(46,74,139,0.08)" }}
           >
             <div className="absolute inset-0 pointer-events-none"
-              style={{ background: "linear-gradient(180deg, #e4edf8 0%, #d6e4f7 100%)" }}
+              className="section-bg-gradient"
+            style={{ background: "linear-gradient(180deg, #e4edf8 0%, #d6e4f7 100%)" }}
             />
             <div className="relative max-w-[1100px] mx-auto px-6 py-16">
-              <div className="flex items-end justify-between mb-10">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between mb-10">
                 <div>
                   <div className="flex items-center gap-2 mb-3">
                     <span className="w-6 h-px" style={{ background: "rgba(46,74,139,0.35)" }} />
@@ -215,7 +216,7 @@ export default function HomePage() {
                   </svg>
                 </Link>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
                 {featuredBarbers.map((barber) => (
                   <BarberCard
                     key={barber.id}
@@ -237,7 +238,7 @@ export default function HomePage() {
 
         {/* ── Testimonials ── */}
         {userRole !== "pro" && (
-          <section style={{ borderTop: "1px solid rgba(46,74,139,0.08)", background: "linear-gradient(180deg, #e8f0fa 0%, #d6e4f7 100%)" }}>
+          <section className="section-bg-gradient" style={{ borderTop: "1px solid rgba(46,74,139,0.08)", background: "linear-gradient(180deg, #e8f0fa 0%, #d6e4f7 100%)" }}>
             <div className="max-w-[1100px] mx-auto px-6 py-16">
               <div className="text-center mb-10">
                 <div className="flex items-center justify-center gap-2 mb-3">
@@ -287,7 +288,7 @@ export default function HomePage() {
         )}
 
         {/* ── How it works ── */}
-        <section style={{ borderTop: "1px solid rgba(46,74,139,0.08)", background: "linear-gradient(180deg, #e4edf8 0%, #d6e4f7 100%)" }}>
+        <section className="section-bg-gradient" style={{ borderTop: "1px solid rgba(46,74,139,0.08)", background: "linear-gradient(180deg, #e4edf8 0%, #d6e4f7 100%)" }}>
           <div className="max-w-[1000px] mx-auto px-6 py-20">
             <div className="text-center mb-14">
               <span
@@ -405,7 +406,7 @@ export default function HomePage() {
                 backgroundSize: "24px 24px",
               }}
             />
-            <div className="relative max-w-[720px] mx-auto px-6 py-24 text-center">
+            <div className="relative max-w-[720px] mx-auto px-6 py-14 md:py-24 text-center">
               <h2
                 className="font-heading font-bold text-white mb-5"
                 style={{ fontSize: "clamp(28px, 4vw, 50px)", lineHeight: 1.1, letterSpacing: "-0.02em" }}

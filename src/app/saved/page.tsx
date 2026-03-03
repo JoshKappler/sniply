@@ -57,11 +57,11 @@ export default function SavedPage() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="min-h-screen bg-[#d6e4f7]">
+    <div className="min-h-screen bg-[#d6e4f7] dark:bg-black">
       <Navbar />
 
       <div className="max-w-[1200px] mx-auto px-6 py-10">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-8">
           <div>
             <h1 className="font-heading font-bold text-gray-900 text-3xl">Saved Pros</h1>
             <p className="text-gray-500 mt-1">
@@ -91,7 +91,7 @@ export default function SavedPage() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
             {savedBarbers.map((barber) => (
               <div key={barber.id} className="relative group">
                 <BarberCard

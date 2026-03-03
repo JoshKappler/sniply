@@ -26,7 +26,7 @@ export default function BarberCard({
     <Link href={`/barber/${id}`} className="block group">
       <div className="barber-card bg-white rounded-2xl overflow-hidden h-full flex flex-col transition-transform duration-300 group-hover:-translate-y-1.5">
         {/* Hero Image */}
-        <div className="relative bg-gray-100" style={{ height: "220px" }}>
+        <div className="relative bg-gray-100 barber-card-image">
           {heroImage ? (
             <Image
               src={heroImage}
@@ -84,15 +84,15 @@ export default function BarberCard({
         </div>
 
         {/* Card Content */}
-        <div className="p-5 flex flex-col flex-1">
-          <h3 className="font-heading font-bold text-gray-900 text-lg leading-snug">{name}</h3>
+        <div className="p-3 sm:p-5 flex flex-col flex-1">
+          <h3 className="font-heading font-bold text-gray-900 text-sm sm:text-lg leading-snug">{name}</h3>
 
-          <div className="flex items-center gap-1.5 mt-1.5">
+          <div className="flex items-center gap-1.5 mt-1 sm:mt-1.5">
             <Stars rating={rating} size="sm" />
             <span className="text-sm text-gray-500">{rating} <span className="text-gray-400">({reviewCount})</span></span>
           </div>
 
-          <p className="text-sm text-gray-500 mt-2 flex items-center gap-1">
+          <p className="text-xs sm:text-sm text-gray-500 mt-1 sm:mt-2 flex items-center gap-1">
             <svg className="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
             </svg>
@@ -102,7 +102,7 @@ export default function BarberCard({
             )}
           </p>
 
-          <div className="mt-3 flex items-center gap-2 flex-wrap">
+          <div className="mt-2 sm:mt-3 flex items-center gap-2 flex-wrap">
             {type === "independent" ? (
               <span
                 className="text-xs font-semibold px-3 py-1 rounded-full text-white"
@@ -118,7 +118,7 @@ export default function BarberCard({
             <span className="text-sm font-semibold text-gray-800">From ${startingPrice}</span>
           </div>
 
-          <div className="mt-3 flex flex-wrap gap-1.5 flex-1">
+          <div className="mt-2 sm:mt-3 hidden sm:flex flex-wrap gap-1.5 flex-1">
             {specialties.slice(0, 3).map((s) => (
               <span
                 key={s}
@@ -135,7 +135,7 @@ export default function BarberCard({
           </div>
 
           {/* Next available + arrow */}
-          <div className="mt-4 flex items-center justify-between">
+          <div className="mt-2 sm:mt-4 flex items-center justify-between">
             {nextAvailable ? (
               <span className="flex items-center gap-1.5 text-xs text-emerald-600 font-medium">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 animate-pulse" />

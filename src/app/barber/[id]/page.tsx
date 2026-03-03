@@ -1178,6 +1178,7 @@ export default function BarberProfilePage({
     setPreselectedService(serviceName);
     setSelectedDate(null);
     setBookingSlot(null);
+    setTab("booking");
     setTimeout(() => {
       calendarRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 80);
@@ -1241,7 +1242,7 @@ export default function BarberProfilePage({
 
 
       {/* Profile header */}
-      <div ref={heroRef} className="bg-[#e4edf8] border-b border-[#2E4A8B]/15">
+      <div ref={heroRef} className="bg-[#e4edf8] dark:bg-[#141414] border-b border-[#2E4A8B]/15">
         <div className="max-w-[1200px] mx-auto px-6 py-8">
           <div className="flex items-start gap-5 flex-wrap">
             <div className="relative w-24 h-24 shrink-0">
@@ -1325,20 +1326,22 @@ export default function BarberProfilePage({
               )}
             </div>
             {/* Right column: price + action buttons */}
-            <div className="shrink-0 flex flex-col items-end gap-3">
-              <div className="text-right">
+            <div className="w-full sm:w-auto sm:shrink-0 flex flex-col items-start sm:items-end gap-3">
+              <div className="text-left sm:text-right">
                 <p className="text-xs text-gray-400">Starting from</p>
                 <p className="font-bold text-2xl text-[#2E4A8B]">${barber.startingPrice}</p>
               </div>
               {!isOwnProfile && (
-                <div className="flex flex-col items-end gap-2">
+                <div className="flex flex-col items-stretch sm:items-end gap-2 w-full sm:w-auto">
                   {/* Book Now button */}
                   <button
                     onClick={() => {
                       setTab("booking");
-                      window.scrollTo({ top: 0, behavior: "smooth" });
+                      setTimeout(() => {
+                        calendarRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                      }, 80);
                     }}
-                    className="flex items-center gap-2 text-sm font-semibold text-white bg-[#2E4A8B] hover:bg-[#243A6F] transition-colors px-5 h-11 rounded-xl shadow-sm"
+                    className="flex items-center justify-center gap-2 text-sm font-semibold text-white bg-[#2E4A8B] hover:bg-[#243A6F] transition-colors px-5 h-11 rounded-xl shadow-sm w-full sm:w-auto"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -1352,7 +1355,7 @@ export default function BarberProfilePage({
                       if (!user) { router.push("/login"); return; }
                       setShowMessageModal(true);
                     }}
-                    className="flex items-center gap-2 text-sm font-semibold text-white bg-[#2E4A8B] hover:bg-[#243A6F] transition-colors px-5 h-11 rounded-xl shadow-sm"
+                    className="flex items-center justify-center gap-2 text-sm font-semibold text-white bg-[#2E4A8B] hover:bg-[#243A6F] transition-colors px-5 h-11 rounded-xl shadow-sm w-full sm:w-auto"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -1362,7 +1365,7 @@ export default function BarberProfilePage({
                   {/* Save button */}
                   <button
                     onClick={() => void toggleSaved()}
-                    className={`flex items-center gap-2 text-sm font-semibold h-11 px-5 rounded-xl border-2 transition-all ${
+                    className={`flex items-center justify-center gap-2 text-sm font-semibold h-11 px-5 rounded-xl border-2 transition-all w-full sm:w-auto ${
                       saved
                         ? "text-[#FF9500] border-[#FF9500]/40 bg-[#FF9500]/8 hover:bg-[#FF9500]/15"
                         : "text-gray-600 border-gray-200 hover:border-[#2E4A8B]/40 hover:text-[#2E4A8B] bg-white"
@@ -1408,13 +1411,13 @@ export default function BarberProfilePage({
       </div>
 
       {/* Tab nav */}
-      <div className="sticky top-[72px] z-30 bg-[#e4edf8] border-b border-[#2E4A8B]/15">
+      <div className="sticky top-[68px] z-30 bg-[#e4edf8] dark:bg-[#111111] border-b border-[#2E4A8B]/15">
         <div className="max-w-[1200px] mx-auto px-6 flex overflow-x-auto">
           {TABS.map(({ key, label }) => (
             <button
               key={key}
               onClick={() => setTab(key)}
-              className={`px-5 py-4 text-[15px] font-semibold whitespace-nowrap border-b-[3px] transition-all duration-200 ${
+              className={`px-3 sm:px-5 py-3 sm:py-4 text-sm sm:text-[15px] font-semibold whitespace-nowrap border-b-[3px] transition-all duration-200 ${
                 tab === key
                   ? "text-gray-900 border-[#2E4A8B]"
                   : "text-gray-400 border-transparent hover:text-[#2E4A8B] hover:border-[#2E4A8B]/30"
@@ -1540,7 +1543,7 @@ export default function BarberProfilePage({
                   const svcImages = (svc as { images?: string[] }).images ?? [];
                   return (
                     <div key={svc.name} className="bg-white rounded-xl p-5 shadow-sm border border-gray-200">
-                      <div className="flex items-start justify-between gap-4">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
                         <div className="flex-1 min-w-0">
                           <h3 className="font-heading font-bold text-gray-900 text-base">{svc.name}</h3>
                           <p className="text-sm text-gray-500 mt-1">{svc.description}</p>
@@ -1556,8 +1559,8 @@ export default function BarberProfilePage({
                         {!isOwnProfile && (
                           <button
                             onClick={() => handleBookService(svc.name)}
-                            className="btn-primary shrink-0 text-sm flex items-center gap-1.5"
-                            style={{ height: "38px", paddingLeft: "16px", paddingRight: "16px" }}
+                            className="btn-primary w-full sm:w-auto shrink-0 text-sm flex items-center justify-center gap-1.5"
+                            style={{ height: "44px", paddingLeft: "16px", paddingRight: "16px" }}
                           >
                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -1602,8 +1605,8 @@ export default function BarberProfilePage({
                 </div>
               ) : (
                 <>
-                  <div ref={calendarRef}>
-                  <h2 className="font-heading font-bold text-gray-900 text-xl mb-1">Select a Date &amp; Time</h2>
+                  <div ref={calendarRef} style={{ scrollMarginTop: "130px" }}>
+                  <h2 className="font-heading font-bold text-gray-900 text-xl mb-1">Select a Date and Time</h2>
                   {preselectedService && (
                     <div className="flex items-center gap-2 mb-3">
                       <span className="text-sm text-gray-500">Booking:</span>
@@ -1914,7 +1917,7 @@ export default function BarberProfilePage({
                                   {/* Expanded: start-time chips */}
                                   {isOpen && fits && (
                                     <div className="px-5 pb-5 pt-1 border-t border-gray-100">
-                                      <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-3">
+                                      <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
                                         {preServiceDur > 0 ? `Start times (${preServiceDur} min service)` : "Pick a start time"}
                                       </p>
                                       {startTimes.length === 0 ? (
@@ -1925,7 +1928,7 @@ export default function BarberProfilePage({
                                             <button
                                               key={slotTime}
                                               onClick={() => handleSlotClick(selectedDate, slotTime)}
-                                              className="px-4 py-2 rounded-xl border-2 border-gray-200 text-sm font-semibold text-gray-700 hover:border-[#2E4A8B] hover:text-[#2E4A8B] hover:bg-[#2E4A8B]/5 transition-all"
+                                              className="px-4 py-2 min-h-[44px] sm:min-h-0 rounded-xl border-2 border-gray-200 text-sm font-semibold text-gray-700 hover:border-[#2E4A8B] hover:text-[#2E4A8B] hover:bg-[#2E4A8B]/5 transition-all"
                                             >
                                               {slotTime}
                                             </button>

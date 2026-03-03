@@ -11,7 +11,7 @@ function EyeToggle({ show, onToggle }: { show: boolean; onToggle: () => void }) 
     <button
       type="button"
       onClick={onToggle}
-      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+      className="absolute right-1.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-2"
       aria-label={show ? "Hide password" : "Show password"}
     >
       {show ? (
@@ -196,20 +196,20 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#d6e4f7]">
+    <div className="min-h-screen bg-[#d6e4f7] dark:bg-black">
       <Navbar />
-      <main className="max-w-[560px] mx-auto px-6 py-10">
+      <main className="max-w-[560px] mx-auto px-4 sm:px-6 py-10">
         <h1 className="font-heading font-bold text-gray-900 text-3xl mb-8">Account Settings</h1>
 
         {/* Username (read-only) */}
-        <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-6 mb-5">
+        <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-4 sm:p-6 mb-5">
           <h2 className="font-semibold text-gray-900 mb-4">Account Info</h2>
           <div className="space-y-3">
             <div>
               <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
                 Username
               </label>
-              <p className="text-sm text-gray-800 bg-[#e4edf8] border border-[#2E4A8B]/12 rounded-lg px-4 py-2.5">
+              <p className="text-sm text-gray-800 bg-[#e4edf8] dark:bg-[#1a1a1a] border border-[#2E4A8B]/12 rounded-lg px-4 py-2.5">
                 @{user?.username}
               </p>
               <p className="text-xs text-gray-400 mt-1">Usernames cannot be changed.</p>
@@ -218,7 +218,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Display name */}
-        <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-6 mb-5">
+        <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-4 sm:p-6 mb-5">
           <h2 className="font-semibold text-gray-900 mb-4">Display Name</h2>
           <div className="space-y-3">
             <div>
@@ -248,7 +248,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Change password */}
-        <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-6 mb-5">
+        <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-4 sm:p-6 mb-5">
           <h2 className="font-semibold text-gray-900 mb-4">Change Password</h2>
           <div className="space-y-4">
             <div>
@@ -324,7 +324,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Notification preferences */}
-        <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-6 mb-5">
+        <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-4 sm:p-6 mb-5">
           <h2 className="font-semibold text-gray-900 mb-1">Notifications</h2>
           <p className="text-xs text-gray-400 mb-5">Choose what you&apos;d like to be notified about.</p>
           <div className="space-y-4">
@@ -343,8 +343,7 @@ export default function SettingsPage() {
                     className="sr-only"
                   />
                   <div
-                    className="w-10 h-6 rounded-full transition-colors duration-200"
-                    style={{ background: notifPrefs[key] ? "#2E4A8B" : "#D1D5DB" }}
+                    className={`w-10 h-6 rounded-full transition-colors duration-200 ${notifPrefs[key] ? "bg-[#2E4A8B]" : "bg-gray-300"}`}
                   >
                     <div
                       className="absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200"
@@ -372,7 +371,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Data & Privacy */}
-        <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-6 mb-5">
+        <div className="bg-white border border-[#2E4A8B]/12 rounded-xl p-4 sm:p-6 mb-5">
           <h2 className="font-semibold text-gray-900 mb-1">Data & Privacy</h2>
           <p className="text-xs text-gray-400 mb-5">Download or manage your personal data.</p>
           <button
@@ -390,7 +389,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Danger zone */}
-        <div className="bg-white border border-red-200 rounded-xl p-6">
+        <div className="bg-white border border-red-200 rounded-xl p-4 sm:p-6">
           <h2 className="font-semibold text-red-600 mb-1">Danger Zone</h2>
           <p className="text-xs text-gray-400 mb-4">Permanently delete your account and all associated data. This cannot be undone.</p>
           {!showDeleteConfirm ? (

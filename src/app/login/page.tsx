@@ -172,7 +172,7 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        <div className="flex-1 flex items-center justify-center px-8 py-12">
+        <div className="flex-1 flex items-center justify-center px-5 sm:px-8 py-12">
           <div className="w-full max-w-[400px]">
             <div className="mb-9">
               <h1 className="font-heading font-bold text-gray-900 mb-2" style={{ fontSize: "32px", letterSpacing: "-0.02em" }}>

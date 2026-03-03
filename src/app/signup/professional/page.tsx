@@ -363,7 +363,7 @@ export default function ProfessionalProfileSetupPage() {
 
   const portfolioGrid = (
     <>
-      <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
         {portfolioImages.map((img, i) => (
           <div key={i} className="relative aspect-square">
             <input type="file" accept="image/*" className="hidden"
@@ -381,7 +381,7 @@ export default function ProfessionalProfileSetupPage() {
                 <svg className="w-6 h-6 text-gray-300 group-hover:text-[#2E4A8B]/40 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
                 </svg>
-                <span className="text-[10px] text-gray-400 mt-1">{i < 6 ? `Photo ${i + 1}` : "+"}</span>
+                <span className="text-xs text-gray-400 mt-1">{i < 6 ? `Photo ${i + 1}` : "+"}</span>
               </div>
             )}
           </div>

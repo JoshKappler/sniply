@@ -468,13 +468,13 @@ function BrowseContent() {
   );
 
   return (
-    <div className="min-h-screen bg-[#d6e4f7]">
+    <div className="min-h-screen bg-[#d6e4f7] dark:bg-black">
       <Navbar />
 
       {/* Unified search sticky bar */}
-      <div className="sticky top-[68px] z-30 bg-[#e4edf8] border-b border-[#2E4A8B]/15">
+      <div className="sticky top-[68px] z-30 bg-[#e4edf8] dark:bg-[#141414] border-b border-[#2E4A8B]/15">
         <div className="max-w-[1200px] mx-auto px-6 py-3">
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-3">
 
             {/* ── Unified search bar ─────────────────────────────────── */}
             <div className="flex-1 min-w-0 flex items-stretch h-[44px] rounded-xl border border-[#2E4A8B]/15 bg-white overflow-hidden transition-colors focus-within:border-[#2E4A8B]">
@@ -490,6 +490,7 @@ function BrowseContent() {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="flex-1 text-sm bg-transparent focus:outline-none min-w-0 placeholder-gray-400 text-gray-900"
+                  style={{ fontSize: "16px" }}
                 />
                 {search && (
                   <button onClick={() => setSearch("")} className="shrink-0 text-gray-400 hover:text-gray-600">
@@ -529,11 +530,12 @@ function BrowseContent() {
                 {/* Location text input */}
                 <input
                   type="text"
-                  placeholder="City, zip, or address…"
+                  placeholder="City or zip…"
                   value={locationQuery}
                   onChange={(e) => { setLocationQuery(e.target.value); setGeoError(null); }}
                   onKeyDown={(e) => e.key === "Enter" && handleGeoSearch(locationQuery)}
                   className="flex-1 text-sm bg-transparent focus:outline-none min-w-0 placeholder-gray-400 text-gray-900"
+                  style={{ fontSize: "16px" }}
                 />
 
                 {locationQuery && (
@@ -576,71 +578,76 @@ function BrowseContent() {
               </button>
             </div>
 
-            {/* Sort dropdown */}
-            <div className="relative shrink-0 hidden sm:block">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as SortKey)}
-                className="appearance-none h-[44px] pl-4 pr-9 rounded-xl border border-[#2E4A8B]/15 text-sm font-medium text-gray-700 bg-white focus:outline-none focus:border-[#2E4A8B] focus:ring-2 focus:ring-[#2E4A8B]/20 cursor-pointer"
-              >
-                {SORT_OPTIONS.map((o) => (
-                  <option key={o.value} value={o.value}>{getSortLabel(o, !!customerProfile)}</option>
-                ))}
-              </select>
-              <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
+            {/* Controls row: sort + filters + toggle */}
+            <div className="flex items-center gap-2 md:gap-3">
 
-            {/* Filters button */}
-            <button
-              onClick={() => setFilterOpen(true)}
-              className={`flex items-center gap-2 px-4 h-[44px] rounded-xl border text-sm font-semibold transition-all shrink-0 ${
-                filterCount > 0
-                  ? "bg-[#2E4A8B] text-white border-[#2E4A8B] hover:bg-[#243A6F]"
-                  : "bg-white text-gray-700 border-[#2E4A8B]/15 hover:border-[#2E4A8B]/40 hover:text-gray-900"
-              }`}
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h18l-6 9v5h-6v-5L3 4z" />
-              </svg>
-              Filters
-              {filterCount > 0 && (
-                <span className="bg-white text-[#2E4A8B] text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center shrink-0">
-                  {filterCount}
-                </span>
-              )}
-            </button>
+              {/* Sort dropdown */}
+              <div className="relative flex flex-1 md:flex-none">
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as SortKey)}
+                  className="appearance-none w-full h-[44px] pl-4 pr-9 rounded-xl border border-[#2E4A8B]/15 text-sm font-medium text-gray-700 bg-white focus:outline-none focus:border-[#2E4A8B] focus:ring-2 focus:ring-[#2E4A8B]/20 cursor-pointer"
+                >
+                  {SORT_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>{getSortLabel(o, !!customerProfile)}</option>
+                  ))}
+                </select>
+                <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
 
-            {/* List / Map toggle */}
-            <div className="flex shrink-0 rounded-xl border border-[#2E4A8B]/15 overflow-hidden h-[44px]">
+              {/* Filters button */}
               <button
-                onClick={() => setViewMode("list")}
-                className={`flex items-center gap-1.5 px-4 text-sm font-semibold transition-colors ${
-                  viewMode === "list"
-                    ? "bg-[#2E4A8B] text-white"
-                    : "bg-white text-gray-600 hover:bg-[#e4edf8]"
+                onClick={() => setFilterOpen(true)}
+                className={`flex items-center gap-2 px-3 md:px-4 h-[44px] rounded-xl border text-sm font-semibold transition-all shrink-0 ${
+                  filterCount > 0
+                    ? "bg-[#2E4A8B] text-white border-[#2E4A8B] hover:bg-[#243A6F]"
+                    : "bg-white text-gray-700 border-[#2E4A8B]/15 hover:border-[#2E4A8B]/40 hover:text-gray-900"
                 }`}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h18l-6 9v5h-6v-5L3 4z" />
                 </svg>
-                <span className="hidden sm:inline">List</span>
+                Filters
+                {filterCount > 0 && (
+                  <span className="bg-white text-[#2E4A8B] text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center shrink-0">
+                    {filterCount}
+                  </span>
+                )}
               </button>
-              <div className="w-px bg-gray-200" />
-              <button
-                onClick={() => setViewMode("map")}
-                className={`flex items-center gap-1.5 px-4 text-sm font-semibold transition-colors ${
-                  viewMode === "map"
-                    ? "bg-[#2E4A8B] text-white"
-                    : "bg-white text-gray-600 hover:bg-[#e4edf8]"
-                }`}
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                </svg>
-                <span className="hidden sm:inline">Map</span>
-              </button>
+
+              {/* List / Map toggle */}
+              <div className="flex shrink-0 rounded-xl border border-[#2E4A8B]/15 overflow-hidden h-[44px]">
+                <button
+                  onClick={() => setViewMode("list")}
+                  className={`flex items-center gap-1.5 px-4 text-sm font-semibold transition-colors ${
+                    viewMode === "list"
+                      ? "bg-[#2E4A8B] text-white"
+                      : "bg-white text-gray-600 hover:bg-gray-100"
+                  }`}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                  </svg>
+                  <span className="hidden sm:inline">List</span>
+                </button>
+                <div className="w-px bg-gray-200" />
+                <button
+                  onClick={() => setViewMode("map")}
+                  className={`flex items-center gap-1.5 px-4 text-sm font-semibold transition-colors ${
+                    viewMode === "map"
+                      ? "bg-[#2E4A8B] text-white"
+                      : "bg-white text-gray-600 hover:bg-gray-100"
+                  }`}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                  </svg>
+                  <span className="hidden sm:inline">Map</span>
+                </button>
+              </div>
+
             </div>
 
           </div>
@@ -649,7 +656,7 @@ function BrowseContent() {
 
       {/* Active filter pills */}
       {activeEntries.length > 0 && (
-        <div className="bg-[#e4edf8] border-b border-[#2E4A8B]/15">
+        <div className="bg-[#e4edf8] dark:bg-[#141414] border-b border-[#2E4A8B]/15">
           <div className="max-w-[1200px] mx-auto px-6 py-2.5 flex items-center gap-2 flex-wrap">
             <span className="text-xs text-gray-400 font-medium shrink-0">Active:</span>
             {activeEntries.map(({ key, val }) => (
@@ -766,7 +773,7 @@ function BrowseContent() {
             {/* ── MAP VIEW ─────────────────────────────────────────────── */}
             {viewMode === "map" && (
               <div className="mb-8">
-                <div style={{ height: "520px" }}>
+                <div className="map-container">
                   <MapView
                     barbers={mapBarbers}
                     center={locationPin ? { lat: locationPin.lat, lng: locationPin.lng } : null}
@@ -840,7 +847,7 @@ function BrowseContent() {
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
                   {visible.map((barber) => {
                     const override = reviewOverrides[barber.id];
                     const dist = locationPin && barber.lat != null && barber.lng != null
@@ -871,8 +878,7 @@ function BrowseContent() {
                   <div className="text-center mt-12">
                     <button
                       onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}
-                      className="btn-secondary"
-                      style={{ minWidth: "200px" }}
+                      className="btn-secondary w-full sm:w-auto"
                     >
                       Load More ({sorted.length - visibleCount} remaining)
                     </button>
@@ -898,7 +904,7 @@ function BrowseContent() {
 export default function BrowsePage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#d6e4f7]">
+      <div className="min-h-screen bg-[#d6e4f7] dark:bg-black">
         <div className="max-w-[1200px] mx-auto px-6 py-8 mt-[144px]">
           <SkeletonGrid count={9} />
         </div>
