@@ -66,7 +66,12 @@ export interface User {
   avatar?: string;    // base64 data URL
   // Customer preference fields (only populated for role === "customer"):
   hairType?: string;
+  hairSubtype?: string;
+  hairTexture?: string;
+  hairColor?: string;
   stylePrefs?: string[];
+  concerns?: string[];
+  notes?: string;
   gender?: string;
   location?: string;
 }
