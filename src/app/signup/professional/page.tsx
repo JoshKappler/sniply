@@ -121,6 +121,7 @@ export default function ProfessionalProfileSetupPage() {
   // UI
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitError, setSubmitError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const profilePhotoRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -248,6 +249,7 @@ export default function ProfessionalProfileSetupPage() {
   };
 
   const handleSubmit = async () => {
+    if (isSubmitting) return;
     setSubmitError("");
     const allErrors: Record<string, string> = {};
     if (!isEditing) {
@@ -269,6 +271,7 @@ export default function ProfessionalProfileSetupPage() {
       return;
     }
 
+    setIsSubmitting(true);
     try {
       const id = existingId ?? `pro-${Date.now()}`;
       const validServices = services
@@ -334,6 +337,8 @@ export default function ProfessionalProfileSetupPage() {
         setSubmitError("Something went wrong saving your profile. Please try again.");
       }
       window.scrollTo({ top: 0, behavior: "smooth" });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -655,8 +660,13 @@ export default function ProfessionalProfileSetupPage() {
             {credentialsForm}
           </section>
 
-          <button onClick={() => void handleSubmit()} className="btn-primary w-full" style={{ height: "52px", fontSize: "16px" }}>
-            Save Changes
+          <button onClick={() => void handleSubmit()} disabled={isSubmitting} className="btn-primary w-full flex items-center justify-center gap-2" style={{ height: "52px", fontSize: "16px" }}>
+            {isSubmitting ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Saving…
+              </>
+            ) : "Save Changes"}
           </button>
         </div>
       </div>
@@ -845,8 +855,13 @@ export default function ProfessionalProfileSetupPage() {
                 Continue
               </button>
             ) : (
-              <button onClick={() => void handleSubmit()} className="btn-primary px-8" style={{ height: "44px" }}>
-                Create Profile
+              <button onClick={() => void handleSubmit()} disabled={isSubmitting} className="btn-primary px-8 flex items-center gap-2" style={{ height: "44px" }}>
+                {isSubmitting ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Saving…
+                  </>
+                ) : "Create Profile"}
               </button>
             )}
             {OPTIONAL_STEPS.has(step) && step < TOTAL_STEPS && (

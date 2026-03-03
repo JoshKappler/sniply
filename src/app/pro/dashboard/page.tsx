@@ -539,6 +539,7 @@ export default function ProDashboardPage() {
   // Services tab
   const [dashSvcs, setDashSvcs] = useState<DashService[]>([{ name: "", description: "", price: "", duration: "", images: [] }]);
   const [svcsSaved, setSvcsSaved] = useState(false);
+  const [isSavingSvcs, setIsSavingSvcs] = useState(false);
   const [svcsError, setSvcsError] = useState<string | null>(null);
 
   // ── Load data ──────────────────────────────────────────────────────────────
@@ -801,6 +802,7 @@ export default function ProDashboardPage() {
 
   // ── Services helpers ───────────────────────────────────────────────────────
   const saveDashServices = async () => {
+    if (isSavingSvcs) return;
     setSvcsError(null);
     if (!profile?.id) { setSvcsError("Profile not loaded — please refresh."); return; }
     const validSvcs = dashSvcs
@@ -814,6 +816,7 @@ export default function ProDashboardPage() {
       }));
     if (validSvcs.length === 0) { setSvcsError("Add at least one service with a name and price before saving."); return; }
     const startingPrice = Math.min(...validSvcs.map(s => s.price));
+    setIsSavingSvcs(true);
     try {
       const updated = await apiUpdateBarber(profile.id, { services: validSvcs, startingPrice });
       setProfile(prev => prev ? { ...prev, ...updated } : prev);
@@ -822,6 +825,8 @@ export default function ProDashboardPage() {
     } catch (err) {
       console.error("sniply/dashboard: failed to save services", err);
       setSvcsError(err instanceof Error ? err.message : "Failed to save — please try again.");
+    } finally {
+      setIsSavingSvcs(false);
     }
   };
 
@@ -1302,10 +1307,16 @@ export default function ProDashboardPage() {
                 </div>
                 <button
                   onClick={() => void saveDashServices()}
+                  disabled={isSavingSvcs || svcsSaved}
                   className={`btn-primary text-sm shrink-0 ${svcsSaved ? "opacity-80" : ""}`}
                   style={{ height: 40, padding: "0 20px", display: "flex", alignItems: "center", gap: 6 }}
                 >
-                  {svcsSaved ? (
+                  {isSavingSvcs ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      Saving…
+                    </>
+                  ) : svcsSaved ? (
                     <>
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />

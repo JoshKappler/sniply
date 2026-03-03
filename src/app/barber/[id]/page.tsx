@@ -235,6 +235,7 @@ function BookingModal({
   const [confirmed, setConfirmed] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
   const [bookingNotes, setBookingNotes] = useState("");
+  const [isConfirming, setIsConfirming] = useState(false);
   const user = getCurrentUser();
 
   // Check if this user already has an active (not-yet-passed) booking with this barber
@@ -292,7 +293,7 @@ function BookingModal({
   const canConfirm = !!selectedService && !existingActiveBooking;
 
   const handleConfirm = async () => {
-    if (!canConfirm || !selectedSlot) return;
+    if (!canConfirm || !selectedSlot || isConfirming) return;
     if (existingActiveBooking) return; // guard against race
     const error = validateSlot();
     if (error) { setValidationError(error); return; }
@@ -314,6 +315,7 @@ function BookingModal({
       createdAt: new Date().toISOString(),
       notes: bookingNotes.trim() || undefined,
     };
+    setIsConfirming(true);
     try {
       // If rescheduling, delete old booking first
       if (rescheduleBookingId) {
@@ -323,6 +325,7 @@ function BookingModal({
     } catch (err) {
       console.error("sniply/booking: failed to save booking", err);
       setValidationError("Booking could not be saved. Please try again.");
+      setIsConfirming(false);
       return;
     }
     setConfirmed(true);
@@ -492,11 +495,16 @@ function BookingModal({
 
             <button
               onClick={() => void handleConfirm()}
-              disabled={!canConfirm}
-              className="btn-primary w-full disabled:opacity-40 disabled:cursor-not-allowed"
+              disabled={!canConfirm || isConfirming}
+              className="btn-primary w-full disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               style={{ height: "48px" }}
             >
-              Confirm Booking
+              {isConfirming ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Booking…
+                </>
+              ) : "Confirm Booking"}
             </button>
             <button onClick={onClose} className="w-full text-sm text-gray-400 hover:text-gray-600 text-center py-1">
               Cancel
@@ -1681,7 +1689,7 @@ export default function BarberProfilePage({
                                   ${!isSelected && hasSlots && !isPast ? "hover:bg-[var(--color-primary)]/10 text-gray-800" : ""}
                                   ${isPast ? "text-gray-300 cursor-not-allowed" : ""}
                                   ${!hasSlots && !isPast ? "text-gray-300 cursor-not-allowed" : ""}
-                                  ${isCalToday && !isSelected ? "ring-2 ring-[var(--color-primary)]/50 font-bold text-[var(--color-primary)]" : ""}
+                                  ${isCalToday && !isSelected ? "ring-2 ring-[var(--color-primary)]/50 font-bold" : ""}
                                 `}
                               >
                                 {day}

@@ -158,6 +158,7 @@ export default function CustomerProfileSetupPage() {
   const [showMoreStyles, setShowMoreStyles] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitError, setSubmitError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const profilePhotoRef = useRef<HTMLInputElement>(null);
   const refPhotoRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -288,6 +289,7 @@ export default function CustomerProfileSetupPage() {
   };
 
   const handleSubmit = async () => {
+    if (isSubmitting) return;
     setSubmitError("");
     const allErrors: Record<string, string> = {};
 
@@ -310,6 +312,7 @@ export default function CustomerProfileSetupPage() {
       return;
     }
 
+    setIsSubmitting(true);
     try {
       const name = `${form.firstName} ${form.lastName}`.trim();
       const prefPatch = {
@@ -375,6 +378,8 @@ export default function CustomerProfileSetupPage() {
         setSubmitError("Something went wrong. Please try again.");
       }
       window.scrollTo({ top: 0, behavior: "smooth" });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -559,8 +564,13 @@ export default function CustomerProfileSetupPage() {
             </div>
           </section>
 
-          <button onClick={() => void handleSubmit()} className="btn-primary w-full" style={{ height: "52px", fontSize: "16px" }}>
-            Save Changes
+          <button onClick={() => void handleSubmit()} disabled={isSubmitting} className="btn-primary w-full flex items-center justify-center gap-2" style={{ height: "52px", fontSize: "16px" }}>
+            {isSubmitting ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Saving…
+              </>
+            ) : "Save Changes"}
           </button>
         </div>
       </div>
@@ -803,8 +813,13 @@ export default function CustomerProfileSetupPage() {
                 Continue
               </button>
             ) : (
-              <button onClick={() => void handleSubmit()} className="btn-primary px-8" style={{ height: "44px" }}>
-                Create Account
+              <button onClick={() => void handleSubmit()} disabled={isSubmitting} className="btn-primary px-8 flex items-center gap-2" style={{ height: "44px" }}>
+                {isSubmitting ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Saving…
+                  </>
+                ) : "Create Account"}
               </button>
             )}
             {OPTIONAL_STEPS.has(step) && step < TOTAL_STEPS && (
