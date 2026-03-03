@@ -187,8 +187,7 @@ export default function HomePage() {
             className="relative"
             style={{ borderTop: "1px solid rgba(46,74,139,0.08)" }}
           >
-            <div className="absolute inset-0 pointer-events-none"
-              className="section-bg-gradient"
+            <div className="absolute inset-0 pointer-events-none section-bg-gradient"
             style={{ background: "linear-gradient(180deg, #e4edf8 0%, #d6e4f7 100%)" }}
             />
             <div className="relative max-w-[1100px] mx-auto px-6 py-16">
