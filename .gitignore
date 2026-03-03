@@ -17,6 +17,9 @@
 /.next/
 /out/
 
+# runtime data (regenerated from data-seed/ at startup)
+/data
+
 # production
 /build
 

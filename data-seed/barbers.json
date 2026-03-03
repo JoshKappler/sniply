@@ -1,0 +1,2390 @@
+{
+  "barbers": [
+    {
+      "id": "1",
+      "name": "John Smith",
+      "username": "john-smith",
+      "rating": 4.8,
+      "reviewCount": 8,
+      "location": "Downtown LA",
+      "fullAddress": "432 S Spring St, Los Angeles, CA 90013",
+      "lat": 34.0507,
+      "lng": -118.2456,
+      "type": "independent",
+      "startingPrice": 45,
+      "specialties": [
+        "Fades",
+        "Curls",
+        "Beards"
+      ],
+      "hairTypes": [
+        "Curly",
+        "Coily",
+        "Straight",
+        "Wavy"
+      ],
+      "bio": "Specializing in fades, tapers, and beard grooming. 10+ years of experience working with all hair types. Passionate about helping clients look and feel their best.",
+      "experience": "10+ years",
+      "languages": [
+        "English",
+        "Spanish"
+      ],
+      "matchPercent": 92,
+      "heroImage": "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1200&h=400&fit=crop",
+      "profileImage": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face",
+      "portfolioImages": [
+        "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1560869713-bf509e1e9724?w=400&h=400&fit=crop"
+      ],
+      "services": [
+        {
+          "name": "Haircut & Style",
+          "description": "Includes consultation, haircut, wash, and styling",
+          "duration": 45,
+          "price": 45
+        },
+        {
+          "name": "Fade / Taper",
+          "description": "Precision fade with lineup and edge work",
+          "duration": 30,
+          "price": 35
+        },
+        {
+          "name": "Beard Trim & Shape",
+          "description": "Full beard grooming and shaping service",
+          "duration": 20,
+          "price": 20
+        },
+        {
+          "name": "Full Service",
+          "description": "Haircut, beard trim, wash, and style package",
+          "duration": 75,
+          "price": 75
+        }
+      ],
+      "reviews": [
+        {
+          "name": "Mike R.",
+          "rating": 5,
+          "text": "Best fade I've ever gotten. John really knows his craft and pays attention to detail. The shop is clean and the vibe is great. Highly recommend!",
+          "date": "2 weeks ago"
+        },
+        {
+          "name": "Sarah T.",
+          "rating": 5,
+          "text": "John is amazing with curly hair. He understood exactly what I wanted and delivered perfectly.",
+          "date": "1 month ago"
+        },
+        {
+          "name": "David K.",
+          "rating": 4,
+          "text": "Good service but had to wait a while even with an appointment. The cut itself was great though.",
+          "date": "2 months ago"
+        },
+        {
+          "name": "James P.",
+          "rating": 5,
+          "text": "Came in for a full service — haircut, beard trim, the works. Left feeling like a new man. John's attention to detail is unmatched.",
+          "date": "3 weeks ago"
+        },
+        {
+          "name": "Tyra N.",
+          "rating": 5,
+          "text": "My husband has been going to John for two years now and refuses to see anyone else. That says it all.",
+          "date": "6 weeks ago"
+        },
+        {
+          "name": "Lin C.",
+          "rating": 4,
+          "text": "Great fade and very clean lineup. Communication is good and he's always on time. Will be back.",
+          "date": "3 months ago"
+        },
+        {
+          "name": "Andre M.",
+          "rating": 5,
+          "text": "John styled my natural curls better than any barber I've tried. He actually listened to what I wanted instead of guessing.",
+          "date": "4 months ago"
+        },
+        {
+          "name": "Sam D.",
+          "rating": 5,
+          "text": "Walked in as a first-time customer and immediately felt welcome. The cut was clean and the price is fair for downtown LA.",
+          "date": "5 months ago"
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "name": "Marcus Williams",
+      "username": "marcus-w",
+      "rating": 4.9,
+      "reviewCount": 8,
+      "location": "Harlem, NYC",
+      "fullAddress": "235 W 125th St, New York, NY 10027",
+      "lat": 40.8092,
+      "lng": -73.9476,
+      "type": "independent",
+      "startingPrice": 55,
+      "specialties": [
+        "Locs",
+        "Waves",
+        "Natural Hair"
+      ],
+      "hairTypes": [
+        "Coily",
+        "Kinky",
+        "Curly"
+      ],
+      "bio": "Master loctician and natural hair specialist with 15 years of experience. Known for meticulous attention to detail and creating lasting client relationships.",
+      "experience": "15+ years",
+      "languages": [
+        "English"
+      ],
+      "matchPercent": 87,
+      "heroImage": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=1200&h=400&fit=crop",
+      "profileImage": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face",
+      "portfolioImages": [
+        "https://images.unsplash.com/photo-1560869713-bf509e1e9724?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1611073615168-fb52496cb763?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop"
+      ],
+      "services": [
+        {
+          "name": "Loc Maintenance",
+          "description": "Full loc retwist, palm rolling, and styling",
+          "duration": 120,
+          "price": 85
+        },
+        {
+          "name": "Natural Hair Styling",
+          "description": "Wash, detangle, style for natural hair",
+          "duration": 90,
+          "price": 70
+        },
+        {
+          "name": "Starter Locs",
+          "description": "Initial loc installation consultation and setup",
+          "duration": 180,
+          "price": 150
+        }
+      ],
+      "reviews": [
+        {
+          "name": "Aaliyah M.",
+          "rating": 5,
+          "text": "Marcus is THE best for locs in the city. My locs have never looked healthier!",
+          "date": "1 week ago"
+        },
+        {
+          "name": "Jerome B.",
+          "rating": 5,
+          "text": "Professional, knowledgeable, and talented. Worth every penny.",
+          "date": "3 weeks ago"
+        },
+        {
+          "name": "Destiny F.",
+          "rating": 5,
+          "text": "I flew in from Philly just to get my locs retwisted by Marcus. No one else in my city does it like he does. Completely worth it.",
+          "date": "2 weeks ago"
+        },
+        {
+          "name": "Rashid O.",
+          "rating": 4,
+          "text": "Great technique and he takes his time. I appreciated that he explained the process while working. Loc maintenance was on point.",
+          "date": "5 weeks ago"
+        },
+        {
+          "name": "Keisha T.",
+          "rating": 5,
+          "text": "Marcus helped me start my loc journey and I couldn't be happier. He gave me real guidance and set realistic expectations. Grateful!",
+          "date": "2 months ago"
+        },
+        {
+          "name": "DeShawn L.",
+          "rating": 5,
+          "text": "Best natural hair specialist in Harlem. He keeps my waves defined and my edges sharp. Loyal client for 3 years now.",
+          "date": "3 months ago"
+        },
+        {
+          "name": "Fatima A.",
+          "rating": 5,
+          "text": "Marcus styled my daughter's natural hair for her graduation and she was absolutely glowing. Professional, gentle, and talented.",
+          "date": "4 months ago"
+        },
+        {
+          "name": "Nadia K.",
+          "rating": 4,
+          "text": "Wait time can be a little long but the quality of work makes it worth it. My locs always look fresh for weeks after.",
+          "date": "5 months ago"
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "name": "Elena Rodriguez",
+      "username": "elena-r",
+      "rating": 4.7,
+      "reviewCount": 7,
+      "location": "Miami Beach, FL",
+      "fullAddress": "742 Ocean Drive, Miami Beach, FL 33139",
+      "lat": 25.7799,
+      "lng": -80.1302,
+      "type": "shop",
+      "shopId": "shop-miami",
+      "shopName": "Luxe Cuts Studio",
+      "shopAddress": "742 Ocean Drive, Miami Beach, FL 33139",
+      "shopImage": "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=600&h=400&fit=crop",
+      "startingPrice": 65,
+      "specialties": [
+        "Color",
+        "Curls",
+        "Extensions"
+      ],
+      "hairTypes": [
+        "Wavy",
+        "Curly",
+        "Straight"
+      ],
+      "bio": "Color specialist and curly hair expert at Miami's top salon. Trained in New York and Paris, bringing world-class techniques to South Florida.",
+      "experience": "8 years",
+      "languages": [
+        "English",
+        "Spanish",
+        "Portuguese"
+      ],
+      "matchPercent": 78,
+      "heroImage": "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=1200&h=400&fit=crop",
+      "profileImage": "https://images.unsplash.com/photo-1494790108755-2616b612b77c?w=200&h=200&fit=crop&crop=face",
+      "portfolioImages": [
+        "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1560869713-bf509e1e9724?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1611073615168-fb52496cb763?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop"
+      ],
+      "services": [
+        {
+          "name": "Curly Cut",
+          "description": "Dry cut technique for curly and wavy hair",
+          "duration": 60,
+          "price": 75
+        },
+        {
+          "name": "Color & Highlights",
+          "description": "Full color service with professional color products",
+          "duration": 120,
+          "price": 120
+        },
+        {
+          "name": "Curl Definition Treatment",
+          "description": "Deep conditioning and curl defining treatment",
+          "duration": 90,
+          "price": 95
+        }
+      ],
+      "reviews": [
+        {
+          "name": "Isabella C.",
+          "rating": 5,
+          "text": "Elena transformed my frizzy mess into beautiful defined curls. I've never loved my hair so much!",
+          "date": "5 days ago"
+        },
+        {
+          "name": "Carmen L.",
+          "rating": 4,
+          "text": "Great color work. The salon is beautiful and the products they use are top quality.",
+          "date": "2 months ago"
+        },
+        {
+          "name": "Sophia G.",
+          "rating": 5,
+          "text": "Elena did my highlights and they came out perfectly blended — totally natural looking. She's an artist.",
+          "date": "3 weeks ago"
+        },
+        {
+          "name": "Mia V.",
+          "rating": 4,
+          "text": "Good experience overall. The curl definition treatment really helped tame my hair. Salon atmosphere is beautiful.",
+          "date": "6 weeks ago"
+        },
+        {
+          "name": "Lucia M.",
+          "rating": 5,
+          "text": "I've been struggling with my curls for years. Elena assessed my hair type immediately and gave me a cut that works WITH my texture. Game changer.",
+          "date": "3 months ago"
+        },
+        {
+          "name": "Rosa P.",
+          "rating": 5,
+          "text": "Elena speaks Portuguese which made communication so much easier. Brilliant colorist and a warm, welcoming person.",
+          "date": "4 months ago"
+        },
+        {
+          "name": "Ana S.",
+          "rating": 3,
+          "text": "The cut was nice but I felt a bit rushed and the wait was longer than expected. The end result was good though.",
+          "date": "5 months ago"
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "name": "James Chen",
+      "username": "james-c",
+      "rating": 4.6,
+      "reviewCount": 7,
+      "location": "San Francisco, CA",
+      "fullAddress": "548 Market St, San Francisco, CA 94104",
+      "lat": 37.79,
+      "lng": -122.3988,
+      "type": "independent",
+      "startingPrice": 50,
+      "specialties": [
+        "Fades",
+        "Tapers",
+        "Men's Cuts"
+      ],
+      "hairTypes": [
+        "Straight",
+        "Wavy",
+        "Thick"
+      ],
+      "bio": "Precision barber specializing in clean fades and modern men's cuts. Former competitive barber with national recognition.",
+      "experience": "6 years",
+      "languages": [
+        "English",
+        "Mandarin"
+      ],
+      "matchPercent": 71,
+      "heroImage": "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1200&h=400&fit=crop",
+      "profileImage": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=face",
+      "portfolioImages": [
+        "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1560869713-bf509e1e9724?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&h=400&fit=crop"
+      ],
+      "services": [
+        {
+          "name": "Signature Fade",
+          "description": "Skin fade with precise lineup",
+          "duration": 40,
+          "price": 55
+        },
+        {
+          "name": "Classic Cut",
+          "description": "Traditional scissor cut and style",
+          "duration": 35,
+          "price": 50
+        },
+        {
+          "name": "Kids Cut",
+          "description": "Haircut for children under 12",
+          "duration": 25,
+          "price": 35
+        }
+      ],
+      "reviews": [
+        {
+          "name": "Kevin L.",
+          "rating": 5,
+          "text": "James gives the cleanest fades I've ever seen. My go-to barber in the Bay Area.",
+          "date": "1 week ago"
+        },
+        {
+          "name": "Ryan T.",
+          "rating": 4,
+          "text": "Solid work on my taper. Clean, quick, professional. The pricing is fair for SF.",
+          "date": "2 weeks ago"
+        },
+        {
+          "name": "Jason W.",
+          "rating": 5,
+          "text": "James is a perfectionist in the best possible way. He takes his time and it shows in the result. Been going to him for a year now.",
+          "date": "1 month ago"
+        },
+        {
+          "name": "Michael H.",
+          "rating": 5,
+          "text": "Brought my 8-year-old in for a kids cut and James was patient and fun with him. Great with kids, great haircut. We'll be regulars.",
+          "date": "2 months ago"
+        },
+        {
+          "name": "Brandon K.",
+          "rating": 4,
+          "text": "Good barber, on time, clean shop. The fade was very clean. Would recommend to anyone in the Market Street area.",
+          "date": "3 months ago"
+        },
+        {
+          "name": "Chris N.",
+          "rating": 5,
+          "text": "As an Asian guy, my thick straight hair can be hard to work with. James understands it completely. Best cut I've gotten in years.",
+          "date": "4 months ago"
+        },
+        {
+          "name": "Alex P.",
+          "rating": 4,
+          "text": "Decent cut and good conversation. Booking was easy and he was exactly on time. Will return.",
+          "date": "5 months ago"
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "name": "Priya Sharma",
+      "username": "priya-s",
+      "rating": 4.9,
+      "reviewCount": 8,
+      "location": "Houston, TX",
+      "fullAddress": "1200 Main Street SW, Houston, TX 77002",
+      "lat": 29.7533,
+      "lng": -95.3684,
+      "type": "shop",
+      "shopId": "shop-houston",
+      "shopName": "Crown & Blade Barbershop",
+      "shopAddress": "1200 Main Street SW, Houston, TX 77002",
+      "shopImage": "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=600&h=400&fit=crop",
+      "startingPrice": 40,
+      "specialties": [
+        "Braids",
+        "Cornrows",
+        "Protective Styles"
+      ],
+      "hairTypes": [
+        "Coily",
+        "Kinky",
+        "Curly"
+      ],
+      "bio": "Award-winning braiding specialist with 12 years of expertise. Trained in traditional African braiding techniques and modern protective styles.",
+      "experience": "12 years",
+      "languages": [
+        "English",
+        "Hindi"
+      ],
+      "matchPercent": 95,
+      "heroImage": "https://images.unsplash.com/photo-1611073615168-fb52496cb763?w=1200&h=400&fit=crop",
+      "profileImage": "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=200&h=200&fit=crop&crop=face",
+      "portfolioImages": [
+        "https://images.unsplash.com/photo-1611073615168-fb52496cb763?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1560869713-bf509e1e9724?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop"
+      ],
+      "services": [
+        {
+          "name": "Box Braids",
+          "description": "Traditional box braids, full set",
+          "duration": 240,
+          "price": 150
+        },
+        {
+          "name": "Cornrows",
+          "description": "Straight back or patterned cornrows",
+          "duration": 90,
+          "price": 80
+        },
+        {
+          "name": "Faux Locs",
+          "description": "Faux locs installation, full set",
+          "duration": 300,
+          "price": 200
+        },
+        {
+          "name": "Feed-in Braids",
+          "description": "Natural looking feed-in braid styles",
+          "duration": 120,
+          "price": 100
+        }
+      ],
+      "reviews": [
+        {
+          "name": "Tiffany W.",
+          "rating": 5,
+          "text": "Priya is incredibly talented and patient. My box braids were absolutely perfect and lasted 3 months!",
+          "date": "3 days ago"
+        },
+        {
+          "name": "Nicole R.",
+          "rating": 5,
+          "text": "Best braider in Houston, period. The detail work on my cornrow pattern was stunning.",
+          "date": "2 weeks ago"
+        },
+        {
+          "name": "Imani J.",
+          "rating": 5,
+          "text": "I've been getting my braids done by Priya for 4 years and she never disappoints. The faux locs she installed looked completely real.",
+          "date": "1 month ago"
+        },
+        {
+          "name": "Zara B.",
+          "rating": 5,
+          "text": "She is so meticulous and takes her time to make sure every braid is perfect. My edges were spotless. Worth every dollar.",
+          "date": "6 weeks ago"
+        },
+        {
+          "name": "Monique D.",
+          "rating": 4,
+          "text": "Great braider and a lovely person. Session was long (4 hours for box braids) but that's expected. Very happy with the results.",
+          "date": "2 months ago"
+        },
+        {
+          "name": "Alicia H.",
+          "rating": 5,
+          "text": "Priya styled my daughter's hair for prom — feed-in braids with beads. She looked stunning. Priya went above and beyond.",
+          "date": "3 months ago"
+        },
+        {
+          "name": "Stephanie C.",
+          "rating": 5,
+          "text": "Finally found a braider who actually protects my natural hair while styling it. My hair has grown so much since switching to Priya.",
+          "date": "4 months ago"
+        },
+        {
+          "name": "Jasmine L.",
+          "rating": 4,
+          "text": "Talented and professional. My cornrows held up for weeks. Booking is easy and she's always prompt.",
+          "date": "5 months ago"
+        }
+      ]
+    },
+    {
+      "id": "6",
+      "name": "Andre Thompson",
+      "username": "andre-t",
+      "rating": 4.5,
+      "reviewCount": 6,
+      "location": "Atlanta, GA",
+      "fullAddress": "123 Auburn Ave NE, Atlanta, GA 30303",
+      "lat": 33.7528,
+      "lng": -84.3747,
+      "type": "independent",
+      "startingPrice": 35,
+      "specialties": [
+        "Waves",
+        "Fades",
+        "Beards"
+      ],
+      "hairTypes": [
+        "Coily",
+        "Kinky"
+      ],
+      "bio": "Wave specialist and precision barber serving Atlanta for 5 years. Known for creating 360 waves and crisp fades.",
+      "experience": "5 years",
+      "languages": [
+        "English"
+      ],
+      "matchPercent": 68,
+      "heroImage": "https://images.unsplash.com/photo-1560869713-bf509e1e9724?w=1200&h=400&fit=crop",
+      "profileImage": "https://images.unsplash.com/photo-1463453091185-61582044d556?w=200&h=200&fit=crop&crop=face",
+      "portfolioImages": [
+        "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1560869713-bf509e1e9724?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1611073615168-fb52496cb763?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop"
+      ],
+      "services": [
+        {
+          "name": "Wave Cut & Brush",
+          "description": "Fade cut optimized for wave training",
+          "duration": 35,
+          "price": 40
+        },
+        {
+          "name": "Basic Fade",
+          "description": "Clean fade with lineup",
+          "duration": 25,
+          "price": 35
+        },
+        {
+          "name": "Beard Shape",
+          "description": "Edge up and beard shaping",
+          "duration": 15,
+          "price": 20
+        }
+      ],
+      "reviews": [
+        {
+          "name": "Marcus J.",
+          "rating": 5,
+          "text": "Andre got my waves popping! Best barber for wave work in ATL.",
+          "date": "1 month ago"
+        },
+        {
+          "name": "Damon B.",
+          "rating": 4,
+          "text": "Clean fade and good lineup. Prices are fair and the turnaround is quick. Solid local barber.",
+          "date": "6 weeks ago"
+        },
+        {
+          "name": "Javion K.",
+          "rating": 5,
+          "text": "Andre is the wave whisperer. I had a patchy wave pattern and he gave me the right cut to even it out. My waves are 360 now.",
+          "date": "2 months ago"
+        },
+        {
+          "name": "Terrell S.",
+          "rating": 4,
+          "text": "Good barber, responsive, and easy to book. The beard shape was clean. I'll keep coming back.",
+          "date": "3 months ago"
+        },
+        {
+          "name": "DeVon M.",
+          "rating": 5,
+          "text": "Moved to Atlanta six months ago and Andre was the first barber I tried. Didn't need to try anyone else — he's that good.",
+          "date": "4 months ago"
+        },
+        {
+          "name": "Chris W.",
+          "rating": 4,
+          "text": "Consistent quality every time. He remembers your preferences and always delivers. Highly recommended for coily hair types.",
+          "date": "5 months ago"
+        }
+      ]
+    },
+    {
+      "id": "7",
+      "name": "Keisha Johnson",
+      "username": "keisha-j",
+      "rating": 4.9,
+      "reviewCount": 7,
+      "location": "Chicago, IL",
+      "fullAddress": "407 E 63rd St, Chicago, IL 60637",
+      "lat": 41.7793,
+      "lng": -87.6024,
+      "type": "independent",
+      "startingPrice": 60,
+      "specialties": [
+        "Protective Styles",
+        "Natural Hair",
+        "Locs"
+      ],
+      "hairTypes": [
+        "Coily",
+        "Kinky",
+        "Curly"
+      ],
+      "bio": "Chicago's leading natural hair and protective style specialist. I believe healthy hair is a lifestyle, and I help clients build routines that work long after they leave the chair.",
+      "experience": "9 years",
+      "languages": [
+        "English"
+      ],
+      "matchPercent": 89,
+      "heroImage": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=1200&h=400&fit=crop",
+      "profileImage": "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=200&h=200&fit=crop&crop=face",
+      "portfolioImages": [
+        "https://images.unsplash.com/photo-1611073615168-fb52496cb763?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1560869713-bf509e1e9724?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop"
+      ],
+      "services": [
+        {
+          "name": "Twist Out & Style",
+          "description": "Two-strand twists set and styled for definition",
+          "duration": 90,
+          "price": 80
+        },
+        {
+          "name": "Loc Maintenance",
+          "description": "Retwist, palm rolling, and neatening",
+          "duration": 120,
+          "price": 90
+        },
+        {
+          "name": "Big Chop Consultation & Style",
+          "description": "Supportive big chop session with styling guidance",
+          "duration": 60,
+          "price": 65
+        },
+        {
+          "name": "Silk Press",
+          "description": "Heat-free silk press with minimal damage",
+          "duration": 75,
+          "price": 85
+        }
+      ],
+      "reviews": [
+        {
+          "name": "Brianna M.",
+          "rating": 5,
+          "text": "Keisha did my big chop and I was terrified. She made me feel completely at ease and the result was stunning. My confidence shot through the roof.",
+          "date": "1 week ago"
+        },
+        {
+          "name": "Tamara L.",
+          "rating": 5,
+          "text": "Best silk press I've ever had. No heat damage, no frizz on the way home. She uses such quality products.",
+          "date": "2 weeks ago"
+        },
+        {
+          "name": "Danielle S.",
+          "rating": 5,
+          "text": "Keisha knows natural hair inside and out. She diagnosed my dryness issue in two minutes and recommended a whole routine for me.",
+          "date": "1 month ago"
+        },
+        {
+          "name": "Rashida O.",
+          "rating": 5,
+          "text": "My loc maintenance has never looked this good. She's meticulous and her retwists hold for months.",
+          "date": "2 months ago"
+        },
+        {
+          "name": "Crystal B.",
+          "rating": 4,
+          "text": "Great stylist and really knowledgeable. Booking can be tricky since she stays booked up, but definitely worth the wait.",
+          "date": "3 months ago"
+        },
+        {
+          "name": "Shonda T.",
+          "rating": 5,
+          "text": "Keisha is the real deal. My twist out looked incredible for a full week. I got compliments everywhere I went.",
+          "date": "4 months ago"
+        },
+        {
+          "name": "Nkechi A.",
+          "rating": 5,
+          "text": "She truly cares about your hair health, not just how it looks walking out the door. That long-term focus is rare and I appreciate it so much.",
+          "date": "5 months ago"
+        }
+      ]
+    },
+    {
+      "id": "8",
+      "name": "Darius Mitchell",
+      "username": "darius-m",
+      "rating": 4.8,
+      "reviewCount": 6,
+      "location": "Brooklyn, NYC",
+      "fullAddress": "874 Fulton St, Brooklyn, NY 11238",
+      "lat": 40.6876,
+      "lng": -73.9577,
+      "type": "independent",
+      "startingPrice": 50,
+      "specialties": [
+        "Fades",
+        "Lineups",
+        "Skin Fades"
+      ],
+      "hairTypes": [
+        "Coily",
+        "Kinky",
+        "Curly",
+        "Wavy"
+      ],
+      "bio": "Brooklyn-raised precision barber with 8 years in the game. I take fades seriously — every edge, every blend, every time. Walk in looking regular, walk out looking right.",
+      "experience": "8 years",
+      "languages": [
+        "English"
+      ],
+      "matchPercent": 84,
+      "heroImage": "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=1200&h=400&fit=crop",
+      "profileImage": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop&crop=face",
+      "portfolioImages": [
+        "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1560869713-bf509e1e9724?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop"
+      ],
+      "services": [
+        {
+          "name": "Skin Fade",
+          "description": "Bald skin fade with sharp lineup",
+          "duration": 45,
+          "price": 55
+        },
+        {
+          "name": "Mid Fade",
+          "description": "Mid drop fade with blended top",
+          "duration": 35,
+          "price": 50
+        },
+        {
+          "name": "Shape-Up Only",
+          "description": "Edge lineup and shape-up without a cut",
+          "duration": 20,
+          "price": 30
+        },
+        {
+          "name": "Cut & Beard",
+          "description": "Full haircut with beard line-up and shape",
+          "duration": 60,
+          "price": 70
+        }
+      ],
+      "reviews": [
+        {
+          "name": "Jordan C.",
+          "rating": 5,
+          "text": "Darius does skin fades like nobody else in Brooklyn. I've tried probably 10 barbers and none of them match his precision.",
+          "date": "4 days ago"
+        },
+        {
+          "name": "Elijah R.",
+          "rating": 5,
+          "text": "Always clean, always on time. My lineup looks sharp for two weeks after every visit. That's craft.",
+          "date": "3 weeks ago"
+        },
+        {
+          "name": "Tre M.",
+          "rating": 5,
+          "text": "Walked in with a wild head of hair and walked out looking like I had a photoshoot. Darius is talented for real.",
+          "date": "1 month ago"
+        },
+        {
+          "name": "Xavier D.",
+          "rating": 4,
+          "text": "Solid barber with a good eye. The blending on my mid fade was seamless. Shop has good energy too.",
+          "date": "2 months ago"
+        },
+        {
+          "name": "Marcus E.",
+          "rating": 5,
+          "text": "I drove from Queens just to see him and I'll keep making the trip. That's how good he is.",
+          "date": "3 months ago"
+        },
+        {
+          "name": "Karim B.",
+          "rating": 4,
+          "text": "Great cut and great conversation. He listens carefully to what you want before picking up the clippers. No guessing games.",
+          "date": "4 months ago"
+        }
+      ]
+    },
+    {
+      "id": "9",
+      "name": "Sofia Ramirez",
+      "username": "sofia-r",
+      "rating": 4.8,
+      "reviewCount": 6,
+      "location": "Austin, TX",
+      "fullAddress": "1209 S Congress Ave, Austin, TX 78704",
+      "lat": 30.2484,
+      "lng": -97.7503,
+      "type": "shop",
+      "shopId": "shop-austin",
+      "shopName": "The Color Bar Austin",
+      "shopAddress": "1209 S Congress Ave, Austin, TX 78704",
+      "shopImage": "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&h=400&fit=crop",
+      "startingPrice": 80,
+      "specialties": [
+        "Balayage",
+        "Color",
+        "Highlights"
+      ],
+      "hairTypes": [
+        "Straight",
+        "Wavy",
+        "Curly"
+      ],
+      "bio": "Creative colorist specializing in balayage, lived-in color, and dimensional highlights. I help clients find the color that feels like them — low maintenance, high impact.",
+      "experience": "7 years",
+      "languages": [
+        "English",
+        "Spanish"
+      ],
+      "matchPercent": 76,
+      "heroImage": "https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=1200&h=400&fit=crop",
+      "profileImage": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop&crop=face",
+      "portfolioImages": [
+        "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1560869713-bf509e1e9724?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1611073615168-fb52496cb763?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop"
+      ],
+      "services": [
+        {
+          "name": "Balayage",
+          "description": "Hand-painted highlights for a sun-kissed, natural look",
+          "duration": 150,
+          "price": 160
+        },
+        {
+          "name": "Full Highlights",
+          "description": "Traditional foil highlights throughout",
+          "duration": 120,
+          "price": 130
+        },
+        {
+          "name": "Color Gloss",
+          "description": "Toning gloss to refresh and add shine",
+          "duration": 60,
+          "price": 80
+        },
+        {
+          "name": "Color Correction",
+          "description": "Corrective color for problematic or over-processed hair",
+          "duration": 240,
+          "price": 250
+        }
+      ],
+      "reviews": [
+        {
+          "name": "Hailey P.",
+          "rating": 5,
+          "text": "Sofia gave me the most natural-looking balayage I've ever had. People keep asking if I've been in the sun. That's the goal!",
+          "date": "1 week ago"
+        },
+        {
+          "name": "Taylor B.",
+          "rating": 5,
+          "text": "Came in with box-dye damage and she worked a miracle. The color correction took 4 hours but I left with beautiful healthy-looking hair.",
+          "date": "3 weeks ago"
+        },
+        {
+          "name": "Olivia K.",
+          "rating": 4,
+          "text": "Gorgeous highlights. She took her time mixing the right tones for my skin. The salon is super chic too.",
+          "date": "2 months ago"
+        },
+        {
+          "name": "Grace T.",
+          "rating": 5,
+          "text": "Sofia is a true artist. My hair has texture and dimension I didn't think was possible. She completely changed how I feel about my hair.",
+          "date": "3 months ago"
+        },
+        {
+          "name": "Ava R.",
+          "rating": 5,
+          "text": "Best colorist in Austin, hands down. She listens to what you actually want, not what she thinks you should have. Refreshing.",
+          "date": "4 months ago"
+        },
+        {
+          "name": "Natalie C.",
+          "rating": 4,
+          "text": "Excellent color gloss — my hair looks so shiny and healthy. Pricey but you get what you pay for at The Color Bar.",
+          "date": "5 months ago"
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "name": "Tyrone Washington",
+      "username": "tyrone-w",
+      "rating": 4.7,
+      "reviewCount": 5,
+      "location": "Phoenix, AZ",
+      "fullAddress": "215 W Washington St, Phoenix, AZ 85003",
+      "lat": 33.4489,
+      "lng": -112.0748,
+      "type": "independent",
+      "startingPrice": 38,
+      "specialties": [
+        "Fades",
+        "Waves",
+        "Tapers"
+      ],
+      "hairTypes": [
+        "Coily",
+        "Kinky",
+        "Straight"
+      ],
+      "bio": "Phoenix barber known for clean fades and wave training. I've been cutting hair since I was a teenager — this is what I was born to do. Every client gets my full focus, every time.",
+      "experience": "7 years",
+      "languages": [
+        "English"
+      ],
+      "matchPercent": 73,
+      "heroImage": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=1200&h=400&fit=crop",
+      "profileImage": "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=200&h=200&fit=crop&crop=face",
+      "portfolioImages": [
+        "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1560869713-bf509e1e9724?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1611073615168-fb52496cb763?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop"
+      ],
+      "services": [
+        {
+          "name": "Taper Fade",
+          "description": "Classic taper fade with clean lineup",
+          "duration": 35,
+          "price": 40
+        },
+        {
+          "name": "Skin Bald Fade",
+          "description": "Bald fade down to the skin",
+          "duration": 40,
+          "price": 45
+        },
+        {
+          "name": "Wave Consultation & Cut",
+          "description": "Fade cut tailored for 360 wave pattern",
+          "duration": 45,
+          "price": 48
+        },
+        {
+          "name": "Edge & Beard",
+          "description": "Lineup and beard trim only",
+          "duration": 20,
+          "price": 25
+        }
+      ],
+      "reviews": [
+        {
+          "name": "Corey M.",
+          "rating": 5,
+          "text": "Tyrone is consistent. Every single time I sit in his chair I leave looking fresh. That reliability is hard to find.",
+          "date": "2 weeks ago"
+        },
+        {
+          "name": "Brandon J.",
+          "rating": 5,
+          "text": "His fades are surgeon-level clean. I've been going to him since he first opened and the quality has never dropped.",
+          "date": "1 month ago"
+        },
+        {
+          "name": "Dominic S.",
+          "rating": 4,
+          "text": "Good barber, good prices for Phoenix. The wave consultation was helpful — he actually gave me real tips I could follow at home.",
+          "date": "2 months ago"
+        },
+        {
+          "name": "Isaiah T.",
+          "rating": 5,
+          "text": "Moved from Atlanta and was worried about finding a good barber. Tyrone is the real deal. Found my new spot.",
+          "date": "3 months ago"
+        },
+        {
+          "name": "Marcus G.",
+          "rating": 4,
+          "text": "Clean cuts, fair prices, no drama. He's booked out but worth planning ahead for.",
+          "date": "4 months ago"
+        }
+      ]
+    },
+    {
+      "id": "11",
+      "name": "Devon Harris",
+      "username": "devon-h",
+      "rating": 4.8,
+      "reviewCount": 7,
+      "location": "Uptown Oakland, CA",
+      "fullAddress": "1820 Telegraph Ave, Oakland, CA 94612",
+      "lat": 37.8098,
+      "lng": -122.266,
+      "type": "independent",
+      "startingPrice": 45,
+      "specialties": [
+        "Fades",
+        "Tapers",
+        "Skin Fades"
+      ],
+      "hairTypes": [
+        "Coily",
+        "Kinky",
+        "Wavy",
+        "Curly"
+      ],
+      "bio": "Oakland raised and Oakland proud. Seven years cutting on Telegraph Ave — known for surgical skin fades and crisp lineups that hold for weeks. The chair is clean, the energy is right.",
+      "experience": "7 years",
+      "languages": [
+        "English",
+        "Spanish"
+      ],
+      "matchPercent": 82,
+      "heroImage": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=1200&h=400&fit=crop",
+      "profileImage": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200&h=200&fit=crop&crop=face",
+      "portfolioImages": [
+        "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1560869713-bf509e1e9724?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop"
+      ],
+      "services": [
+        {
+          "name": "Skin Fade",
+          "description": "Bald skin fade with sharp lineup and edge work",
+          "duration": 40,
+          "price": 50
+        },
+        {
+          "name": "Taper Fade",
+          "description": "Classic taper fade, blended to perfection",
+          "duration": 35,
+          "price": 45
+        },
+        {
+          "name": "Shape-Up",
+          "description": "Edge lineup and hairline clean-up",
+          "duration": 20,
+          "price": 25
+        },
+        {
+          "name": "Cut & Beard",
+          "description": "Haircut with full beard trim and shaping",
+          "duration": 55,
+          "price": 65
+        }
+      ],
+      "reviews": [
+        {
+          "name": "Jaylen T.",
+          "rating": 5,
+          "text": "Devon does the cleanest skin fades in Oakland. No debate. Been going to him for 3 years and never once been disappointed.",
+          "date": "1 week ago"
+        },
+        {
+          "name": "Marcus O.",
+          "rating": 5,
+          "text": "Crisp lineup, perfect blend, good vibes. Telegraph Ave's best kept secret.",
+          "date": "3 weeks ago"
+        },
+        {
+          "name": "Darius W.",
+          "rating": 4,
+          "text": "Solid barber. Was a bit of a wait but the cut was worth it. Skin fade was sharp.",
+          "date": "1 month ago"
+        },
+        {
+          "name": "Kenji R.",
+          "rating": 5,
+          "text": "Moved from LA and was worried about finding a good barber in the Bay. Devon is that guy. Exactly what I was looking for.",
+          "date": "6 weeks ago"
+        },
+        {
+          "name": "Isaiah P.",
+          "rating": 5,
+          "text": "Got my fade done before my interview and walked in looking like a whole executive. Thank you Devon.",
+          "date": "2 months ago"
+        },
+        {
+          "name": "Andre B.",
+          "rating": 5,
+          "text": "My go-to every two weeks without question. Consistent quality, good conversation, fair price.",
+          "date": "3 months ago"
+        },
+        {
+          "name": "Calvin M.",
+          "rating": 4,
+          "text": "Great taper fade. He really takes time on the edges. Shop is clean and easy to find on Telegraph.",
+          "date": "4 months ago"
+        }
+      ]
+    },
+    {
+      "id": "12",
+      "name": "Lucia Vargas",
+      "username": "lucia-v",
+      "rating": 4.7,
+      "reviewCount": 6,
+      "location": "Mission District, SF",
+      "fullAddress": "2424 Mission St, San Francisco, CA 94110",
+      "lat": 37.7558,
+      "lng": -122.4187,
+      "type": "shop",
+      "shopId": "shop-sf-mission",
+      "shopName": "Cortes & Cultura",
+      "shopAddress": "2424 Mission St, San Francisco, CA 94110",
+      "shopImage": "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=600&h=400&fit=crop",
+      "startingPrice": 60,
+      "specialties": [
+        "Color",
+        "Curls",
+        "Extensions"
+      ],
+      "hairTypes": [
+        "Wavy",
+        "Curly",
+        "Straight"
+      ],
+      "bio": "Mission-born colorist and curl specialist at Cortes & Cultura. Trained in color theory in Mexico City and precision cutting in San Francisco. Bringing vibrant, personalized color work to the neighborhood.",
+      "experience": "9 years",
+      "languages": [
+        "English",
+        "Spanish"
+      ],
+      "matchPercent": 79,
+      "heroImage": "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=1200&h=400&fit=crop",
+      "profileImage": "https://images.unsplash.com/photo-1548142813-c348350df52b?w=200&h=200&fit=crop&crop=face",
+      "portfolioImages": [
+        "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1611073615168-fb52496cb763?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1560869713-bf509e1e9724?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop"
+      ],
+      "services": [
+        {
+          "name": "Curly Cut",
+          "description": "Dry cut technique tailored for curly and wavy textures",
+          "duration": 60,
+          "price": 75
+        },
+        {
+          "name": "Full Color",
+          "description": "Root-to-tip color with toning treatment",
+          "duration": 120,
+          "price": 110
+        },
+        {
+          "name": "Balayage",
+          "description": "Hand-painted highlights for natural dimension",
+          "duration": 150,
+          "price": 145
+        },
+        {
+          "name": "Extensions Consultation",
+          "description": "Hair extension fitting and styling session",
+          "duration": 90,
+          "price": 90
+        }
+      ],
+      "reviews": [
+        {
+          "name": "Rosa M.",
+          "rating": 5,
+          "text": "Lucia is magic with curly hair. She understood my texture immediately and gave me a cut that actually bounces. First time I've left a salon happy in years.",
+          "date": "5 days ago"
+        },
+        {
+          "name": "Valentina G.",
+          "rating": 5,
+          "text": "My balayage came out so beautiful. Natural, warm, and low maintenance. She matched it perfectly to my skin tone.",
+          "date": "2 weeks ago"
+        },
+        {
+          "name": "Sofia R.",
+          "rating": 4,
+          "text": "Great colorist. The salon has wonderful energy and the whole team speaks Spanish which I loved. Will return for highlights.",
+          "date": "1 month ago"
+        },
+        {
+          "name": "Camila T.",
+          "rating": 5,
+          "text": "Best hair experience I've had in San Francisco. Lucia listens and delivers. My wavy hair has never looked more defined.",
+          "date": "2 months ago"
+        },
+        {
+          "name": "Ana P.",
+          "rating": 4,
+          "text": "Good curly cut and pleasant salon. A bit pricier than I expected but the quality justifies it.",
+          "date": "3 months ago"
+        },
+        {
+          "name": "Daniela F.",
+          "rating": 5,
+          "text": "She did my extensions and they blend so seamlessly. Nobody can tell they're not my natural hair. Incredible work.",
+          "date": "4 months ago"
+        }
+      ]
+    },
+    {
+      "id": "13",
+      "name": "Raymond Park",
+      "username": "raymond-p",
+      "rating": 4.6,
+      "reviewCount": 6,
+      "location": "SoMa, SF",
+      "fullAddress": "155 5th St, San Francisco, CA 94103",
+      "lat": 37.7786,
+      "lng": -122.4034,
+      "type": "independent",
+      "startingPrice": 55,
+      "specialties": [
+        "Fades",
+        "Modern Cuts",
+        "Undercuts"
+      ],
+      "hairTypes": [
+        "Straight",
+        "Thick",
+        "Wavy"
+      ],
+      "bio": "SoMa precision barber trained in Seoul and San Francisco. Specializing in modern fades and cuts that work with Asian hair textures. Clean technique, zero guessing.",
+      "experience": "6 years",
+      "languages": [
+        "English",
+        "Korean"
+      ],
+      "matchPercent": 74,
+      "heroImage": "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1200&h=400&fit=crop",
+      "profileImage": "https://images.unsplash.com/photo-1542909168-82c3e7fdca5c?w=200&h=200&fit=crop&crop=face",
+      "portfolioImages": [
+        "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1560869713-bf509e1e9724?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop"
+      ],
+      "services": [
+        {
+          "name": "Modern Fade",
+          "description": "Contemporary fade with scissor-blended top",
+          "duration": 45,
+          "price": 60
+        },
+        {
+          "name": "Undercut",
+          "description": "Disconnected undercut with styled top",
+          "duration": 40,
+          "price": 55
+        },
+        {
+          "name": "Classic Men's Cut",
+          "description": "Scissor cut with taper and blended sides",
+          "duration": 35,
+          "price": 55
+        },
+        {
+          "name": "Texture & Style",
+          "description": "Layered cut for texture and movement",
+          "duration": 50,
+          "price": 65
+        }
+      ],
+      "reviews": [
+        {
+          "name": "Jason K.",
+          "rating": 5,
+          "text": "Raymond gets thick Asian hair like no one else. My hair finally looks how I always imagined it could. He's my permanent barber.",
+          "date": "1 week ago"
+        },
+        {
+          "name": "Brian L.",
+          "rating": 4,
+          "text": "Clean undercut, great fade. He took his time and the result was sharp. Good spot in SoMa for a quick cut.",
+          "date": "3 weeks ago"
+        },
+        {
+          "name": "Kevin W.",
+          "rating": 5,
+          "text": "His modern fade technique is next level. I've been to barbers all over the city and Raymond is in a different class.",
+          "date": "2 months ago"
+        },
+        {
+          "name": "Daniel H.",
+          "rating": 4,
+          "text": "Solid work. I got the texture cut and it's been getting compliments ever since. Easy to book and always on time.",
+          "date": "3 months ago"
+        },
+        {
+          "name": "Tom Y.",
+          "rating": 5,
+          "text": "He speaks Korean which was great for communicating exactly what I wanted. Perfect cut every time.",
+          "date": "4 months ago"
+        },
+        {
+          "name": "Steven C.",
+          "rating": 4,
+          "text": "Great experience overall. The shop is clean and minimal. Raymond works efficiently without rushing.",
+          "date": "5 months ago"
+        }
+      ]
+    },
+    {
+      "id": "14",
+      "name": "Simone Okafor",
+      "username": "simone-o",
+      "rating": 4.9,
+      "reviewCount": 7,
+      "location": "Berkeley, CA",
+      "fullAddress": "2500 Telegraph Ave, Berkeley, CA 94704",
+      "lat": 37.866,
+      "lng": -122.2588,
+      "type": "independent",
+      "startingPrice": 65,
+      "specialties": [
+        "Natural Hair",
+        "Locs",
+        "Protective Styles"
+      ],
+      "hairTypes": [
+        "Coily",
+        "Kinky",
+        "Curly"
+      ],
+      "bio": "Berkeley's natural hair authority with 10 years of experience. Specializing in loc journeys, protective styles, and helping clients connect with the cultural beauty of their natural texture. Community-rooted values.",
+      "experience": "10 years",
+      "languages": [
+        "English",
+        "Yoruba"
+      ],
+      "matchPercent": 91,
+      "heroImage": "https://images.unsplash.com/photo-1611073615168-fb52496cb763?w=1200&h=400&fit=crop",
+      "profileImage": "https://images.unsplash.com/photo-1589156280159-27698a70f29e?w=200&h=200&fit=crop&crop=face",
+      "portfolioImages": [
+        "https://images.unsplash.com/photo-1611073615168-fb52496cb763?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1560869713-bf509e1e9724?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop"
+      ],
+      "services": [
+        {
+          "name": "Loc Maintenance",
+          "description": "Full retwist, palm rolling, and neatening",
+          "duration": 120,
+          "price": 90
+        },
+        {
+          "name": "Starter Locs",
+          "description": "Initial loc installation with full consultation",
+          "duration": 210,
+          "price": 175
+        },
+        {
+          "name": "Natural Style & Wash",
+          "description": "Wash, deep condition, and natural style",
+          "duration": 90,
+          "price": 80
+        },
+        {
+          "name": "Protective Style Consultation",
+          "description": "Hair health assessment and protective style planning",
+          "duration": 45,
+          "price": 65
+        }
+      ],
+      "reviews": [
+        {
+          "name": "Adaeze N.",
+          "rating": 5,
+          "text": "Simone is hands down the best loctician in the East Bay. My locs have been thriving for two years under her care. Irreplaceable.",
+          "date": "4 days ago"
+        },
+        {
+          "name": "Zainab A.",
+          "rating": 5,
+          "text": "She started my locs and I'm so grateful. Took her time explaining everything. My journey started right because of her.",
+          "date": "2 weeks ago"
+        },
+        {
+          "name": "Imani C.",
+          "rating": 5,
+          "text": "Her knowledge of natural hair is unmatched. She recommended a whole regimen and my hair is the healthiest it's been in years.",
+          "date": "1 month ago"
+        },
+        {
+          "name": "Lola B.",
+          "rating": 4,
+          "text": "Great protective style consultation. She was thorough and honest about my hair's condition. Trusted her advice completely.",
+          "date": "2 months ago"
+        },
+        {
+          "name": "Amara D.",
+          "rating": 5,
+          "text": "People stop me on Telegraph Ave to ask about my locs. I always say Simone. She's a true artist.",
+          "date": "3 months ago"
+        },
+        {
+          "name": "Nkechi E.",
+          "rating": 5,
+          "text": "Simone embodies what natural hair care should be — holistic, informed, and culturally affirming. My hair and my spirit leave her chair renewed.",
+          "date": "4 months ago"
+        },
+        {
+          "name": "Temi O.",
+          "rating": 4,
+          "text": "Long sessions but absolutely worth it. The attention to detail on my retwist is unlike anything else in Berkeley.",
+          "date": "5 months ago"
+        }
+      ]
+    },
+    {
+      "id": "15",
+      "name": "Carlos Mendoza",
+      "username": "carlos-m",
+      "rating": 4.7,
+      "reviewCount": 6,
+      "location": "Downtown San Jose, CA",
+      "fullAddress": "151 W Santa Clara St, San Jose, CA 95113",
+      "lat": 37.3382,
+      "lng": -121.8863,
+      "type": "independent",
+      "startingPrice": 40,
+      "specialties": [
+        "Fades",
+        "Tapers",
+        "Beards"
+      ],
+      "hairTypes": [
+        "Straight",
+        "Wavy",
+        "Coily"
+      ],
+      "bio": "San Jose barber with 8 years serving the South Bay. Affordable prices, consistent quality, and a welcoming shop. Specializing in taper fades and beard sculpting for every face shape.",
+      "experience": "8 years",
+      "languages": [
+        "English",
+        "Spanish"
+      ],
+      "matchPercent": 75,
+      "heroImage": "https://images.unsplash.com/photo-1560869713-bf509e1e9724?w=1200&h=400&fit=crop",
+      "profileImage": "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=200&h=200&fit=crop&crop=face",
+      "portfolioImages": [
+        "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1560869713-bf509e1e9724?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop"
+      ],
+      "services": [
+        {
+          "name": "Taper Fade",
+          "description": "Classic taper fade with clean lineup",
+          "duration": 35,
+          "price": 40
+        },
+        {
+          "name": "Skin Fade",
+          "description": "Bald fade with precision edge work",
+          "duration": 40,
+          "price": 45
+        },
+        {
+          "name": "Beard Sculpt",
+          "description": "Full beard shaping and detail work",
+          "duration": 25,
+          "price": 28
+        },
+        {
+          "name": "Cut & Beard Combo",
+          "description": "Haircut with full beard trim",
+          "duration": 55,
+          "price": 60
+        }
+      ],
+      "reviews": [
+        {
+          "name": "Ricardo V.",
+          "rating": 5,
+          "text": "Carlos is the best barber in San Jose, period. Fair prices, consistent fades, and never makes you wait too long.",
+          "date": "1 week ago"
+        },
+        {
+          "name": "Miguel S.",
+          "rating": 5,
+          "text": "My whole family goes to Carlos. From the kids to my dad — he handles everyone perfectly.",
+          "date": "2 weeks ago"
+        },
+        {
+          "name": "Eduardo R.",
+          "rating": 4,
+          "text": "Great beard sculpt. He understood my face shape and designed something that actually looked good on me. Will definitely return.",
+          "date": "1 month ago"
+        },
+        {
+          "name": "Jorge L.",
+          "rating": 5,
+          "text": "Best $40 cut in the South Bay. Clean, quick, and he listens to exactly what you want.",
+          "date": "2 months ago"
+        },
+        {
+          "name": "Luis C.",
+          "rating": 4,
+          "text": "Solid work and a chill atmosphere. He's always booked but it's easy enough to schedule ahead.",
+          "date": "3 months ago"
+        },
+        {
+          "name": "Marco A.",
+          "rating": 5,
+          "text": "Came in for a taper fade and left with way more confidence. Carlos has skills that are rare at this price point.",
+          "date": "4 months ago"
+        }
+      ]
+    },
+    {
+      "id": "16",
+      "name": "Jasmine Wu",
+      "username": "jasmine-w",
+      "rating": 4.8,
+      "reviewCount": 7,
+      "location": "The Castro, SF",
+      "fullAddress": "456 Castro St, San Francisco, CA 94114",
+      "lat": 37.7609,
+      "lng": -122.435,
+      "type": "independent",
+      "startingPrice": 70,
+      "specialties": [
+        "Color",
+        "Balayage",
+        "Textured Cuts"
+      ],
+      "hairTypes": [
+        "Straight",
+        "Wavy",
+        "Curly"
+      ],
+      "bio": "Castro stylist specializing in lived-in color, balayage, and textured cuts. Trained at Sassoon Academy San Francisco. I believe great hair should feel effortless to maintain day after day.",
+      "experience": "8 years",
+      "languages": [
+        "English",
+        "Cantonese",
+        "Mandarin"
+      ],
+      "matchPercent": 77,
+      "heroImage": "https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=1200&h=400&fit=crop",
+      "profileImage": "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop&crop=face",
+      "portfolioImages": [
+        "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1560869713-bf509e1e9724?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1611073615168-fb52496cb763?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop"
+      ],
+      "services": [
+        {
+          "name": "Balayage",
+          "description": "Hand-painted highlights for natural, sun-kissed color",
+          "duration": 150,
+          "price": 155
+        },
+        {
+          "name": "Full Color",
+          "description": "Root-to-tip color with tone and gloss",
+          "duration": 120,
+          "price": 120
+        },
+        {
+          "name": "Textured Cut",
+          "description": "Layered cut for movement and natural texture",
+          "duration": 60,
+          "price": 85
+        },
+        {
+          "name": "Color Gloss",
+          "description": "Shine-boosting toning treatment",
+          "duration": 60,
+          "price": 70
+        }
+      ],
+      "reviews": [
+        {
+          "name": "Lily C.",
+          "rating": 5,
+          "text": "Jasmine is the most talented colorist I've ever been to. My balayage is so natural and dimensional — I get compliments every week.",
+          "date": "3 days ago"
+        },
+        {
+          "name": "Mei L.",
+          "rating": 5,
+          "text": "She speaks Cantonese which made it so easy to describe what I wanted. The result was perfect. She's my forever stylist.",
+          "date": "2 weeks ago"
+        },
+        {
+          "name": "Sarah T.",
+          "rating": 5,
+          "text": "Got the textured cut and I'm obsessed. It dries beautifully and requires zero effort to style. Exactly what she promised.",
+          "date": "1 month ago"
+        },
+        {
+          "name": "Anya R.",
+          "rating": 4,
+          "text": "Beautiful color gloss. My hair went from dull to shiny overnight. Price is fair for Castro and the quality is outstanding.",
+          "date": "2 months ago"
+        },
+        {
+          "name": "Priya N.",
+          "rating": 5,
+          "text": "Jasmine understood my vision for understated, effortless color better than any colorist I've tried in SF. Booked my next appointment before I left.",
+          "date": "3 months ago"
+        },
+        {
+          "name": "Christine W.",
+          "rating": 5,
+          "text": "Came in for a full color and left feeling like myself again. She has an exceptional eye for what looks right on each person.",
+          "date": "4 months ago"
+        },
+        {
+          "name": "Emma K.",
+          "rating": 4,
+          "text": "Great stylist and a lovely personality. She takes her time and explains everything she's doing. Very transparent process.",
+          "date": "5 months ago"
+        }
+      ]
+    },
+    {
+      "id": "17",
+      "name": "Marcus Bell",
+      "username": "marcus-b",
+      "rating": 4.8,
+      "reviewCount": 6,
+      "location": "Palo Alto, CA",
+      "fullAddress": "261 Hamilton Ave, Palo Alto, CA 94301",
+      "lat": 37.4449,
+      "lng": -122.1612,
+      "type": "shop",
+      "shopId": "shop-palo-alto",
+      "shopName": "Peninsula Styles",
+      "shopAddress": "261 Hamilton Ave, Palo Alto, CA 94301",
+      "shopImage": "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=600&h=400&fit=crop",
+      "startingPrice": 60,
+      "specialties": [
+        "Fades",
+        "Men's Cuts",
+        "Tapers"
+      ],
+      "hairTypes": [
+        "Coily",
+        "Kinky",
+        "Wavy",
+        "Straight"
+      ],
+      "bio": "Palo Alto's most trusted barber for over a decade at Peninsula Styles. Clean environment, precise fades, and cuts that work with your lifestyle — whether you're heading to the office or the weekend.",
+      "experience": "11 years",
+      "languages": [
+        "English"
+      ],
+      "matchPercent": 80,
+      "heroImage": "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1200&h=400&fit=crop",
+      "profileImage": "https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=200&h=200&fit=crop&crop=face",
+      "portfolioImages": [
+        "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1603354350317-6f7aaa5911c5?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1560869713-bf509e1e9724?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop"
+      ],
+      "services": [
+        {
+          "name": "Executive Fade",
+          "description": "Professional fade styled for the workplace",
+          "duration": 45,
+          "price": 65
+        },
+        {
+          "name": "Taper & Style",
+          "description": "Clean taper with scissor-finished top",
+          "duration": 40,
+          "price": 60
+        },
+        {
+          "name": "Skin Fade",
+          "description": "Bald skin fade with crisp lineup",
+          "duration": 40,
+          "price": 65
+        },
+        {
+          "name": "Kids Cut",
+          "description": "Haircut for children under 12",
+          "duration": 25,
+          "price": 45
+        }
+      ],
+      "reviews": [
+        {
+          "name": "David K.",
+          "rating": 5,
+          "text": "Marcus has been cutting my hair for 5 years. Consistent, professional, and worth every dollar. Best barber on the Peninsula.",
+          "date": "1 week ago"
+        },
+        {
+          "name": "James L.",
+          "rating": 5,
+          "text": "Executive fade is perfectly named. I walked into my board meeting looking sharp as ever. Marcus gets it.",
+          "date": "2 weeks ago"
+        },
+        {
+          "name": "Peter W.",
+          "rating": 4,
+          "text": "Great cuts for my whole family. He's patient with my kids and the adult cuts are excellent.",
+          "date": "1 month ago"
+        },
+        {
+          "name": "Robert H.",
+          "rating": 5,
+          "text": "The most professional barbershop experience I've had on the Peninsula. Marcus runs a tight ship.",
+          "date": "2 months ago"
+        },
+        {
+          "name": "Anthony S.",
+          "rating": 5,
+          "text": "11 years and every single cut has been excellent. That kind of consistency is rare. Marcus is a craftsman.",
+          "date": "3 months ago"
+        },
+        {
+          "name": "Chris M.",
+          "rating": 4,
+          "text": "Clean shop, skilled barber. His taper is consistently perfect. Pricing is fair for the Palo Alto area.",
+          "date": "4 months ago"
+        }
+      ]
+    },
+    {
+      "id": "18",
+      "name": "Tre Williams",
+      "username": "tre-w",
+      "rating": 4.6,
+      "reviewCount": 5,
+      "location": "East Oakland, CA",
+      "fullAddress": "3301 E 12th St, Oakland, CA 94601",
+      "lat": 37.7702,
+      "lng": -122.2254,
+      "type": "independent",
+      "startingPrice": 38,
+      "specialties": [
+        "Waves",
+        "Fades",
+        "Beards"
+      ],
+      "hairTypes": [
+        "Coily",
+        "Kinky"
+      ],
+      "bio": "East Oakland barber keeping the community fresh. I specialize in wave maintenance cuts and crisp fades. Fair prices and no compromise on quality — everybody in this chair leaves right.",
+      "experience": "5 years",
+      "languages": [
+        "English"
+      ],
+      "matchPercent": 69,
+      "heroImage": "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=1200&h=400&fit=crop",
+      "profileImage": "https://images.unsplash.com/photo-1530268729831-4b0b9e170218?w=200&h=200&fit=crop&crop=face",
+      "portfolioImages": [
+        "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1560869713-bf509e1e9724?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop"
+      ],
+      "services": [
+        {
+          "name": "Wave Cut",
+          "description": "Low fade optimized for 360 wave training",
+          "duration": 35,
+          "price": 40
+        },
+        {
+          "name": "Basic Fade",
+          "description": "Mid or high fade with lineup",
+          "duration": 25,
+          "price": 38
+        },
+        {
+          "name": "Beard Trim",
+          "description": "Beard shaping and edge work",
+          "duration": 15,
+          "price": 20
+        }
+      ],
+      "reviews": [
+        {
+          "name": "Damon R.",
+          "rating": 5,
+          "text": "Tre keeps East Oakland fresh. Fair prices, no nonsense, and the waves been looking crazy since I started going to him.",
+          "date": "2 weeks ago"
+        },
+        {
+          "name": "Jaylen N.",
+          "rating": 4,
+          "text": "Good barber, consistent fades. Priced right for the neighborhood. Always on time.",
+          "date": "1 month ago"
+        },
+        {
+          "name": "Marcus T.",
+          "rating": 5,
+          "text": "He did my wave cut and my pattern has never been more even. He knows exactly how to cut for waves.",
+          "date": "2 months ago"
+        },
+        {
+          "name": "Kevin S.",
+          "rating": 4,
+          "text": "Clean shop, good energy. The beard trim was precise and the fade was solid. Will keep coming back.",
+          "date": "3 months ago"
+        },
+        {
+          "name": "Travis B.",
+          "rating": 5,
+          "text": "Real one in the community. Tre keeps his prices fair and his skill level high. That balance is rare.",
+          "date": "4 months ago"
+        }
+      ]
+    },
+    {
+      "id": "19",
+      "name": "Aisha Green",
+      "username": "aisha-g",
+      "rating": 4.9,
+      "reviewCount": 6,
+      "location": "Fremont, CA",
+      "fullAddress": "39155 Liberty St, Fremont, CA 94538",
+      "lat": 37.5485,
+      "lng": -121.9886,
+      "type": "independent",
+      "startingPrice": 55,
+      "specialties": [
+        "Natural Hair",
+        "Braids",
+        "Protective Styles"
+      ],
+      "hairTypes": [
+        "Coily",
+        "Kinky",
+        "Curly"
+      ],
+      "bio": "Fremont's natural hair and braiding specialist serving the East Bay for 7 years. I create protective styles that actually protect. No shortcuts, no rush, no compromise on your hair health.",
+      "experience": "7 years",
+      "languages": [
+        "English"
+      ],
+      "matchPercent": 88,
+      "heroImage": "https://images.unsplash.com/photo-1611073615168-fb52496cb763?w=1200&h=400&fit=crop",
+      "profileImage": "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&h=200&fit=crop&crop=face",
+      "portfolioImages": [
+        "https://images.unsplash.com/photo-1611073615168-fb52496cb763?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1560869713-bf509e1e9724?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&h=400&fit=crop"
+      ],
+      "services": [
+        {
+          "name": "Box Braids",
+          "description": "Full set box braids with protective technique",
+          "duration": 240,
+          "price": 140
+        },
+        {
+          "name": "Cornrows",
+          "description": "Straight back or geometric cornrow patterns",
+          "duration": 90,
+          "price": 75
+        },
+        {
+          "name": "Natural Style & Condition",
+          "description": "Wash, deep condition, and natural curl style",
+          "duration": 90,
+          "price": 75
+        },
+        {
+          "name": "Knotless Braids",
+          "description": "Knotless braids for reduced tension and a natural look",
+          "duration": 270,
+          "price": 165
+        }
+      ],
+      "reviews": [
+        {
+          "name": "Nia B.",
+          "rating": 5,
+          "text": "Aisha is the absolute best braider in the East Bay. My knotless braids looked stunning and lasted three months without frizzing.",
+          "date": "5 days ago"
+        },
+        {
+          "name": "Tasha M.",
+          "rating": 5,
+          "text": "She is so gentle with my edges. I've had braiders ruin my edges before — Aisha actually protects them. Night and day difference.",
+          "date": "3 weeks ago"
+        },
+        {
+          "name": "Renee D.",
+          "rating": 5,
+          "text": "My daughter and I both got box braids and Aisha did both perfectly. A true professional.",
+          "date": "1 month ago"
+        },
+        {
+          "name": "Kezia O.",
+          "rating": 4,
+          "text": "Excellent work and a calming, clean environment. The session was long but she never rushed. Very happy with the result.",
+          "date": "2 months ago"
+        },
+        {
+          "name": "Alicia F.",
+          "rating": 5,
+          "text": "Drove from San Jose because a friend recommended her, and it was so worth it. Best braiding experience I've had.",
+          "date": "3 months ago"
+        },
+        {
+          "name": "Maya T.",
+          "rating": 5,
+          "text": "Aisha did my natural style and it was incredible. She knows coily hair deeply — the techniques she used left my curls defined for days.",
+          "date": "4 months ago"
+        }
+      ]
+    },
+    {
+      "id": "20",
+      "name": "Diego Reyes",
+      "username": "diego-r",
+      "rating": 4.7,
+      "reviewCount": 6,
+      "location": "Inner Richmond, SF",
+      "fullAddress": "700 Clement St, San Francisco, CA 94118",
+      "lat": 37.7833,
+      "lng": -122.4624,
+      "type": "independent",
+      "startingPrice": 48,
+      "specialties": [
+        "Fades",
+        "Skin Fades",
+        "Lineups"
+      ],
+      "hairTypes": [
+        "Straight",
+        "Wavy",
+        "Coily",
+        "Curly"
+      ],
+      "bio": "Clement Street barber serving the Outer Richmond and beyond for 6 years. Precise skin fades and sharp lineups for every hair type. Every cut is a fresh challenge — I don't copy-paste.",
+      "experience": "6 years",
+      "languages": [
+        "English",
+        "Spanish"
+      ],
+      "matchPercent": 72,
+      "heroImage": "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=1200&h=400&fit=crop",
+      "profileImage": "https://images.unsplash.com/photo-1548369937-47519962c11a?w=200&h=200&fit=crop&crop=face",
+      "portfolioImages": [
+        "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1560869713-bf509e1e9724?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop"
+      ],
+      "services": [
+        {
+          "name": "Skin Fade",
+          "description": "Bald skin fade with crisp lineup",
+          "duration": 40,
+          "price": 52
+        },
+        {
+          "name": "Mid Fade",
+          "description": "Mid fade with blended transition",
+          "duration": 35,
+          "price": 48
+        },
+        {
+          "name": "Shape-Up & Lineup",
+          "description": "Edge-up and hairline detail only",
+          "duration": 20,
+          "price": 25
+        },
+        {
+          "name": "Full Cut & Beard",
+          "description": "Haircut with full beard detail and shaping",
+          "duration": 55,
+          "price": 68
+        }
+      ],
+      "reviews": [
+        {
+          "name": "Pablo V.",
+          "rating": 5,
+          "text": "Best barber on Clement Street. Diego's skin fade is surgical — I don't go anywhere else.",
+          "date": "1 week ago"
+        },
+        {
+          "name": "Eddie C.",
+          "rating": 4,
+          "text": "Great mid fade, very clean. He's fast without being rushed. Fair price for the Richmond.",
+          "date": "3 weeks ago"
+        },
+        {
+          "name": "Mateo R.",
+          "rating": 5,
+          "text": "Diego does my whole beard and haircut and I always leave looking fresh for days. Consistent, talented, and chill.",
+          "date": "1 month ago"
+        },
+        {
+          "name": "Adrian G.",
+          "rating": 5,
+          "text": "He works with my curly hair which a lot of fade barbers aren't great at. Diego adapts the technique perfectly. Really impressed.",
+          "date": "2 months ago"
+        },
+        {
+          "name": "Felix M.",
+          "rating": 4,
+          "text": "Good barber and easy to get an appointment with. The lineup was super sharp and clean.",
+          "date": "3 months ago"
+        },
+        {
+          "name": "Sergio N.",
+          "rating": 5,
+          "text": "I've lived in the Richmond for three years and Diego is definitely the neighborhood's best barber. Always leaves me right.",
+          "date": "4 months ago"
+        }
+      ]
+    },
+    {
+      "id": "21",
+      "name": "Kenji Watanabe",
+      "username": "kenji-w",
+      "rating": 4.8,
+      "reviewCount": 6,
+      "isNew": true,
+      "location": "Japantown, SF",
+      "fullAddress": "1737 Post St, San Francisco, CA 94115",
+      "lat": 37.7851,
+      "lng": -122.4302,
+      "type": "shop",
+      "shopId": "shop-sf-jptown",
+      "shopName": "Pacific Cuts",
+      "shopAddress": "1737 Post St, San Francisco, CA 94115",
+      "shopImage": "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&h=400&fit=crop",
+      "startingPrice": 55,
+      "specialties": [
+        "Men's Cuts",
+        "Tapers",
+        "Textured Styles"
+      ],
+      "hairTypes": [
+        "Straight",
+        "Thick",
+        "Wavy"
+      ],
+      "bio": "Japantown precision barber trained in Tokyo and San Francisco with 12 years of experience at Pacific Cuts. Specializing in fine and thick Asian hair — cuts that frame the face perfectly and require minimal styling.",
+      "experience": "12 years",
+      "languages": [
+        "English",
+        "Japanese"
+      ],
+      "matchPercent": 73,
+      "heroImage": "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1200&h=400&fit=crop",
+      "profileImage": "https://images.unsplash.com/photo-1540569014015-19a7be504e3a?w=200&h=200&fit=crop&crop=face",
+      "portfolioImages": [
+        "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1560869713-bf509e1e9724?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1621605815971-fbc98d665033?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop"
+      ],
+      "services": [
+        {
+          "name": "Japanese Taper",
+          "description": "Precision taper with scissor-over-comb technique",
+          "duration": 50,
+          "price": 65
+        },
+        {
+          "name": "Texture Cut",
+          "description": "Layered cut for natural movement and texture",
+          "duration": 45,
+          "price": 60
+        },
+        {
+          "name": "Classic Men's Cut",
+          "description": "Traditional short back and sides with styled top",
+          "duration": 40,
+          "price": 55
+        },
+        {
+          "name": "Scalp Treatment & Cut",
+          "description": "Relaxing scalp treatment followed by precision cut",
+          "duration": 70,
+          "price": 85
+        }
+      ],
+      "reviews": [
+        {
+          "name": "Hiroshi T.",
+          "rating": 5,
+          "text": "Kenji is the only barber I trust with my fine Japanese hair. He uses techniques from Tokyo that nobody else in SF applies. Flawless every time.",
+          "date": "1 week ago"
+        },
+        {
+          "name": "Daniel W.",
+          "rating": 5,
+          "text": "The scalp treatment and cut was incredible. I left feeling completely refreshed. Kenji's experience shows in every detail.",
+          "date": "2 weeks ago"
+        },
+        {
+          "name": "Kevin N.",
+          "rating": 4,
+          "text": "Great taper, very precise. The shop has a calm, zen atmosphere. Priced well for the quality.",
+          "date": "1 month ago"
+        },
+        {
+          "name": "Tom S.",
+          "rating": 5,
+          "text": "Thick Asian hair is notoriously hard to cut well. Kenji handles it like breathing. My cut looks good for weeks.",
+          "date": "2 months ago"
+        },
+        {
+          "name": "Alex Y.",
+          "rating": 5,
+          "text": "Been coming to Pacific Cuts for 3 years. Kenji remembers your preferences and always delivers. Consistent excellence.",
+          "date": "3 months ago"
+        },
+        {
+          "name": "Brian C.",
+          "rating": 4,
+          "text": "Clean shop in Japantown, excellent barber. The texture cut gave my hair a life I didn't know it had.",
+          "date": "4 months ago"
+        }
+      ]
+    },
+    {
+      "id": "22",
+      "name": "Fatima Al-Hassan",
+      "username": "fatima-ah",
+      "rating": 4.9,
+      "reviewCount": 6,
+      "isNew": true,
+      "location": "Sausalito, CA",
+      "fullAddress": "500 Caledonia St, Sausalito, CA 94965",
+      "lat": 37.859,
+      "lng": -122.4854,
+      "type": "independent",
+      "startingPrice": 75,
+      "specialties": [
+        "Locs",
+        "Natural Hair",
+        "Braids"
+      ],
+      "hairTypes": [
+        "Coily",
+        "Kinky",
+        "Curly"
+      ],
+      "bio": "Marin's premier loctician and natural hair stylist. Trained in Dakar and Paris, I bring a global perspective to locs and protective styles. Clients travel from across the Bay and beyond for a reason.",
+      "experience": "11 years",
+      "languages": [
+        "English",
+        "Arabic",
+        "French"
+      ],
+      "matchPercent": 86,
+      "heroImage": "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=1200&h=400&fit=crop",
+      "profileImage": "https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=200&h=200&fit=crop&crop=face",
+      "portfolioImages": [
+        "https://images.unsplash.com/photo-1611073615168-fb52496cb763?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1560869713-bf509e1e9724?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1622286342621-4bd786c2447c?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=400&h=400&fit=crop",
+        "https://images.unsplash.com/photo-1599351431202-1e0f0137899a?w=400&h=400&fit=crop"
+      ],
+      "services": [
+        {
+          "name": "Loc Maintenance",
+          "description": "Full retwist, palm rolling, and styling",
+          "duration": 120,
+          "price": 100
+        },
+        {
+          "name": "Starter Locs",
+          "description": "Initial installation with full consultation and aftercare guide",
+          "duration": 240,
+          "price": 200
+        },
+        {
+          "name": "Loc Extensions",
+          "description": "Extensions to add length and fullness to existing locs",
+          "duration": 180,
+          "price": 175
+        },
+        {
+          "name": "Natural Styling Session",
+          "description": "Wash, condition, and natural style for coily hair",
+          "duration": 90,
+          "price": 85
+        }
+      ],
+      "reviews": [
+        {
+          "name": "Layla A.",
+          "rating": 5,
+          "text": "Fatima is a true master. I've seen locticians all over the Bay and nobody approaches her skill level. My locs look like art.",
+          "date": "3 days ago"
+        },
+        {
+          "name": "Yasmin B.",
+          "rating": 5,
+          "text": "She speaks Arabic and French, which made communication so natural. The result was even more beautiful than I imagined.",
+          "date": "2 weeks ago"
+        },
+        {
+          "name": "Sophia D.",
+          "rating": 5,
+          "text": "I drove from San Jose and would do it again without hesitation. Fatima's technique is truly at another level.",
+          "date": "1 month ago"
+        },
+        {
+          "name": "Mona K.",
+          "rating": 5,
+          "text": "She started my loc journey six months ago and my locs are thriving. The guidance she gives beyond the chair is invaluable.",
+          "date": "2 months ago"
+        },
+        {
+          "name": "Halima N.",
+          "rating": 4,
+          "text": "Beautiful natural styling session. She was thorough, gentle, and my hair was glowing when I left. Worth the trip to Sausalito.",
+          "date": "3 months ago"
+        },
+        {
+          "name": "Nadia C.",
+          "rating": 5,
+          "text": "Her Dakar-trained technique is unmistakable. Every loc is placed with intention. I've been recommending her to everyone I know.",
+          "date": "4 months ago"
+        }
+      ]
+    }
+  ],
+  "shops": [
+    {
+      "id": "shop-miami",
+      "name": "Luxe Cuts Studio",
+      "address": "742 Ocean Drive, Miami Beach, FL 33139",
+      "city": "Miami Beach, FL",
+      "image": "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=600&h=400&fit=crop"
+    },
+    {
+      "id": "shop-houston",
+      "name": "Crown & Blade Barbershop",
+      "address": "1200 Main Street SW, Houston, TX 77002",
+      "city": "Houston, TX",
+      "image": "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=600&h=400&fit=crop"
+    },
+    {
+      "id": "shop-austin",
+      "name": "The Color Bar Austin",
+      "address": "1209 S Congress Ave, Austin, TX 78704",
+      "city": "Austin, TX",
+      "image": "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&h=400&fit=crop"
+    },
+    {
+      "id": "shop-sf-mission",
+      "name": "Cortes & Cultura",
+      "address": "2424 Mission St, San Francisco, CA 94110",
+      "city": "Mission District, SF",
+      "image": "https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=600&h=400&fit=crop"
+    },
+    {
+      "id": "shop-palo-alto",
+      "name": "Peninsula Styles",
+      "address": "261 Hamilton Ave, Palo Alto, CA 94301",
+      "city": "Palo Alto, CA",
+      "image": "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?w=600&h=400&fit=crop"
+    },
+    {
+      "id": "shop-sf-jptown",
+      "name": "Pacific Cuts",
+      "address": "1737 Post St, San Francisco, CA 94115",
+      "city": "Japantown, SF",
+      "image": "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&h=400&fit=crop"
+    }
+  ]
+}
