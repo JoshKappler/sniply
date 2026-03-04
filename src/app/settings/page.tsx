@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { getCurrentUser, setCurrentUser, type User } from "@/lib/auth";
-import { apiGetUser, apiUpdateUser, apiUpdateNotifPrefs, apiGetNotifPrefs } from "@/lib/api";
+import { apiGetUser, apiUpdateUser, apiDeleteUser, apiUpdateNotifPrefs, apiGetNotifPrefs } from "@/lib/api";
 import { useToast } from "@/components/Toast";
 
 function EyeToggle({ show, onToggle }: { show: boolean; onToggle: () => void }) {
@@ -192,32 +192,11 @@ export default function SettingsPage() {
     if (!user || deleteInput !== user.username || isDeletingAccount) return;
     setIsDeletingAccount(true);
 
-    // Fetch fresh user data so we have the correct profileId (localStorage may be stale)
-    let freshUser = user;
+    // Hard-delete user and all related data
     try {
-      freshUser = await apiGetUser(user.id);
-    } catch {
-      // If we can't fetch, fall back to localStorage data
-    }
-
-    // If pro, delete the barber profile so it no longer appears on browse
-    if (freshUser.role === "pro" && freshUser.profileId) {
-      try {
-        const res = await fetch(`/api/barbers/${freshUser.profileId}`, { method: "DELETE", credentials: "include" });
-        if (!res.ok && res.status !== 404) throw new Error(`HTTP ${res.status}`);
-      } catch (err) {
-        console.error("sniply/settings: failed to delete barber profile", err);
-        addToast("Failed to delete account. Please try again.");
-        setIsDeletingAccount(false);
-        return;
-      }
-    }
-
-    // Mark user as deleted via API (soft delete by clearing key fields)
-    try {
-      await apiUpdateUser(user.id, { username: `deleted-${user.id}` });
+      await apiDeleteUser(user.id);
     } catch (err) {
-      console.error("sniply/settings: failed to soft-delete user via API", err);
+      console.error("sniply/settings: failed to delete account", err);
       addToast("Failed to delete account. Please try again.");
       setIsDeletingAccount(false);
       return;

@@ -4,6 +4,54 @@ import type { User } from "@/lib/types";
 import { getSession, unauthorized, forbidden } from "@/lib/server-auth";
 import bcrypt from "bcryptjs";
 
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const session = getSession(req);
+  if (!session) return unauthorized();
+  if (session.userId !== id) return forbidden();
+
+  const userRow = await queryOne(`SELECT profile_id FROM users WHERE id = $1`, [id]);
+  if (!userRow) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  const profileId: string | null = userRow.profile_id ?? null;
+  const client = await pool().connect();
+  try {
+    await client.query("BEGIN");
+
+    // Common: delete all user-level data
+    await client.query(`DELETE FROM notif_prefs       WHERE user_id    = $1`, [id]);
+    await client.query(`DELETE FROM favorites         WHERE user_id    = $1`, [id]);
+    await client.query(`DELETE FROM reviews           WHERE user_id    = $1`, [id]);
+    await client.query(`DELETE FROM bookings          WHERE user_id    = $1`, [id]);
+    await client.query(`DELETE FROM customer_threads  WHERE customer_id = $1`, [id]);
+    await client.query(`DELETE FROM threads           WHERE customer_id = $1`, [id]);
+
+    // Pro-only: cascade through barber profile
+    if (profileId) {
+      await client.query(`DELETE FROM customer_threads WHERE pro_profile_id = $1`, [profileId]);
+      await client.query(`DELETE FROM threads          WHERE pro_id         = $1`, [id]);
+      await client.query(`DELETE FROM bookings         WHERE barber_id      = $1`, [profileId]);
+      await client.query(`DELETE FROM reviews          WHERE barber_id      = $1`, [profileId]);
+      await client.query(`DELETE FROM availability     WHERE barber_id      = $1`, [profileId]);
+      await client.query(`DELETE FROM business_hours   WHERE profile_id     = $1`, [profileId]);
+      await client.query(`DELETE FROM barbers          WHERE id             = $1`, [profileId]);
+    }
+
+    await client.query(`DELETE FROM users WHERE id = $1`, [id]);
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
+  }
+
+  return NextResponse.json({ success: true });
+}
+
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }

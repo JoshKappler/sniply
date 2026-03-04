@@ -59,6 +59,10 @@ export async function apiUpdateUser(id: string, patch: Partial<User> & { current
   return apiFetch(`/api/users/${id}`, { method: "PUT", body: JSON.stringify(patch) });
 }
 
+export async function apiDeleteUser(id: string): Promise<void> {
+  await apiFetch(`/api/users/${id}`, { method: "DELETE" });
+}
+
 // ── Auth ──────────────────────────────────────────────────────────────────────
 
 export async function apiLogin(username: string, password: string): Promise<User> {
