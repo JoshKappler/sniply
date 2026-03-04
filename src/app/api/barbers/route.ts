@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { query, queryOne, rowToBarber, rowToShop, pool } from "@/lib/db";
+import { getSession } from "@/lib/server-auth";
 import type { Barber } from "@/lib/types";
 
 export async function GET() {
@@ -14,6 +15,18 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  // Prevent duplicate barber profiles for the same authenticated user
+  const session = getSession(req);
+  if (session) {
+    const user = await queryOne<{ profile_id: string | null }>(
+      `SELECT profile_id FROM users WHERE id = $1`,
+      [session.userId]
+    );
+    if (user?.profile_id) {
+      return NextResponse.json({ error: "Barber profile already exists" }, { status: 409 });
+    }
+  }
+
   const body = await req.json() as Barber;
 
   const existing = await queryOne(`SELECT id FROM barbers WHERE id = $1`, [body.id]);
