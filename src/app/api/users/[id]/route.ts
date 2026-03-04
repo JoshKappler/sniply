@@ -16,7 +16,7 @@ export async function DELETE(
   const userRow = await queryOne(`SELECT profile_id FROM users WHERE id = $1`, [id]);
   if (!userRow) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  const profileId: string | null = userRow.profile_id ?? null;
+  const profileId: string | null = (userRow.profile_id as string | null) ?? null;
   const client = await pool().connect();
   try {
     await client.query("BEGIN");
