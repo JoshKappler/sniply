@@ -41,6 +41,10 @@ export async function apiUpdateBarber(id: string, patch: Partial<Barber>): Promi
   return apiFetch(`/api/barbers/${id}`, { method: "PUT", body: JSON.stringify(patch) });
 }
 
+export async function apiDeleteBarber(id: string): Promise<void> {
+  await apiFetch(`/api/barbers/${id}`, { method: "DELETE" });
+}
+
 // ── Users ─────────────────────────────────────────────────────────────────────
 
 export async function apiRegisterUser(user: Omit<User, "id">): Promise<User> {

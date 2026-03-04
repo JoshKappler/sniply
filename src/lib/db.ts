@@ -339,7 +339,7 @@ export function rowToBooking(r: Row): Booking {
     userId: r.user_id as string,
     userName: (r.user_name as string) ?? undefined,
     service: (r.service as string) ?? "",
-    date: (r.date as string) ?? "",
+    date: ((r.date as string) ?? "").substring(0, 10),
     time: (r.time as string) ?? "",
     endTime: (r.end_time as string) ?? undefined,
     price: Number(r.price ?? 0),

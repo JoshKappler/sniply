@@ -162,6 +162,10 @@ function getMondayOf(d: Date): Date {
 function toISODate(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
+function parseLocalDate(dateStr: string): Date {
+  const [y, m, d] = dateStr.substring(0, 10).split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
 function fmtWeekRange(weekStart: Date): string {
   const weekEnd = new Date(weekStart);
   weekEnd.setDate(weekStart.getDate() + 6);
@@ -459,7 +463,7 @@ export default function ProDashboardPage() {
   const bookingsByDate = useMemo(() => {
     const map: Record<string, Booking[]> = {};
     for (const b of bookings) {
-      const dateKey = toISODate(new Date(b.date));
+      const dateKey = b.date.substring(0, 10);
       if (!map[dateKey]) map[dateKey] = [];
       map[dateKey].push(b);
     }
@@ -981,11 +985,11 @@ export default function ProDashboardPage() {
   const firstDow    = new Date(calYear, calMonth, 1).getDay();
   const today       = new Date();
   const bookingDates = new Set<number>(
-    bookings.filter(b => { const d = new Date(b.date); return d.getMonth() === calMonth && d.getFullYear() === calYear; })
-            .map(b => new Date(b.date).getDate())
+    bookings.filter(b => { const d = parseLocalDate(b.date); return d.getMonth() === calMonth && d.getFullYear() === calYear; })
+            .map(b => parseLocalDate(b.date).getDate())
   );
   const dayBookings = selectedDay
-    ? bookings.filter(b => { const d = new Date(b.date); return d.getMonth() === calMonth && d.getFullYear() === calYear && d.getDate() === selectedDay; })
+    ? bookings.filter(b => { const d = parseLocalDate(b.date); return d.getMonth() === calMonth && d.getFullYear() === calYear && d.getDate() === selectedDay; })
     : [];
 
   if (loading) return (

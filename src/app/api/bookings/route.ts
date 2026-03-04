@@ -71,6 +71,14 @@ export async function POST(req: NextRequest) {
   try {
     await client.query("BEGIN");
 
+    // Acquire a per-(barber, date) advisory lock to serialize concurrent booking requests.
+    // FOR UPDATE only locks existing rows; when the slot is empty it acquires no lock,
+    // allowing two concurrent transactions to both pass the conflict check and double-book.
+    await client.query(
+      `SELECT pg_advisory_xact_lock(hashtext($1 || ',' || $2))`,
+      [body.barberId, body.date ?? ""]
+    );
+
     const conflict = await client.query(
       `SELECT id FROM bookings
        WHERE barber_id = $1

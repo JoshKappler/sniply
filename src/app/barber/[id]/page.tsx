@@ -1023,7 +1023,7 @@ export default function BarberProfilePage({
     apiGetBookings({ barberId: id }).then((bookings) => {
       const map: Record<string, Interval[]> = {};
       for (const b of bookings) {
-        const dateKey = isoDate(new Date(b.date));
+        const dateKey = b.date.substring(0, 10);
         if (!map[dateKey]) map[dateKey] = [];
         const startMins = parseTimeToMinutes(b.time);
         const endTime = (b as { endTime?: string }).endTime;
