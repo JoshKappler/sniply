@@ -20,14 +20,6 @@ interface ProProfile extends Barber {
   credentials?: { text: string; fileName?: string; fileData?: string }[];
 }
 
-interface StoredReview {
-  userId: string;
-  name: string;
-  rating: number;
-  text: string;
-  date: string;
-  photos?: string[];
-}
 
 interface MessageThread {
   id: string;
