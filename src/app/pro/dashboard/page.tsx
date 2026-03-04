@@ -53,11 +53,13 @@ interface MessageThread {
 }
 
 interface StoredReview {
+  id?: number;
   userId: string;
-  name: string;
+  userName: string;
   rating: number;
   text: string;
   date: string;
+  reply?: string;
 }
 
 // ── Image compression (for service photos) ─────────────────────────────────────
@@ -582,7 +584,7 @@ export default function ProDashboardPage() {
 
       // Load reviews from API
       apiGetReviews(profileId).then((reviews) => {
-        setProReviews(reviews.map((r) => ({ id: r.id, userId: r.userId, name: r.userName, rating: r.rating, text: r.text, date: r.date })));
+        setProReviews(reviews.map((r) => ({ id: r.id, userId: r.userId, userName: r.userName, rating: r.rating, text: r.text, date: r.date })));
         const repliesMap: Record<string, string> = {};
         reviews.forEach((r) => {
           if (r.reply) repliesMap[`${r.userId}_${r.date}`] = r.reply;
@@ -1220,7 +1222,7 @@ export default function ProDashboardPage() {
                             <div key={i} className="border-b border-gray-100 last:border-b-0 pb-4 last:pb-0">
                               <div className="flex items-start justify-between gap-3 mb-1.5">
                                 <div>
-                                  <p className="text-sm font-semibold text-gray-900">{review.name}</p>
+                                  <p className="text-sm font-semibold text-gray-900">{review.userName}</p>
                                   <Stars rating={review.rating} size="sm" />
                                 </div>
                                 <span className="text-xs text-gray-400 shrink-0">{review.date}</span>

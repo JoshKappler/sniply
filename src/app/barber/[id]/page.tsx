@@ -1108,7 +1108,7 @@ export default function BarberProfilePage({
       setExtraReviews(reviews.map(r => ({
         id: r.id,
         userId: r.userId,
-        name: r.userName,
+        userName: r.userName,
         rating: r.rating,
         text: r.text,
         date: r.date,
@@ -1974,7 +1974,8 @@ export default function BarberProfilePage({
               {allReviews.length > 0 ? (
                 <>
                   {allReviews.map((rev, i) => {
-                    const replyKey = `${(rev as StoredReview).userId || rev.name}_${rev.date}`;
+                    const revName = 'userName' in rev ? rev.userName : rev.name;
+                    const replyKey = `${(rev as StoredReview).userId || revName}_${rev.date}`;
                     const existingReply = reviewReplies[replyKey];
                     const isReplying = replyingTo === replyKey;
                     return (
@@ -1984,7 +1985,7 @@ export default function BarberProfilePage({
                           <span className="text-[var(--color-accent)] font-bold text-sm ml-1">{rev.rating}.0</span>
                         </div>
                         <p className="text-sm text-gray-500">
-                          <span className="font-semibold text-gray-700">{rev.name}</span>
+                          <span className="font-semibold text-gray-700">{revName}</span>
                           {" · "}{rev.date}
                         </p>
                         <p className="text-gray-700 mt-3 leading-relaxed text-sm">&ldquo;{rev.text}&rdquo;</p>
