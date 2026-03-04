@@ -5,7 +5,16 @@
 import crypto from "crypto";
 import type { NextRequest } from "next/server";
 
-const SECRET = process.env.SESSION_SECRET ?? "dev-secret-change-in-production";
+const SECRET = (() => {
+  const s = process.env.SESSION_SECRET;
+  if (!s) {
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("SESSION_SECRET environment variable must be set in production.");
+    }
+    return "dev-secret-change-in-production";
+  }
+  return s;
+})();
 
 export const SESSION_COOKIE = "sniply_session";
 export const SESSION_MAX_AGE = 60 * 60 * 24 * 7; // 7 days

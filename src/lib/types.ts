@@ -59,7 +59,7 @@ export interface Barber {
 export interface User {
   id: string;
   username: string;
-  password: string;
+  password?: string; // never returned from API — stored only in DB
   name: string;
   role: "customer" | "pro";
   profileId?: string; // for pros — links to Barber.id in barbers.json
@@ -125,6 +125,7 @@ export interface CustomerThreadRef {
 }
 
 export interface StoredReview {
+  id?: number;
   userId: string;
   userName: string;
   rating: number;

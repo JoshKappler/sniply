@@ -353,6 +353,7 @@ export function rowToBooking(r: Row): Booking {
 
 export function rowToReview(r: Row): StoredReview {
   return {
+    id: r.id !== undefined ? Number(r.id) : undefined,
     userId: r.user_id as string,
     userName: (r.user_name as string) ?? "",
     rating: Number(r.rating),

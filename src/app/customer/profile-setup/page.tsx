@@ -331,7 +331,6 @@ export default function CustomerProfileSetupPage() {
       if (!isEditing) {
         try {
           const newUser = await apiRegisterUser({
-            id: `user-${Date.now()}`,
             username: username.trim(),
             password,
             role: "customer",
@@ -348,12 +347,8 @@ export default function CustomerProfileSetupPage() {
       } else {
         const existing = getCurrentUser();
         if (existing) {
-          try {
-            const updated = await apiUpdateUser(existing.id, prefPatch);
-            setCurrentUser({ ...existing, ...updated });
-          } catch (err) {
-            console.error("sniply/profile-setup: failed to save preferences to API", err);
-          }
+          const updated = await apiUpdateUser(existing.id, prefPatch);
+          setCurrentUser({ ...existing, ...updated });
         }
       }
 

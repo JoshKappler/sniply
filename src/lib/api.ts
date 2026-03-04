@@ -33,7 +33,7 @@ export async function apiGetBarber(id: string): Promise<Barber> {
   return apiFetch(`/api/barbers/${id}`);
 }
 
-export async function apiCreateBarber(barber: Barber): Promise<Barber> {
+export async function apiCreateBarber(barber: Omit<Barber, "id">): Promise<Barber> {
   return apiFetch("/api/barbers", { method: "POST", body: JSON.stringify(barber) });
 }
 
@@ -43,7 +43,7 @@ export async function apiUpdateBarber(id: string, patch: Partial<Barber>): Promi
 
 // ── Users ─────────────────────────────────────────────────────────────────────
 
-export async function apiRegisterUser(user: User): Promise<User> {
+export async function apiRegisterUser(user: Omit<User, "id">): Promise<User> {
   return apiFetch("/api/users", { method: "POST", body: JSON.stringify(user) });
 }
 
@@ -96,10 +96,10 @@ export async function apiPostReview(barberId: string, review: StoredReview): Pro
   return apiFetch(`/api/reviews/${barberId}`, { method: "POST", body: JSON.stringify(review) });
 }
 
-export async function apiReplyToReview(barberId: string, reviewIdx: number, text: string): Promise<StoredReview> {
+export async function apiReplyToReview(barberId: string, reviewId: number, text: string): Promise<StoredReview> {
   return apiFetch(`/api/reviews/${barberId}/reply`, {
     method: "POST",
-    body: JSON.stringify({ reviewIdx, text }),
+    body: JSON.stringify({ reviewId, text }),
   });
 }
 

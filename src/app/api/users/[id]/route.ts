@@ -5,13 +5,18 @@ import { getSession, unauthorized, forbidden } from "@/lib/server-auth";
 import bcrypt from "bcryptjs";
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
+  const session = getSession(req);
+  if (!session) return unauthorized();
+  if (session.userId !== id) return forbidden();
+
   const row = await queryOne(`SELECT * FROM users WHERE id = $1`, [id]);
   if (!row) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  return NextResponse.json(rowToUser(row));
+  const { password: _pw, ...safeUser } = rowToUser(row);
+  return NextResponse.json(safeUser);
 }
 
 export async function PUT(
@@ -61,5 +66,6 @@ export async function PUT(
     ]
   );
 
-  return NextResponse.json(merged);
+  const { password: _pw, ...safeUser } = merged;
+  return NextResponse.json(safeUser);
 }

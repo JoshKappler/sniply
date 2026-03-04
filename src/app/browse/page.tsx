@@ -9,41 +9,15 @@ import MapView, { type MapBarber } from "@/components/MapView";
 import type { Barber } from "@/lib/types";
 import { apiGetBarbers, apiGetReviews, apiGetAvailability } from "@/lib/api";
 import { getCurrentUser } from "@/lib/auth";
+import { haversineDistance, computeMatchScore, type CustomerProfile } from "@/lib/utils";
 
 type SortKey = "recommended" | "rating" | "reviews" | "price-low" | "price-high";
 type ViewMode = "list" | "map";
-
-interface CustomerProfile {
-  hairType: string;
-  stylePrefs: string[];
-}
 
 interface LocationPin {
   lat: number;
   lng: number;
   label: string;
-}
-
-const HAIR_TYPE_MAP: Record<string, string> = {
-  straight: "Straight",
-  wavy: "Wavy",
-  curly: "Curly",
-  coily: "Coily",
-  kinky: "Kinky",
-};
-
-// ── Haversine distance (miles) ─────────────────────────────────────────────
-function haversineDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
-  const R = 3958.8;
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLng = ((lng2 - lng1) * Math.PI) / 180;
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLng / 2) *
-      Math.sin(dLng / 2);
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
 // ── Geocode via Nominatim (OpenStreetMap, no API key needed) ───────────────
@@ -74,26 +48,6 @@ async function geocodeQuery(
     }
   }
   return null;
-}
-
-function computeMatchScore(barber: Barber, profile: CustomerProfile | null): number | undefined {
-  if (!profile) return undefined;
-  const { hairType, stylePrefs = [] } = profile;
-  const mappedHair = HAIR_TYPE_MAP[hairType] ?? null;
-  const hairMatch = mappedHair
-    ? barber.hairTypes.some((ht) => ht.toLowerCase() === mappedHair.toLowerCase())
-    : null;
-  const matchedStyles = stylePrefs.filter((pref) =>
-    barber.specialties.some(
-      (spec) =>
-        spec.toLowerCase().includes(pref.toLowerCase()) ||
-        pref.toLowerCase().includes(spec.toLowerCase())
-    )
-  ).length;
-  if (stylePrefs.length === 0 && hairMatch === null) return undefined;
-  if (stylePrefs.length === 0) return hairMatch ? 70 : 30;
-  if (hairMatch === null) return Math.round((matchedStyles / stylePrefs.length) * 100);
-  return Math.min(100, (hairMatch ? 40 : 0) + Math.round((matchedStyles / stylePrefs.length) * 60));
 }
 
 const SORT_OPTIONS: { value: SortKey; label: string }[] = [

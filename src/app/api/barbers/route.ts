@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { query, queryOne, rowToBarber, rowToShop, pool } from "@/lib/db";
-import { getSession } from "@/lib/server-auth";
+import { getSession, unauthorized, forbidden } from "@/lib/server-auth";
 import type { Barber } from "@/lib/types";
+import { randomUUID } from "crypto";
 
 export async function GET() {
   const [barberRows, shopRows] = await Promise.all([
@@ -15,24 +16,21 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  // Prevent duplicate barber profiles for the same authenticated user
   const session = getSession(req);
-  if (session) {
-    const user = await queryOne<{ profile_id: string | null }>(
-      `SELECT profile_id FROM users WHERE id = $1`,
-      [session.userId]
-    );
-    if (user?.profile_id) {
-      return NextResponse.json({ error: "Barber profile already exists" }, { status: 409 });
-    }
+  if (!session) return unauthorized();
+  if (session.role !== "pro") return forbidden();
+
+  // Prevent duplicate barber profiles for the same authenticated user
+  const user = await queryOne<{ profile_id: string | null }>(
+    `SELECT profile_id FROM users WHERE id = $1`,
+    [session.userId]
+  );
+  if (user?.profile_id) {
+    return NextResponse.json({ error: "Barber profile already exists" }, { status: 409 });
   }
 
-  const body = await req.json() as Barber;
-
-  const existing = await queryOne(`SELECT id FROM barbers WHERE id = $1`, [body.id]);
-  if (existing) {
-    return NextResponse.json({ error: "Barber ID already exists" }, { status: 409 });
-  }
+  const body = await req.json() as Omit<Barber, "id">;
+  const id = randomUUID();
 
   await pool().query(
     `INSERT INTO barbers (
@@ -42,7 +40,7 @@ export async function POST(req: NextRequest) {
        portfolio_images, services, credentials
      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22)`,
     [
-      body.id, body.name, body.username ?? null, body.rating ?? 0, body.reviewCount ?? 0,
+      id, body.name, body.username ?? null, body.rating ?? 0, body.reviewCount ?? 0,
       body.location ?? null, body.fullAddress ?? null, body.lat ?? null, body.lng ?? null,
       body.type ?? "independent", body.shopId ?? null, body.startingPrice ?? 0,
       body.specialties ?? [], body.hairTypes ?? [], body.bio ?? null, body.experience ?? null,
@@ -52,6 +50,6 @@ export async function POST(req: NextRequest) {
     ]
   );
 
-  const row = await queryOne(`SELECT * FROM barbers WHERE id = $1`, [body.id]);
+  const row = await queryOne(`SELECT * FROM barbers WHERE id = $1`, [id]);
   return NextResponse.json(rowToBarber(row!), { status: 201 });
 }

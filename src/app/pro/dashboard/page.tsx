@@ -582,7 +582,7 @@ export default function ProDashboardPage() {
 
       // Load reviews from API
       apiGetReviews(profileId).then((reviews) => {
-        setProReviews(reviews.map((r) => ({ userId: r.userId, name: r.userName, rating: r.rating, text: r.text, date: r.date })));
+        setProReviews(reviews.map((r) => ({ id: r.id, userId: r.userId, name: r.userName, rating: r.rating, text: r.text, date: r.date })));
         const repliesMap: Record<string, string> = {};
         reviews.forEach((r) => {
           if (r.reply) repliesMap[`${r.userId}_${r.date}`] = r.reply;
@@ -1255,7 +1255,7 @@ export default function ProDashboardPage() {
                                         const updated = { ...dashReviewReplies, [replyKey]: replyText };
                                         setDashReviewReplies(updated);
                                         if (profileId) {
-                                          void apiReplyToReview(profileId, i, replyText);
+                                          if (review.id != null) void apiReplyToReview(profileId, review.id, replyText);
                                         }
                                         setDashReplyingTo(null);
                                         setDashReplyDraft("");

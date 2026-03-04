@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { query, queryOne, rowToReview, pool } from "@/lib/db";
+import { queryOne, rowToReview, pool } from "@/lib/db";
 import { getSession, unauthorized, forbidden } from "@/lib/server-auth";
 
 export async function POST(
@@ -18,18 +18,17 @@ export async function POST(
   );
   if (!owner || owner.profile_id !== barberId) return forbidden();
 
-  const { reviewIdx, text } = await req.json() as { reviewIdx: number; text: string };
+  const { reviewId, text } = await req.json() as { reviewId: number; text: string };
 
-  // Get reviews in insertion order; find the one at the given index
-  const rows = await query(
-    `SELECT * FROM reviews WHERE barber_id = $1 ORDER BY id ASC`,
-    [barberId]
+  // Verify the review belongs to this barber before updating
+  const existing = await queryOne(
+    `SELECT id FROM reviews WHERE id = $1 AND barber_id = $2`,
+    [reviewId, barberId]
   );
-  if (!rows[reviewIdx]) {
+  if (!existing) {
     return NextResponse.json({ error: "Review not found" }, { status: 404 });
   }
 
-  const reviewId = rows[reviewIdx].id as number;
   await pool().query(`UPDATE reviews SET reply = $2 WHERE id = $1`, [reviewId, text]);
 
   const updated = await queryOne(`SELECT * FROM reviews WHERE id = $1`, [reviewId]);

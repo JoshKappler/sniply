@@ -77,18 +77,35 @@ export default function CustomerProfilePage() {
       return;
     }
     setUserName(user.name || "");
-    // Load profile from session (user prefs are on the user object)
-    setProfile({ name: user.name ?? "", gender: user.gender ?? "", hairType: user.hairType ?? "", hairSubtype: "", hairTexture: "", hairColor: "", stylePrefs: user.stylePrefs ?? [], concerns: [], notes: "", referencePhotos: [] });
-    // Also check localStorage for reference photos (legacy)
+    // Build profile from the user object (source of truth from DB)
+    const baseProfile: CustomerProfile = {
+      name: user.name ?? "",
+      gender: user.gender ?? "",
+      hairType: user.hairType ?? "",
+      hairSubtype: user.hairSubtype ?? "",
+      hairTexture: user.hairTexture ?? "",
+      hairColor: user.hairColor ?? "",
+      stylePrefs: user.stylePrefs ?? [],
+      concerns: user.concerns ?? [],
+      notes: user.notes ?? "",
+      profilePhoto: user.avatar ?? undefined,
+      referencePhotos: [],
+    };
+    // Supplement with localStorage only for reference photos and profile photo
+    // (these are not stored in DB, only client-side)
     try {
       const raw = localStorage.getItem("sniply_customer_profile");
       if (raw) {
-        const saved = JSON.parse(raw);
-        setProfile((prev) => ({ ...prev, ...saved }));
+        const saved = JSON.parse(raw) as Partial<CustomerProfile>;
+        baseProfile.referencePhotos = saved.referencePhotos ?? [];
+        if (!baseProfile.profilePhoto && saved.profilePhoto) {
+          baseProfile.profilePhoto = saved.profilePhoto;
+        }
       }
     } catch (err) {
       console.error("sniply/profile: failed to parse legacy profile from localStorage", err);
     }
+    setProfile(baseProfile);
     // Load message threads from API
     apiGetCustomerThreads(user.id).then((threads) => {
       setMessageThreads(threads.slice(0, 4));

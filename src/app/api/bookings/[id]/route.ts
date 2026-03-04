@@ -32,6 +32,16 @@ export async function PUT(
   const body = await req.json() as Partial<Booking>;
   const merged: Booking = { ...booking, ...body };
 
+  // Lock immutable identity fields — clients must never reassign ownership
+  merged.id = booking.id;
+  merged.userId = booking.userId;
+  merged.barberId = booking.barberId;
+
+  // Customers cannot change price — only pros can adjust it
+  if (session.role !== "pro") {
+    merged.price = booking.price;
+  }
+
   await pool().query(
     `UPDATE bookings SET
        barber_id    = $2, barber_name  = $3, barber_image = $4,

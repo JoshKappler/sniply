@@ -4,14 +4,33 @@ import type { MessageThread } from "@/lib/types";
 import { getSession, unauthorized, forbidden } from "@/lib/server-auth";
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ proId: string }> }
 ) {
   const { proId } = await params;
-  const rows = await query(
-    `SELECT * FROM threads WHERE pro_id = $1 ORDER BY ts DESC NULLS LAST`,
-    [proId]
-  );
+  const session = getSession(req);
+  if (!session) return unauthorized();
+
+  // Customers can only read threads they're a participant in; pros must own the profile
+  if (session.role === "pro") {
+    const owner = await queryOne(
+      `SELECT profile_id FROM users WHERE id = $1`,
+      [session.userId]
+    );
+    if (!owner || owner.profile_id !== proId) return forbidden();
+  }
+  // Customers: allowed — they'll only see threads where they're customer_id (filtered below)
+
+  const rows = session.role === "pro"
+    ? await query(
+        `SELECT * FROM threads WHERE pro_id = $1 ORDER BY ts DESC NULLS LAST`,
+        [proId]
+      )
+    : await query(
+        `SELECT * FROM threads WHERE pro_id = $1 AND customer_id = $2 ORDER BY ts DESC NULLS LAST`,
+        [proId, session.userId]
+      );
+
   return NextResponse.json(rows.map(rowToThread));
 }
 

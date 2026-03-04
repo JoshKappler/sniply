@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, use } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import type { Barber } from "@/lib/types";
+import type { Barber, StoredReview } from "@/lib/types";
 import { apiGetBarber, apiCreateBooking, apiDeleteBooking, apiGetBookings, apiGetReviews, apiPostReview, apiReplyToReview, apiGetFavorites, apiUpdateFavorites, apiGetThreads, apiUpdateThreads, apiGetCustomerThreads, apiUpdateCustomerThreads, apiGetAvailability, apiGetBusinessHours } from "@/lib/api";
 import { getCurrentUser } from "@/lib/auth";
 
@@ -294,6 +294,7 @@ function BookingModal({
 
   const handleConfirm = async () => {
     if (!canConfirm || !selectedSlot || isConfirming) return;
+    if (!user) { setValidationError("Please sign in to complete your booking."); return; }
     if (existingActiveBooking) return; // guard against race
     const error = validateSlot();
     if (error) { setValidationError(error); return; }
@@ -305,7 +306,7 @@ function BookingModal({
       barberImage: barber.profileImage,
       service: selectedService,
       duration: serviceDuration,
-      date: selectedSlot.date.toISOString(),
+      date: isoDate(selectedSlot.date),
       time: selectedSlot.time,
       endTime: computedEndTime ?? selectedSlot.time,
       userId: user?.id ?? "guest",
@@ -324,7 +325,8 @@ function BookingModal({
       await apiCreateBooking(booking);
     } catch (err) {
       console.error("sniply/booking: failed to save booking", err);
-      setValidationError("Booking could not be saved. Please try again.");
+      const msg = err instanceof Error ? err.message : "Booking could not be saved. Please try again.";
+      setValidationError(msg);
       setIsConfirming(false);
       return;
     }
@@ -1112,6 +1114,7 @@ export default function BarberProfilePage({
     // Reviews
     apiGetReviews(id).then((reviews) => {
       setExtraReviews(reviews.map(r => ({
+        id: r.id,
         userId: r.userId,
         name: r.userName,
         rating: r.rating,
@@ -2035,7 +2038,8 @@ export default function BarberProfilePage({
                                     const replyText = replyDraft.trim();
                                     const updated = { ...reviewReplies, [replyKey]: replyText };
                                     setReviewReplies(updated);
-                                    void apiReplyToReview(id, i, replyText);
+                                    const revId = (rev as StoredReview).id;
+                                    if (revId != null) void apiReplyToReview(id, revId, replyText);
                                     setReplyingTo(null);
                                     setReplyDraft("");
                                   }}

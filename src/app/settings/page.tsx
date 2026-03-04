@@ -66,6 +66,13 @@ export default function SettingsPage() {
   });
   const [notifSaved, setNotifSaved] = useState(false);
 
+  // Submitting states
+  const [isSavingName, setIsSavingName] = useState(false);
+  const [isSavingPassword, setIsSavingPassword] = useState(false);
+  const [isSavingNotif, setIsSavingNotif] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+
   // Delete account
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteInput, setDeleteInput] = useState("");
@@ -86,11 +93,12 @@ export default function SettingsPage() {
   }, [router]);
 
   const saveName = async () => {
-    if (!user) return;
+    if (!user || isSavingName) return;
     if (!name.trim()) {
       setErrors((e) => ({ ...e, name: "Name cannot be empty." }));
       return;
     }
+    setIsSavingName(true);
     try {
       const updated = await apiUpdateUser(user.id, { name: name.trim() });
       const merged = { ...user, ...updated };
@@ -101,11 +109,13 @@ export default function SettingsPage() {
       addToast("Display name updated successfully.");
     } catch {
       addToast("Failed to update name. Please try again.");
+    } finally {
+      setIsSavingName(false);
     }
   };
 
   const savePassword = async () => {
-    if (!user) return;
+    if (!user || isSavingPassword) return;
     const errs: Record<string, string> = {};
     if (!currentPassword) errs.currentPassword = "Enter your current password.";
     if (!newPassword) errs.newPassword = "Enter a new password.";
@@ -118,6 +128,7 @@ export default function SettingsPage() {
       return;
     }
     setErrors({});
+    setIsSavingPassword(true);
     try {
       const updated = await apiUpdateUser(user.id, { password: newPassword, currentPassword });
       const merged = { ...user, ...updated };
@@ -132,11 +143,14 @@ export default function SettingsPage() {
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to update password. Please try again.";
       setErrors({ currentPassword: msg });
+    } finally {
+      setIsSavingPassword(false);
     }
   };
 
   const saveNotifPrefs = async () => {
-    if (!user) return;
+    if (!user || isSavingNotif) return;
+    setIsSavingNotif(true);
     try {
       await apiUpdateNotifPrefs(user.id, notifPrefs);
       setNotifSaved(true);
@@ -144,16 +158,19 @@ export default function SettingsPage() {
       addToast("Notification preferences saved.");
     } catch {
       addToast("Failed to save preferences. Please try again.");
+    } finally {
+      setIsSavingNotif(false);
     }
   };
 
   const handleDownloadData = async () => {
-    if (!user) return;
+    if (!user || isDownloading) return;
+    setIsDownloading(true);
     const data: Record<string, unknown> = { user: { ...user, password: "[hidden]" } };
     try {
       const [bookings, favorites] = await Promise.all([
-        fetch(`/api/bookings?userId=${user.id}`).then((r) => r.json()),
-        fetch(`/api/favorites/${user.id}`).then((r) => r.json()),
+        fetch(`/api/bookings?userId=${user.id}`, { credentials: "include" }).then((r) => r.json()),
+        fetch(`/api/favorites/${user.id}`, { credentials: "include" }).then((r) => r.json()),
       ]);
       data.bookings = bookings;
       data.favorites = favorites;
@@ -168,17 +185,37 @@ export default function SettingsPage() {
     a.click();
     URL.revokeObjectURL(url);
     addToast("Your data has been downloaded.");
+    setIsDownloading(false);
   };
 
   const handleDeleteAccount = async () => {
-    if (!user || deleteInput !== user.username) return;
+    if (!user || deleteInput !== user.username || isDeletingAccount) return;
+    setIsDeletingAccount(true);
+
+    // If pro, delete the barber profile so it no longer appears on browse
+    if (user.role === "pro" && user.profileId) {
+      try {
+        const res = await fetch(`/api/barbers/${user.profileId}`, { method: "DELETE", credentials: "include" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      } catch (err) {
+        console.error("sniply/settings: failed to delete barber profile", err);
+        addToast("Failed to delete account. Please try again.");
+        setIsDeletingAccount(false);
+        return;
+      }
+    }
+
     // Mark user as deleted via API (soft delete by clearing key fields)
     try {
       await apiUpdateUser(user.id, { username: `deleted-${user.id}`, password: "" });
     } catch (err) {
       console.error("sniply/settings: failed to soft-delete user via API", err);
+      addToast("Failed to delete account. Please try again.");
+      setIsDeletingAccount(false);
+      return;
     }
-    // Clear session localStorage
+
+    // Only clear session after successful deletion
     localStorage.removeItem("sniply_current_user");
     localStorage.removeItem("sniply_role");
     localStorage.removeItem("sniply_onboarded");
@@ -240,13 +277,14 @@ export default function SettingsPage() {
             </div>
             <button
               onClick={() => void saveName()}
-              className={`w-full rounded-xl text-sm font-semibold h-11 transition-all ${
+              disabled={isSavingName}
+              className={`w-full rounded-xl text-sm font-semibold h-11 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
                 nameSuccess
                   ? "bg-green-50 text-green-600 border border-green-200"
                   : "btn-primary"
               }`}
             >
-              {nameSuccess ? "Name Updated ✓" : "Save Name"}
+              {isSavingName ? "Saving…" : nameSuccess ? "Name Updated ✓" : "Save Name"}
             </button>
           </div>
         </div>
@@ -321,10 +359,11 @@ export default function SettingsPage() {
             )}
             <button
               onClick={() => void savePassword()}
-              className="btn-primary w-full"
+              disabled={isSavingPassword}
+              className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ height: "44px", fontSize: "15px" }}
             >
-              Update Password
+              {isSavingPassword ? "Updating…" : "Update Password"}
             </button>
           </div>
         </div>
@@ -366,13 +405,14 @@ export default function SettingsPage() {
           </div>
           <button
             onClick={() => void saveNotifPrefs()}
-            className={`mt-5 w-full rounded-xl text-sm font-semibold h-11 transition-all ${
+            disabled={isSavingNotif}
+            className={`mt-5 w-full rounded-xl text-sm font-semibold h-11 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
               notifSaved
                 ? "bg-green-50 text-green-600 border border-green-200"
                 : "btn-primary"
             }`}
           >
-            {notifSaved ? "Preferences Saved ✓" : "Save Preferences"}
+            {isSavingNotif ? "Saving…" : notifSaved ? "Preferences Saved ✓" : "Save Preferences"}
           </button>
         </div>
 
@@ -382,12 +422,13 @@ export default function SettingsPage() {
           <p className="text-xs text-gray-400 mb-5">Download or manage your personal data.</p>
           <button
             onClick={() => void handleDownloadData()}
-            className="w-full flex items-center justify-center gap-2 h-11 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-all"
+            disabled={isDownloading}
+            className="w-full flex items-center justify-center gap-2 h-11 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
-            Download My Data
+            {isDownloading ? "Preparing…" : "Download My Data"}
           </button>
           <p className="text-xs text-gray-400 mt-2 text-center">
             Downloads a JSON file with your profile, bookings, and settings.
@@ -426,11 +467,11 @@ export default function SettingsPage() {
                 </button>
                 <button
                   onClick={() => void handleDeleteAccount()}
-                  disabled={deleteInput !== user?.username}
+                  disabled={deleteInput !== user?.username || isDeletingAccount}
                   className="flex-1 h-11 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                   style={{ background: "linear-gradient(135deg, #EF4444, #DC2626)" }}
                 >
-                  Delete Account
+                  {isDeletingAccount ? "Deleting…" : "Delete Account"}
                 </button>
               </div>
             </div>

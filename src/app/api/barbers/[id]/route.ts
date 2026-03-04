@@ -60,3 +60,26 @@ export async function PUT(
   const row = await queryOne(`SELECT * FROM barbers WHERE id = $1`, [id]);
   return NextResponse.json(rowToBarber(row!));
 }
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const session = getSession(req);
+  if (!session) return unauthorized();
+  if (session.role !== "pro") return forbidden();
+
+  // Verify this pro owns the barber profile
+  const owner = await queryOne(
+    `SELECT profile_id FROM users WHERE id = $1`,
+    [session.userId]
+  );
+  if (!owner || owner.profile_id !== id) return forbidden();
+
+  const existing = await queryOne(`SELECT id FROM barbers WHERE id = $1`, [id]);
+  if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  await pool().query(`DELETE FROM barbers WHERE id = $1`, [id]);
+  return NextResponse.json({ success: true });
+}

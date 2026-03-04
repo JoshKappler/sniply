@@ -273,15 +273,14 @@ export default function ProfessionalProfileSetupPage() {
 
     setIsSubmitting(true);
     try {
-      const id = existingId ?? `pro-${Date.now()}`;
+      const existingBarberIdForEdit = existingId;
       const validServices = services
         .filter(s => s.name.trim() && s.price.trim())
         .map(s => ({ name: s.name.trim(), description: s.description.trim(), price: parseFloat(s.price) || 0, duration: parseInt(s.duration) || 30 }));
       const startingPrice = validServices.length > 0 ? Math.min(...validServices.map(s => s.price)) : 0;
       const filledPortfolio = portfolioImages.filter(Boolean) as string[];
 
-      const profile = {
-        id,
+      const profileData = {
         name: `${firstName.trim()} ${lastName.trim()}`,
         username: existingUser?.username ?? username.trim(),
         bio: bio.trim(),
@@ -299,21 +298,28 @@ export default function ProfessionalProfileSetupPage() {
         profileImage: profilePhoto ?? "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face",
       };
 
-      if (isEditing) {
-        await apiUpdateBarber(id, profile);
-      } else {
-        await apiCreateBarber(profile);
-      }
-
-      if (isEditing) {
-        const patch = { name: profile.name, profileId: id, avatar: profilePhoto ?? existingUser!.avatar };
+      if (isEditing && existingBarberIdForEdit) {
+        await apiUpdateBarber(existingBarberIdForEdit, profileData);
+        const patch = { name: profileData.name, profileId: existingBarberIdForEdit, avatar: profilePhoto ?? existingUser!.avatar };
         const updated = await apiUpdateUser(existingUser!.id, patch);
         setCurrentUser({ ...existingUser!, ...updated });
       } else {
+        // Server generates the barber ID — use it in the user record
+        let createdBarberId: string;
+        try {
+          const createdBarber = await apiCreateBarber(profileData);
+          createdBarberId = createdBarber.id;
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : "Profile creation failed";
+          setErrors({ username: msg });
+          setStep(1);
+          return;
+        }
+
         try {
           const newUser = await apiRegisterUser({
-            id: `user-${Date.now()}`, username: username.trim(), password,
-            name: profile.name, role: "pro", profileId: id, avatar: profilePhoto ?? undefined,
+            username: username.trim(), password,
+            name: profileData.name, role: "pro", profileId: createdBarberId, avatar: profilePhoto ?? undefined,
           });
           // Establish the server-side session cookie so authenticated API calls work
           await apiLogin(username.trim(), password);

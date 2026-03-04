@@ -3,10 +3,14 @@ import { query, pool } from "@/lib/db";
 import { getSession, unauthorized, forbidden } from "@/lib/server-auth";
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ userId: string }> }
 ) {
   const { userId } = await params;
+  const session = getSession(req);
+  if (!session) return unauthorized();
+  if (session.userId !== userId) return forbidden();
+
   const rows = await query(
     `SELECT barber_id FROM favorites WHERE user_id = $1 ORDER BY barber_id`,
     [userId]
