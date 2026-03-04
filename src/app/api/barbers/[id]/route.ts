@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { queryOne, rowToBarber, pool } from "@/lib/db";
 import type { Barber } from "@/lib/types";
 import { getSession, unauthorized, forbidden } from "@/lib/server-auth";
+import type { PoolClient } from "pg";
 
 export async function GET(
   _req: NextRequest,
@@ -78,14 +79,26 @@ export async function DELETE(
   );
   if (!owner || owner.profile_id !== id) return forbidden();
 
-  const existing = await queryOne(`SELECT id FROM barbers WHERE id = $1`, [id]);
-
-  if (existing) {
-    await pool().query(`DELETE FROM barbers WHERE id = $1`, [id]);
+  const client: PoolClient = await pool().connect();
+  try {
+    await client.query("BEGIN");
+    // Cascade-delete all data tied to this barber profile
+    await client.query(`DELETE FROM bookings         WHERE barber_id      = $1`, [id]);
+    await client.query(`DELETE FROM reviews          WHERE barber_id      = $1`, [id]);
+    await client.query(`DELETE FROM availability     WHERE barber_id      = $1`, [id]);
+    await client.query(`DELETE FROM business_hours   WHERE profile_id     = $1`, [id]);
+    await client.query(`DELETE FROM customer_threads WHERE pro_profile_id = $1`, [id]);
+    await client.query(`DELETE FROM threads          WHERE pro_id         = $1`, [session.userId]);
+    await client.query(`DELETE FROM barbers          WHERE id             = $1`, [id]);
+    // Always clear profile_id regardless of whether barber row existed (handles orphaned state)
+    await client.query(`UPDATE users SET profile_id = NULL WHERE profile_id = $1`, [id]);
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
   }
-
-  // Always clear profile_id regardless of whether barber row existed (handles orphaned state)
-  await pool().query(`UPDATE users SET profile_id = NULL WHERE profile_id = $1`, [id]);
 
   return NextResponse.json({ success: true });
 }
