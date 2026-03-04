@@ -16,9 +16,15 @@ function getPool(): Pool {
       connectionString: process.env.DATABASE_URL,
       ssl:
         process.env.DATABASE_URL?.includes("railway.app") ||
+        process.env.DATABASE_URL?.includes("rlwy.net") ||
         process.env.NODE_ENV === "production"
           ? { rejectUnauthorized: false }
           : false,
+    });
+    // Prevent unhandled 'error' events from crashing the Node process when
+    // Railway (or any proxy) silently drops an idle connection.
+    _pool.on("error", (err) => {
+      console.error("[db] idle client error:", err.message);
     });
   }
   return _pool;
