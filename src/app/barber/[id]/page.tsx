@@ -594,7 +594,7 @@ function ReviewForm({ barber, existingReviews, onSubmit, hasBooked = false }: Re
     if (!rating || !text.trim()) return;
     const review: StoredReview = {
       userId: user.id,
-      name: user.name,
+      userName: user.name,
       rating,
       text: text.trim(),
       date: "Just now",
