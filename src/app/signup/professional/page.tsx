@@ -155,7 +155,9 @@ export default function ProfessionalProfileSetupPage() {
           })));
         }
         if (p.profileImage) setProfilePhoto(p.profileImage);
-      }).catch(() => {}).finally(() => setLoading(false));
+      }).catch(() => {
+        setExistingUser(prev => prev ? { ...prev, profileId: undefined } : prev);
+      }).finally(() => setLoading(false));
     };
 
     if (cu?.profileId) {
@@ -315,7 +317,25 @@ export default function ProfessionalProfileSetupPage() {
       };
 
       if (isEditing && existingBarberIdForEdit) {
-        await apiUpdateBarber(existingBarberIdForEdit, profileData);
+        const editPatch = {
+          name: profileData.name,
+          username: profileData.username,
+          bio: profileData.bio,
+          location: profileData.location,
+          fullAddress: profileData.fullAddress,
+          type: profileData.type,
+          shopName: profileData.shopName,
+          experience: profileData.experience,
+          languages: profileData.languages,
+          specialties: profileData.specialties,
+          hairTypes: profileData.hairTypes,
+          credentials: profileData.credentials,
+          portfolioImages: profileData.portfolioImages,
+          heroImage: profileData.heroImage,
+          profileImage: profileData.profileImage,
+          gender,
+        };
+        await apiUpdateBarber(existingBarberIdForEdit, editPatch);
         const patch = { name: profileData.name, profileId: existingBarberIdForEdit, avatar: profilePhoto ?? existingUser!.avatar };
         const updated = await apiUpdateUser(existingUser!.id, patch);
         setCurrentUser({ ...existingUser!, ...updated });

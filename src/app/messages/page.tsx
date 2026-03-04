@@ -228,7 +228,7 @@ export default function MessagesPage() {
           <div className="flex gap-4 h-[calc(100dvh-180px)] md:h-[560px]">
             {/* Thread list */}
             <div
-              className={`${selectedItem ? "hidden md:flex" : "flex"} flex-col w-full md:w-[280px] shrink-0 bg-white border border-gray-200 rounded-xl overflow-hidden`}
+              className={`${selectedItem ? "hidden md:flex" : "flex"} flex-col w-full md:w-[280px] shrink-0 bg-white border border-gray-200 rounded-xl overflow-y-auto`}
             >
               {loadedThreads.map((lt, idx) => (
                 <button

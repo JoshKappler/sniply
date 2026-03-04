@@ -777,7 +777,7 @@ export default function ProDashboardPage() {
     const touchMove = (ev: TouchEvent) => {
       const t = ev.touches[0];
       if (!t) return;
-      ev.preventDefault();
+      if (dragOpRef.current) ev.preventDefault();
       move({ clientX: t.clientX, clientY: t.clientY } as MouseEvent);
     };
     const touchUp = (ev: TouchEvent) => {
@@ -2141,8 +2141,8 @@ export default function ProDashboardPage() {
           {tab === "messages" && (
             <div className="max-w-[760px] animate-tab-fade">
               <h1 className="font-heading font-bold text-gray-900 text-2xl mb-6">Messages</h1>
-              <div className="flex gap-4 h-[560px]">
-                <div className={`${selectedThread ? "hidden md:flex" : "flex"} flex-col w-full md:w-[280px] shrink-0 bg-white border border-[var(--color-primary)]/12 rounded-xl overflow-hidden`}>
+              <div className="flex gap-4 h-[min(560px,calc(100dvh-220px))]">
+                <div className={`${selectedThread ? "hidden md:flex" : "flex"} flex-col w-full md:w-[280px] shrink-0 bg-white border border-[var(--color-primary)]/12 rounded-xl overflow-y-auto`}>
                   {!threadsLoaded ? (
                     [0, 1, 2].map(i => (
                       <div key={i} className="flex items-start gap-3 p-4 border-b last:border-b-0 border-gray-100 animate-pulse">

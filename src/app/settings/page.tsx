@@ -204,7 +204,7 @@ export default function SettingsPage() {
     if (freshUser.role === "pro" && freshUser.profileId) {
       try {
         const res = await fetch(`/api/barbers/${freshUser.profileId}`, { method: "DELETE", credentials: "include" });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok && res.status !== 404) throw new Error(`HTTP ${res.status}`);
       } catch (err) {
         console.error("sniply/settings: failed to delete barber profile", err);
         addToast("Failed to delete account. Please try again.");

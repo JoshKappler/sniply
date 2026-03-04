@@ -94,7 +94,8 @@ const DDL = `
     profile_image    TEXT,
     portfolio_images TEXT[],
     services         JSONB DEFAULT '[]',
-    credentials      JSONB DEFAULT '[]'
+    credentials      JSONB DEFAULT '[]',
+    shop_name        TEXT
   );
 
   CREATE TABLE IF NOT EXISTS bookings (
@@ -186,6 +187,7 @@ export async function migrate(): Promise<void> {
   if (migrated) return;
   const db = getPool();
   await db.query(DDL);
+  await db.query(`ALTER TABLE barbers ADD COLUMN IF NOT EXISTS shop_name TEXT`);
 
   const { rows } = await db.query("SELECT COUNT(*) FROM barbers");
   if (parseInt(rows[0].count, 10) === 0) {
@@ -305,6 +307,7 @@ export function rowToBarber(r: Row): Barber {
     lng: r.lng != null ? Number(r.lng) : undefined,
     type: (r.type as "independent" | "shop") ?? "independent",
     shopId: (r.shop_id as string) ?? undefined,
+    shopName: (r.shop_name as string) ?? undefined,
     startingPrice: Number(r.starting_price ?? 0),
     specialties: (r.specialties as string[]) ?? [],
     hairTypes: (r.hair_types as string[]) ?? [],
