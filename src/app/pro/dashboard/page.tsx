@@ -7,6 +7,7 @@ import { Stars } from "@/components/Stars";
 import { useToast } from "@/components/Toast";
 import { getCurrentUser, setCurrentUser as persistCurrentUser, type User } from "@/lib/auth";
 import { apiGetBarber, apiGetUser, apiUpdateBarber, apiGetBookings, apiUpdateBooking, apiGetReviews, apiReplyToReview, apiGetThreads, apiUpdateThreads, apiGetAvailability, apiUpdateAvailability, apiGetBusinessHours, apiUpdateBusinessHours } from "@/lib/api";
+import type { Booking, MessageThread, StoredReview } from "@/lib/types";
 
 type TabKey = "profile" | "services" | "appointments" | "messages" | "analytics";
 
@@ -28,38 +29,6 @@ interface ProProfile {
   startingPrice?: number;
   portfolioImages?: (string | null)[];
   profileImage?: string;
-}
-
-interface Booking {
-  id: string;
-  barberId: string;
-  barberName: string;
-  service: string;
-  date: string;
-  time: string;
-  duration?: number;
-  userId: string;
-  userName?: string;
-  createdAt?: string;
-}
-
-interface MessageThread {
-  id: string;
-  customerName: string;
-  preview: string;
-  timestamp: string;
-  unread: boolean;
-  messages: { from: "pro" | "customer"; text: string; time: string }[];
-}
-
-interface StoredReview {
-  id?: number;
-  userId: string;
-  userName: string;
-  rating: number;
-  text: string;
-  date: string;
-  reply?: string;
 }
 
 // ── Image compression (for service photos) ─────────────────────────────────────
@@ -480,8 +449,9 @@ export default function ProDashboardPage() {
   const dragStartPos   = useRef<{ x: number; y: number } | null>(null);
 
   // Stable refs so effects with empty deps can read latest values
-  const profileRef     = useRef<ProProfile | null>(null);
-  const currentUserRef = useRef<User | null>(null);
+  const profileRef          = useRef<ProProfile | null>(null);
+  const currentUserRef      = useRef<User | null>(null);
+  const schedInitializedRef = useRef(false); // true after first schedLoaded=true; prevents saving on initial load
   profileRef.current     = profile;
   currentUserRef.current = currentUser;
 
@@ -650,6 +620,13 @@ export default function ProDashboardPage() {
   // ── Auto-save availability whenever schedData changes (800ms debounce) ──────
   useEffect(() => {
     if (!schedLoaded) return;
+    // Skip the very first fire (schedLoaded just became true from initial load).
+    // Without this guard, a failed apiGetAvailability catch would set schedLoaded=true
+    // with schedData={} and immediately overwrite real saved data with an empty object.
+    if (!schedInitializedRef.current) {
+      schedInitializedRef.current = true;
+      return;
+    }
     setAutoSaveStatus("pending");
     const t = setTimeout(() => {
       const prof = profileRef.current;

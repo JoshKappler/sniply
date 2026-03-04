@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { getCurrentUser, setCurrentUser, type User } from "@/lib/auth";
-import { apiUpdateUser, apiUpdateNotifPrefs, apiGetNotifPrefs } from "@/lib/api";
+import { apiGetUser, apiUpdateUser, apiUpdateNotifPrefs, apiGetNotifPrefs } from "@/lib/api";
 import { useToast } from "@/components/Toast";
 
 function EyeToggle({ show, onToggle }: { show: boolean; onToggle: () => void }) {
@@ -192,10 +192,18 @@ export default function SettingsPage() {
     if (!user || deleteInput !== user.username || isDeletingAccount) return;
     setIsDeletingAccount(true);
 
+    // Fetch fresh user data so we have the correct profileId (localStorage may be stale)
+    let freshUser = user;
+    try {
+      freshUser = await apiGetUser(user.id);
+    } catch {
+      // If we can't fetch, fall back to localStorage data
+    }
+
     // If pro, delete the barber profile so it no longer appears on browse
-    if (user.role === "pro" && user.profileId) {
+    if (freshUser.role === "pro" && freshUser.profileId) {
       try {
-        const res = await fetch(`/api/barbers/${user.profileId}`, { method: "DELETE", credentials: "include" });
+        const res = await fetch(`/api/barbers/${freshUser.profileId}`, { method: "DELETE", credentials: "include" });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
       } catch (err) {
         console.error("sniply/settings: failed to delete barber profile", err);
@@ -215,7 +223,8 @@ export default function SettingsPage() {
       return;
     }
 
-    // Only clear session after successful deletion
+    // Clear session cookie + localStorage
+    await fetch("/api/auth/logout", { method: "POST", credentials: "include" }).catch(() => {});
     localStorage.removeItem("sniply_current_user");
     localStorage.removeItem("sniply_role");
     localStorage.removeItem("sniply_onboarded");

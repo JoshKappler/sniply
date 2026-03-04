@@ -1,22 +1,5 @@
-export interface User {
-  id: string;
-  username: string;
-  password?: string; // never returned from API — stored only in DB
-  name: string;
-  role: "customer" | "pro";
-  profileId?: string; // for pros — links to Barber.id in barbers.json
-  avatar?: string;    // base64 data URL
-  // Customer preference fields:
-  hairType?: string;
-  hairSubtype?: string;
-  hairTexture?: string;
-  hairColor?: string;
-  stylePrefs?: string[];
-  concerns?: string[];
-  notes?: string;
-  gender?: string;
-  location?: string;
-}
+import type { User } from "@/lib/types";
+export type { User };
 
 // ── Session (localStorage only) ───────────────────────────────────────────────
 

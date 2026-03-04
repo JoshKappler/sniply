@@ -783,7 +783,9 @@ function MessageModal({ barber, currentUser, onClose }: MessageModalProps) {
         await writeCustomerThreadRef(currentUser.id, barber.id, barber.name, barber.profileImage, found.id, found.preview, found.timestamp, false);
       }
       setThread(found);
-    }).catch(() => {});
+    }).catch(() => {
+      setSendError("Couldn't connect to chat. Please refresh and try again.");
+    });
   }, [barber, currentUser]);
 
   // Auto-scroll to bottom when messages change
@@ -811,6 +813,7 @@ function MessageModal({ barber, currentUser, onClose }: MessageModalProps) {
     void apiGetThreads(barber.id).then(async (threads) => {
       const idx = threads.findIndex((t) => t.id === thread.id);
       if (idx >= 0) threads[idx] = updatedThread;
+      else threads.push(updatedThread);
       await apiUpdateThreads(barber.id, threads);
       await writeCustomerThreadRef(currentUser.id, barber.id, barber.name, barber.profileImage, thread.id, msg.text, new Date().toISOString(), false);
     }).catch(() => {
@@ -894,7 +897,7 @@ function MessageModal({ barber, currentUser, onClose }: MessageModalProps) {
           />
           <button
             onClick={sendMessage}
-            disabled={!draftText.trim()}
+            disabled={!draftText.trim() || !thread}
             className="w-10 h-10 rounded-xl bg-[var(--color-primary)] flex items-center justify-center shrink-0 disabled:opacity-40 hover:bg-[#243A6F] transition-colors"
           >
             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

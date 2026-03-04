@@ -45,6 +45,7 @@ export default function MessagesPage() {
   const [loadedThreads, setLoadedThreads] = useState<LoadedThread[]>([]);
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
   const [replyText, setReplyText] = useState("");
+  const [sendError, setSendError] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const currentUserRef = useRef<{ id: string; name: string } | null>(null);
 
@@ -121,6 +122,7 @@ export default function MessagesPage() {
   const selectThread = (idx: number) => {
     setSelectedIdx(idx);
     setReplyText("");
+    setSendError("");
     void markAsRead(idx);
   };
 
@@ -156,16 +158,26 @@ export default function MessagesPage() {
 
     // Persist to API
     void (async () => {
-      const threads = await apiGetThreads(item.ref.proProfileId);
-      const tIdx = threads.findIndex((t) => t.id === item.thread.id);
-      if (tIdx >= 0) threads[tIdx] = updatedThread;
-      await apiUpdateThreads(item.ref.proProfileId, threads);
+      try {
+        const threads = await apiGetThreads(item.ref.proProfileId);
+        const tIdx = threads.findIndex((t) => t.id === item.thread.id);
+        if (tIdx >= 0) threads[tIdx] = updatedThread;
+        else threads.push(updatedThread);
+        await apiUpdateThreads(item.ref.proProfileId, threads);
 
-      const refs = await apiGetCustomerThreads(user.id);
-      const rIdx = refs.findIndex((r) => r.proProfileId === item.ref.proProfileId);
-      if (rIdx >= 0) {
-        refs[rIdx] = { ...refs[rIdx], lastMessage: msg.text, timestamp: new Date().toISOString(), unread: false };
-        await apiUpdateCustomerThreads(user.id, refs);
+        const refs = await apiGetCustomerThreads(user.id);
+        const rIdx = refs.findIndex((r) => r.proProfileId === item.ref.proProfileId);
+        if (rIdx >= 0) {
+          refs[rIdx] = { ...refs[rIdx], lastMessage: msg.text, timestamp: new Date().toISOString(), unread: false };
+          await apiUpdateCustomerThreads(user.id, refs);
+        }
+      } catch {
+        // Roll back optimistic update
+        setLoadedThreads((prev) =>
+          prev.map((lt, i) => i === selectedIdx ? { ...lt, thread: item.thread, ref: item.ref } : lt)
+        );
+        setReplyText(msg.text);
+        setSendError("Message couldn't be sent. Please try again.");
       }
     })();
   };
@@ -302,12 +314,15 @@ export default function MessagesPage() {
                 </div>
 
                 {/* Reply input */}
+                {sendError && (
+                  <p className="px-4 pb-1 text-xs text-red-500 shrink-0">{sendError}</p>
+                )}
                 <div className="px-4 py-3 border-t border-gray-100 flex items-center gap-2 shrink-0">
                   <input
                     type="text"
                     placeholder={`Message ${selectedItem.ref.proName.split(" ")[0]}…`}
                     value={replyText}
-                    onChange={(e) => setReplyText(e.target.value)}
+                    onChange={(e) => { setReplyText(e.target.value); if (sendError) setSendError(""); }}
                     onKeyDown={(e) => { if (e.key === "Enter") sendMessage(); }}
                     className="flex-1 border border-gray-200 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20"
                   />
