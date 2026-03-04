@@ -282,12 +282,11 @@ function BookingModal({
     return null;
   };
 
-  const canConfirm = !!selectedService && !existingActiveBooking;
+  const canConfirm = !!selectedService;
 
   const handleConfirm = async () => {
     if (!canConfirm || !selectedSlot || isConfirming) return;
     if (!user) { setValidationError("Please sign in to complete your booking."); return; }
-    if (existingActiveBooking) return; // guard against race
     const error = validateSlot();
     if (error) { setValidationError(error); return; }
     setValidationError(null);
@@ -362,35 +361,23 @@ function BookingModal({
               Done
             </button>
           </div>
-        ) : existingActiveBooking ? (
-          <div className="px-6 py-6">
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-5">
-              <div className="flex items-start gap-3">
-                <svg className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <div>
-                  <p className="text-sm font-semibold text-amber-800 mb-1">You already have an upcoming appointment</p>
-                  <p className="text-sm text-amber-700">
-                    {existingActiveBooking.service} · {
-                      (() => {
-                        const d = new Date(existingActiveBooking.date);
-                        return `${DAY_NAMES[d.getDay()]}, ${MONTH_NAMES[d.getMonth()]} ${d.getDate()}`;
-                      })()
-                    } at {existingActiveBooking.time}
-                  </p>
-                  <p className="text-xs text-amber-600 mt-2">
-                    You can book another appointment once this one has passed.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <button onClick={onClose} className="btn-primary w-full" style={{ height: "44px" }}>
-              Got it
-            </button>
-          </div>
         ) : (
           <div className="px-6 py-6 space-y-5">
+            {existingActiveBooking && (
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-start gap-2.5">
+                <svg className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p className="text-xs text-amber-700">
+                  You already have an upcoming appointment ({existingActiveBooking.service} · {
+                    (() => {
+                      const d = new Date(existingActiveBooking.date);
+                      return `${DAY_NAMES[d.getDay()]}, ${MONTH_NAMES[d.getMonth()]} ${d.getDate()}`;
+                    })()
+                  } at {existingActiveBooking.time}). You can still book another date.
+                </p>
+              </div>
+            )}
             {selectedSlot && (
               <div className="bg-gray-50 rounded-xl px-4 py-3 flex items-center gap-3">
                 <svg className="w-5 h-5 text-[var(--color-primary)] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -767,6 +754,7 @@ interface MessageModalProps {
 function MessageModal({ barber, currentUser, onClose }: MessageModalProps) {
   const [thread, setThread] = useState<MessageThread | null>(null);
   const [draftText, setDraftText] = useState("");
+  const [sendError, setSendError] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Load or create thread on mount
@@ -819,11 +807,17 @@ function MessageModal({ barber, currentUser, onClose }: MessageModalProps) {
     };
     setThread(updatedThread);
     setDraftText("");
+    setSendError("");
     void apiGetThreads(barber.id).then(async (threads) => {
       const idx = threads.findIndex((t) => t.id === thread.id);
       if (idx >= 0) threads[idx] = updatedThread;
       await apiUpdateThreads(barber.id, threads);
       await writeCustomerThreadRef(currentUser.id, barber.id, barber.name, barber.profileImage, thread.id, msg.text, new Date().toISOString(), false);
+    }).catch(() => {
+      // Roll back optimistic update so the user knows the message wasn't saved
+      setThread(thread);
+      setDraftText(msg.text);
+      setSendError("Message couldn't be sent. Please try again.");
     });
   };
 
@@ -883,6 +877,9 @@ function MessageModal({ barber, currentUser, onClose }: MessageModalProps) {
           )}
           <div ref={messagesEndRef} />
         </div>
+
+        {/* Send error */}
+        {sendError && <p className="px-4 pb-1 text-xs text-red-500">{sendError}</p>}
 
         {/* Input row */}
         <div className="border-t border-gray-100 px-4 py-3 flex gap-2 items-end shrink-0">

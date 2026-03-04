@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, ChangeEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getCurrentUser, setCurrentUser, type User } from "@/lib/auth";
-import { apiRegisterUser, apiUpdateUser, apiCreateBarber, apiUpdateBarber, apiGetBarber, apiLogin } from "@/lib/api";
+import { apiRegisterUser, apiUpdateUser, apiCreateBarber, apiUpdateBarber, apiGetBarber, apiGetUser, apiLogin } from "@/lib/api";
 import { CustomSelect } from "@/components/CustomSelect";
 import Navbar from "@/components/Navbar";
 
@@ -127,8 +127,9 @@ export default function ProfessionalProfileSetupPage() {
   useEffect(() => {
     const cu = getCurrentUser();
     setExistingUser(cu);
-    if (cu?.profileId) {
-      apiGetBarber(cu.profileId).then((p) => {
+
+    const loadBarberProfile = (profileId: string) => {
+      apiGetBarber(profileId).then((p) => {
         setExistingId(p.id);
         const nameParts = (p.name ?? "").split(" ");
         setFirstName(nameParts[0] ?? "");
@@ -153,8 +154,23 @@ export default function ProfessionalProfileSetupPage() {
             price: String(s.price ?? ""), duration: String(s.duration ?? ""),
           })));
         }
-        if (p.profileImage?.startsWith("data:")) setProfilePhoto(p.profileImage);
+        if (p.profileImage) setProfilePhoto(p.profileImage);
       }).catch(() => {}).finally(() => setLoading(false));
+    };
+
+    if (cu?.profileId) {
+      loadBarberProfile(cu.profileId);
+    } else if (cu?.id) {
+      // localStorage may be stale — fetch fresh user from DB to check for profileId
+      apiGetUser(cu.id).then((fresh) => {
+        if (fresh.profileId) {
+          setCurrentUser({ ...cu, profileId: fresh.profileId });
+          setExistingUser({ ...cu, profileId: fresh.profileId });
+          loadBarberProfile(fresh.profileId);
+        } else {
+          setLoading(false);
+        }
+      }).catch(() => setLoading(false));
     } else {
       setLoading(false);
     }
@@ -273,7 +289,7 @@ export default function ProfessionalProfileSetupPage() {
 
     setIsSubmitting(true);
     try {
-      const existingBarberIdForEdit = existingId;
+      const existingBarberIdForEdit = existingId ?? existingUser?.profileId ?? null;
       const validServices = services
         .filter(s => s.name.trim() && s.price.trim())
         .map(s => ({ name: s.name.trim(), description: s.description.trim(), price: parseFloat(s.price) || 0, duration: parseInt(s.duration) || 30 }));
@@ -303,32 +319,57 @@ export default function ProfessionalProfileSetupPage() {
         const patch = { name: profileData.name, profileId: existingBarberIdForEdit, avatar: profilePhoto ?? existingUser!.avatar };
         const updated = await apiUpdateUser(existingUser!.id, patch);
         setCurrentUser({ ...existingUser!, ...updated });
-      } else {
-        // Server generates the barber ID — use it in the user record
+      } else if (!isEditing) {
+        // Brand-new user: register + login FIRST so the session cookie is set,
+        // then create barber (POST /api/barbers requires authentication)
+        let newUser: User;
+        try {
+          newUser = await apiRegisterUser({
+            username: username.trim(), password,
+            name: profileData.name, role: "pro", avatar: profilePhoto ?? undefined,
+          });
+          // Registration already sets a session cookie; login confirms it
+          await apiLogin(username.trim(), password);
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : "Registration failed";
+          setErrors({ username: msg });
+          setStep(1);
+          return;
+        }
+
         let createdBarberId: string;
         try {
           const createdBarber = await apiCreateBarber(profileData);
           createdBarberId = createdBarber.id;
         } catch (err) {
           const msg = err instanceof Error ? err.message : "Profile creation failed";
-          setErrors({ username: msg });
-          setStep(1);
+          setSubmitError(msg);
           return;
         }
 
+        // Link the barber profile to the user record
         try {
-          const newUser = await apiRegisterUser({
-            username: username.trim(), password,
-            name: profileData.name, role: "pro", profileId: createdBarberId, avatar: profilePhoto ?? undefined,
-          });
-          // Establish the server-side session cookie so authenticated API calls work
-          await apiLogin(username.trim(), password);
-          setCurrentUser(newUser);
+          const updatedUser = await apiUpdateUser(newUser.id, { profileId: createdBarberId });
+          setCurrentUser({ ...newUser, ...updatedUser });
+        } catch {
+          setCurrentUser({ ...newUser, profileId: createdBarberId });
+        }
+      } else {
+        // Logged-in user who doesn't have a barber profile yet (recovery path)
+        let createdBarberId: string;
+        try {
+          const createdBarber = await apiCreateBarber(profileData);
+          createdBarberId = createdBarber.id;
         } catch (err) {
-          const msg = err instanceof Error ? err.message : "Registration failed";
-          setErrors({ username: msg });
-          setStep(1);
+          const msg = err instanceof Error ? err.message : "Profile creation failed";
+          setSubmitError(msg);
           return;
+        }
+        try {
+          const updatedUser = await apiUpdateUser(existingUser!.id, { profileId: createdBarberId, name: profileData.name, avatar: profilePhoto ?? existingUser!.avatar });
+          setCurrentUser({ ...existingUser!, ...updatedUser });
+        } catch {
+          setCurrentUser({ ...existingUser!, profileId: createdBarberId });
         }
       }
 

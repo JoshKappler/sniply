@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { Stars } from "@/components/Stars";
 import { useToast } from "@/components/Toast";
-import { getCurrentUser, type User } from "@/lib/auth";
-import { apiGetBarber, apiUpdateBarber, apiGetBookings, apiUpdateBooking, apiGetReviews, apiReplyToReview, apiGetThreads, apiUpdateThreads, apiGetAvailability, apiUpdateAvailability, apiGetBusinessHours, apiUpdateBusinessHours } from "@/lib/api";
+import { getCurrentUser, setCurrentUser as persistCurrentUser, type User } from "@/lib/auth";
+import { apiGetBarber, apiGetUser, apiUpdateBarber, apiGetBookings, apiUpdateBooking, apiGetReviews, apiReplyToReview, apiGetThreads, apiUpdateThreads, apiGetAvailability, apiUpdateAvailability, apiGetBusinessHours, apiUpdateBusinessHours } from "@/lib/api";
 
 type TabKey = "profile" | "services" | "appointments" | "messages" | "analytics";
 
@@ -471,6 +471,7 @@ export default function ProDashboardPage() {
   // ── New scheduling state ───────────────────────────────────────────────────
   const [weekStart, setWeekStart] = useState<Date>(() => getMondayOf(new Date()));
   const [schedData, setSchedData] = useState<Record<string, TimeBlock[]>>({});
+  const [schedLoaded, setSchedLoaded] = useState(false);
   const [dragOp, setDragOp] = useState<DragOp>(null);
   const [activeBlock, setActiveBlock] = useState<{ dateKey: string; blockId: string } | null>(null);
 
@@ -527,7 +528,8 @@ export default function ProDashboardPage() {
   tlBoundsRef.current = tlBounds;
 
   // Messages
-  const [threads, setThreads] = useState<MessageThread[]>(INITIAL_THREADS);
+  const [threads, setThreads] = useState<MessageThread[]>([]);
+  const [threadsLoaded, setThreadsLoaded] = useState(false);
   const [selectedThread, setSelectedThread] = useState<MessageThread | null>(null);
   const [replyText, setReplyText] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -552,8 +554,29 @@ export default function ProDashboardPage() {
     setCurrentUser(user);
 
     const profileId = user?.profileId;
-    if (!profileId) { setLoading(false); return; }
+    if (!profileId) {
+      // localStorage may be stale — fetch fresh user from DB
+      if (user?.id) {
+        apiGetUser(user.id).then((fresh) => {
+          if (fresh.profileId) {
+            const updated = { ...user, profileId: fresh.profileId };
+            persistCurrentUser(updated);
+            setCurrentUser(updated);
+            loadDashboard(fresh.profileId);
+          } else {
+            setLoading(false);
+          }
+        }).catch(() => setLoading(false));
+      } else {
+        setLoading(false);
+      }
+      return;
+    }
 
+    loadDashboard(profileId);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  function loadDashboard(profileId: string) {
     // Load pro profile from API
     apiGetBarber(profileId).then(barber => {
       const prof = barber as ProProfile;
@@ -595,15 +618,18 @@ export default function ProDashboardPage() {
       // Availability + business hours from API
       apiGetAvailability(profileId).then((slots) => {
         if (Object.keys(slots).length > 0) setSchedData(migrateToDateKeyed(slots as Record<string, import("@/lib/types").TimeBlock[]>));
-      }).catch(() => {});
+        setSchedLoaded(true);
+      }).catch(() => { setSchedLoaded(true); });
       apiGetBusinessHours(profileId).then((bh) => {
         if (bh) setBusinessHours(bh);
       }).catch(() => {});
-      apiGetThreads(profileId).then((t) => setThreads(t)).catch(() => {});
+      apiGetThreads(profileId)
+        .then((t) => { setThreads(t); setThreadsLoaded(true); })
+        .catch(() => { setThreadsLoaded(true); });
 
       setLoading(false);
     }).catch(() => setLoading(false));
-  }, [router]);
+  }
 
   // Reset colRefs when week changes
   useEffect(() => {
@@ -616,13 +642,14 @@ export default function ProDashboardPage() {
   // Persist threads to API whenever they change (debounced 800ms)
   useEffect(() => {
     const pid = profile?.id;
-    if (!pid || threads.length === 0) return;
+    if (!pid || !threadsLoaded) return;
     const t = setTimeout(() => void apiUpdateThreads(pid, threads), 800);
     return () => clearTimeout(t);
-  }, [threads, profile?.id]);
+  }, [threads, threadsLoaded, profile?.id]);
 
   // ── Auto-save availability whenever schedData changes (800ms debounce) ──────
   useEffect(() => {
+    if (!schedLoaded) return;
     setAutoSaveStatus("pending");
     const t = setTimeout(() => {
       const prof = profileRef.current;
@@ -635,7 +662,7 @@ export default function ProDashboardPage() {
       }).catch(() => setAutoSaveStatus("idle"));
     }, 800);
     return () => clearTimeout(t);
-  }, [schedData]);
+  }, [schedData, schedLoaded]);
 
   // ── Auto-save business hours whenever they change ──────────────────────────
   useEffect(() => {
@@ -2135,7 +2162,21 @@ export default function ProDashboardPage() {
               <h1 className="font-heading font-bold text-gray-900 text-2xl mb-6">Messages</h1>
               <div className="flex gap-4 h-[560px]">
                 <div className={`${selectedThread ? "hidden md:flex" : "flex"} flex-col w-full md:w-[280px] shrink-0 bg-white border border-[var(--color-primary)]/12 rounded-xl overflow-hidden`}>
-                  {threads.map(thread => (
+                  {!threadsLoaded ? (
+                    [0, 1, 2].map(i => (
+                      <div key={i} className="flex items-start gap-3 p-4 border-b last:border-b-0 border-gray-100 animate-pulse">
+                        <div className="w-9 h-9 rounded-full bg-gray-200 shrink-0 mt-0.5" />
+                        <div className="flex-1 min-w-0 space-y-2 pt-1">
+                          <div className="h-3 bg-gray-200 rounded w-3/4" />
+                          <div className="h-2.5 bg-gray-100 rounded w-full" />
+                        </div>
+                      </div>
+                    ))
+                  ) : threads.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-full p-8 text-center text-gray-400">
+                      <p className="text-sm">No messages yet</p>
+                    </div>
+                  ) : threads.map(thread => (
                     <button key={thread.id}
                       onClick={() => { setSelectedThread(thread); setThreads(p => p.map(t => t.id === thread.id ? { ...t, unread: false } : t)); }}
                       className={`flex items-start gap-3 p-4 border-b last:border-b-0 border-gray-100 text-left hover:bg-gray-50 transition-colors ${selectedThread?.id === thread.id ? "bg-blue-50" : ""}`}>

@@ -207,7 +207,7 @@ export default function SettingsPage() {
 
     // Mark user as deleted via API (soft delete by clearing key fields)
     try {
-      await apiUpdateUser(user.id, { username: `deleted-${user.id}`, password: "" });
+      await apiUpdateUser(user.id, { username: `deleted-${user.id}` });
     } catch (err) {
       console.error("sniply/settings: failed to soft-delete user via API", err);
       addToast("Failed to delete account. Please try again.");
