@@ -280,70 +280,189 @@ export default function HomePage() {
           </section>
         )}
 
-        {/* ── How it works ── */}
+        {/* ── Built for both sides ── */}
+        {userRole !== "pro" && (
         <section className="section-bg-gradient" style={{ borderTop: "1px solid rgba(var(--color-primary-rgb),0.08)", background: "linear-gradient(180deg, var(--color-section-bg) 0%, var(--color-page-bg) 100%)" }}>
           <div className="max-w-[1000px] mx-auto px-6 py-20">
-            <div className="text-center mb-14">
-              <span
-                className="inline-block text-xs font-bold uppercase tracking-[0.2em] mb-4"
-                style={{ color: "rgba(var(--color-primary-rgb),0.55)" }}
-              >
-                How Sniply Works
-              </span>
+            <div className="text-center mb-12">
+              <div className="flex items-center justify-center gap-2 mb-3">
+                <span className="w-6 h-px" style={{ background: "rgba(var(--color-primary-rgb),0.35)" }} />
+                <span className="text-xs font-bold uppercase tracking-[0.18em]" style={{ color: "rgba(var(--color-primary-rgb),0.6)" }}>
+                  Built for both sides
+                </span>
+                <span className="w-6 h-px" style={{ background: "rgba(var(--color-primary-rgb),0.35)" }} />
+              </div>
+              <h2 className="font-heading font-bold text-gray-900 text-3xl md:text-4xl" style={{ letterSpacing: "-0.02em" }}>
+                One platform. Two powerful experiences.
+              </h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {[
-                {
-                  step: "01",
-                  icon: (
-                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                  ),
-                  title: "Filter by specialty",
-                  desc: "Find pros who specialize in your hair type and preferred styles — curly, locs, fades, color, and more.",
-                },
-                {
-                  step: "02",
-                  icon: (
-                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                  ),
-                  title: "Browse their portfolio",
-                  desc: "See real work before you commit — no surprises. Every pro showcases their best cuts and styles.",
-                },
-                {
-                  step: "03",
-                  icon: (
-                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                  ),
-                  title: "Book instantly",
-                  desc: "Connect directly with your chosen pro and lock in your appointment in seconds.",
-                },
-              ].map(({ step, icon, title, desc }) => (
-                <div
-                  key={step}
-                  className="relative rounded-2xl p-8 overflow-hidden transition-all duration-300 hover:-translate-y-1 bg-white how-it-works-card"
-                >
-                  {/* Icon with gradient bg */}
-                  <div
-                    className="w-14 h-14 rounded-2xl flex items-center justify-center text-white mb-6"
-                    style={{ background: "linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%)", boxShadow: "0 4px 16px rgba(var(--color-primary-rgb),0.25)" }}
-                  >
-                    {icon}
-                  </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-                  <h3 className="font-heading font-bold text-gray-900 text-xl mb-2.5">{title}</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
+              {/* ── For Clients ── */}
+              <div
+                className="rounded-2xl p-8 relative overflow-hidden"
+                style={{
+                  background: "white",
+                  border: "1px solid rgba(var(--color-primary-rgb),0.12)",
+                  boxShadow: "0 4px 28px rgba(var(--color-primary-rgb),0.07)",
+                }}
+              >
+                {/* Top accent bar */}
+                <div
+                  className="absolute top-0 left-0 right-0 h-[3px] rounded-t-2xl"
+                  style={{ background: "linear-gradient(90deg, var(--color-primary), var(--color-primary-light))" }}
+                />
+
+                {/* Card header */}
+                <div className="flex items-center gap-3 mb-8">
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0"
+                    style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-light))", boxShadow: "0 4px 12px rgba(var(--color-primary-rgb),0.28)" }}
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "var(--color-primary)" }}>For Clients</span>
+                    <p className="font-heading font-bold text-gray-900 text-lg leading-tight">Find your perfect match</p>
+                  </div>
                 </div>
-              ))}
+
+                {/* Features */}
+                <div className="space-y-5">
+                  {[
+                    {
+                      icon: <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>,
+                      label: "Smart Matching",
+                      desc: "Get paired with pros who specialize in your exact hair type and style goals.",
+                    },
+                    {
+                      icon: <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
+                      label: "Map Discovery",
+                      desc: "Search by location and radius — find top-rated pros in your area on an interactive map.",
+                    },
+                    {
+                      icon: <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>,
+                      label: "Verified Reviews",
+                      desc: "Read real client feedback and browse portfolios before committing to any booking.",
+                    },
+                  ].map(({ icon, label, desc }) => (
+                    <div key={label} className="flex items-start gap-3.5">
+                      <div
+                        className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
+                        style={{ background: "rgba(var(--color-primary-rgb),0.08)", color: "var(--color-primary)" }}
+                      >
+                        {icon}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-900 text-sm">{label}</p>
+                        <p className="text-gray-500 text-sm leading-relaxed mt-0.5">{desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-8 pt-6" style={{ borderTop: "1px solid rgba(var(--color-primary-rgb),0.08)" }}>
+                  <Link
+                    href="/browse"
+                    className="inline-flex items-center gap-1.5 text-sm font-semibold transition-opacity hover:opacity-70"
+                    style={{ color: "var(--color-primary)" }}
+                  >
+                    Start browsing
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                </div>
+              </div>
+
+              {/* ── For Pros ── */}
+              <div
+                className="rounded-2xl p-8 relative overflow-hidden"
+                style={{
+                  background: "linear-gradient(145deg, #111827 0%, #1e2a3a 100%)",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                  boxShadow: "0 4px 28px rgba(0,0,0,0.22)",
+                }}
+              >
+                {/* Subtle dot grid */}
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.055) 1px, transparent 1px)",
+                    backgroundSize: "22px 22px",
+                  }}
+                />
+
+                {/* Card header */}
+                <div className="relative flex items-center gap-3 mb-8">
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                    style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.12)" }}
+                  >
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-white/50">For Pros</span>
+                    <p className="font-heading font-bold text-white text-lg leading-tight">Grow your business</p>
+                  </div>
+                </div>
+
+                {/* Features */}
+                <div className="relative space-y-5">
+                  {[
+                    {
+                      icon: <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>,
+                      label: "Full Dashboard",
+                      desc: "Manage your services, drag-and-drop schedule, and client conversations in one place.",
+                    },
+                    {
+                      icon: <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>,
+                      label: "Business Analytics",
+                      desc: "Track your bookings, revenue, and best-performing services with a real-time dashboard.",
+                    },
+                    {
+                      icon: <svg className="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>,
+                      label: "Direct Messaging",
+                      desc: "Build lasting client relationships with a built-in messaging thread for every customer.",
+                    },
+                  ].map(({ icon, label, desc }) => (
+                    <div key={label} className="flex items-start gap-3.5">
+                      <div
+                        className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 text-white"
+                        style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.09)" }}
+                      >
+                        {icon}
+                      </div>
+                      <div>
+                        <p className="font-semibold text-white text-sm">{label}</p>
+                        <p className="text-white/45 text-sm leading-relaxed mt-0.5">{desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="relative mt-8 pt-6" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+                  <Link
+                    href="/signup/professional"
+                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-white/60 hover:text-white transition-colors"
+                  >
+                    Join as a pro
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                </div>
+              </div>
+
             </div>
           </div>
         </section>
+        )}
 
         {/* ── Pre-footer CTA (non-pro) ── */}
         {userRole !== "pro" && (
