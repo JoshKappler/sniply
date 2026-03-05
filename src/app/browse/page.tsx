@@ -27,7 +27,7 @@ async function geocodeQuery(
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 5000);
   try {
-    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1&addressdetails=0`;
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1&addressdetails=0&countrycodes=us`;
     const res = await fetch(url, {
       headers: { "Accept-Language": "en-US,en;q=0.9" },
       signal: controller.signal,

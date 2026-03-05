@@ -5,6 +5,10 @@ import { useRouter } from "next/navigation";
 import { getCurrentUser, setCurrentUser, type User } from "@/lib/auth";
 import { apiRegisterUser, apiUpdateUser, apiLogin } from "@/lib/api";
 import { CustomSelect } from "@/components/CustomSelect";
+import { HairTypeGrid } from "@/components/HairTypeGrid";
+import { HairTextureGrid } from "@/components/HairTextureGrid";
+import { HairColorGrid } from "@/components/HairColorGrid";
+import { TagGrid } from "@/components/TagGrid";
 import Navbar from "@/components/Navbar";
 
 const STYLE_PREFERENCES = [
@@ -18,14 +22,6 @@ const HAIR_CONCERNS = [
   "Scalp Issues", "Growth", "Frizz", "Heat Damage",
 ];
 
-const HAIR_TYPE_OPTIONS = [
-  { value: "straight", label: "Straight (Type 1)" },
-  { value: "wavy", label: "Wavy (Type 2)" },
-  { value: "curly", label: "Curly (Type 3)" },
-  { value: "coily", label: "Coily (Type 4)" },
-  { value: "kinky", label: "Kinky" },
-  { value: "unsure", label: "Not sure" },
-];
 
 const HAIR_SUBTYPE_OPTIONS: Record<string, { value: string; label: string }[]> = {
   straight: [
@@ -54,23 +50,6 @@ const HAIR_SUBTYPE_OPTIONS: Record<string, { value: string; label: string }[]> =
     { value: "4c", label: "4c — Tight Z-coils, densely packed" },
   ],
 };
-
-const HAIR_TEXTURE_OPTIONS = [
-  { value: "fine", label: "Fine" },
-  { value: "medium", label: "Medium" },
-  { value: "thick", label: "Thick" },
-  { value: "unsure", label: "Not sure" },
-];
-
-const HAIR_COLOR_OPTIONS = [
-  { value: "black", label: "Natural / Black" },
-  { value: "brown", label: "Brown" },
-  { value: "blonde", label: "Blonde" },
-  { value: "red", label: "Red" },
-  { value: "dyed", label: "Dyed / Colored" },
-  { value: "gray", label: "Gray / Silver" },
-  { value: "other", label: "Other" },
-];
 
 const GENDER_OPTIONS = [
   { value: "male", label: "Male" },
@@ -155,7 +134,6 @@ export default function CustomerProfileSetupPage() {
 
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const [referencePhotos, setReferencePhotos] = useState<(string | null)[]>(Array(6).fill(null));
-  const [showMoreStyles, setShowMoreStyles] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitError, setSubmitError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -163,7 +141,6 @@ export default function CustomerProfileSetupPage() {
   const profilePhotoRef = useRef<HTMLInputElement>(null);
   const refPhotoRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  const visibleStyles = showMoreStyles ? STYLE_PREFERENCES : STYLE_PREFERENCES.slice(0, 12);
   const subtypeOptions = HAIR_SUBTYPE_OPTIONS[form.hairType] ?? [];
 
   useEffect(() => {
@@ -494,8 +471,8 @@ export default function CustomerProfileSetupPage() {
             <h2 className="text-xl font-bold text-gray-900 mb-6">Your Hair Profile <span className="text-[#EF4444] font-bold">*</span></h2>
             <div className="space-y-4">
               <div id="hairType">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Hair Type <span className="text-[#EF4444]">*</span></label>
-                <CustomSelect value={form.hairType} onChange={v => updateField("hairType", v)} options={HAIR_TYPE_OPTIONS} placeholder="Select your hair type..." error={!!errors.hairType} />
+                <label className="block text-sm font-medium text-gray-700 mb-3">Hair Type <span className="text-[#EF4444]">*</span></label>
+                <HairTypeGrid value={form.hairType} onChange={v => { updateField("hairType", v); updateField("hairSubtype", ""); }} error={!!errors.hairType} />
                 {errors.hairType && <p className="text-xs text-[#EF4444] mt-1">{errors.hairType}</p>}
               </div>
               {subtypeOptions.length > 0 && (
@@ -506,12 +483,12 @@ export default function CustomerProfileSetupPage() {
               )}
               <div id="hairTexture">
                 <label className="block text-sm font-medium text-gray-700 mb-2">Hair Texture <span className="text-[#EF4444]">*</span></label>
-                <CustomSelect value={form.hairTexture} onChange={v => updateField("hairTexture", v)} options={HAIR_TEXTURE_OPTIONS} placeholder="Select your hair texture..." error={!!errors.hairTexture} />
+                <HairTextureGrid value={form.hairTexture} onChange={v => updateField("hairTexture", v)} error={!!errors.hairTexture} />
                 {errors.hairTexture && <p className="text-xs text-[#EF4444] mt-1">{errors.hairTexture}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Current Hair Color</label>
-                <CustomSelect value={form.hairColor} onChange={v => updateField("hairColor", v)} options={HAIR_COLOR_OPTIONS} placeholder="Select your hair color..." />
+                <HairColorGrid value={form.hairColor} onChange={v => updateField("hairColor", v)} />
               </div>
             </div>
           </section>
@@ -520,29 +497,14 @@ export default function CustomerProfileSetupPage() {
           <section className="mb-10">
             <h2 className="text-xl font-bold text-gray-900 mb-2">Style Preferences</h2>
             <p className="text-sm text-gray-500 mb-5">What styles are you interested in? (Select all that apply)</p>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-2 md:gap-x-4 gap-y-1">
-              {visibleStyles.map(style => (
-                <label key={style} className="flex items-center gap-2.5 py-2 px-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                  <input type="checkbox" checked={form.stylePrefs.includes(style)} onChange={() => toggleArray("stylePrefs", style)} className="w-5 h-5 rounded border-gray-300 text-[var(--color-primary)] accent-[var(--color-primary)] cursor-pointer" />
-                  <span className="text-sm text-gray-700">{style}</span>
-                </label>
-              ))}
-            </div>
-            <button type="button" onClick={() => setShowMoreStyles(!showMoreStyles)} className="mt-3 text-sm text-[var(--color-primary)] font-medium hover:underline">
-              {showMoreStyles ? "− Show Less" : "+ Show More"}
-            </button>
+            <TagGrid items={STYLE_PREFERENCES} value={form.stylePrefs} onChange={v => setForm(prev => ({ ...prev, stylePrefs: v }))} />
           </section>
 
           <hr className="border-gray-100 mb-10" />
           <section className="mb-10">
             <h2 className="text-xl font-bold text-gray-900 mb-2">Hair Concerns <span className="text-gray-400 font-normal text-base">(Optional)</span></h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-2 md:gap-x-4 gap-y-1 mt-4">
-              {HAIR_CONCERNS.map(concern => (
-                <label key={concern} className="flex items-center gap-2.5 py-2 px-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                  <input type="checkbox" checked={form.concerns.includes(concern)} onChange={() => toggleArray("concerns", concern)} className="w-5 h-5 rounded border-gray-300 text-[var(--color-primary)] accent-[var(--color-primary)] cursor-pointer" />
-                  <span className="text-sm text-gray-700">{concern}</span>
-                </label>
-              ))}
+            <div className="mt-4">
+              <TagGrid items={HAIR_CONCERNS} value={form.concerns} onChange={v => setForm(prev => ({ ...prev, concerns: v }))} />
             </div>
           </section>
 
@@ -688,8 +650,8 @@ export default function CustomerProfileSetupPage() {
             </div>
             <div className="space-y-4">
               <div id="hairType">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Hair Type <span className="text-[#EF4444]">*</span></label>
-                <CustomSelect value={form.hairType} onChange={v => updateField("hairType", v)} options={HAIR_TYPE_OPTIONS} placeholder="Select your hair type..." error={!!errors.hairType} />
+                <label className="block text-sm font-medium text-gray-700 mb-3">Hair Type <span className="text-[#EF4444]">*</span></label>
+                <HairTypeGrid value={form.hairType} onChange={v => { updateField("hairType", v); updateField("hairSubtype", ""); }} error={!!errors.hairType} />
                 {errors.hairType && <p className="text-xs text-[#EF4444] mt-1">{errors.hairType}</p>}
               </div>
               {subtypeOptions.length > 0 && (
@@ -707,12 +669,12 @@ export default function CustomerProfileSetupPage() {
               )}
               <div id="hairTexture">
                 <label className="block text-sm font-medium text-gray-700 mb-2">Hair Texture <span className="text-[#EF4444]">*</span></label>
-                <CustomSelect value={form.hairTexture} onChange={v => updateField("hairTexture", v)} options={HAIR_TEXTURE_OPTIONS} placeholder="Select your hair texture..." error={!!errors.hairTexture} />
+                <HairTextureGrid value={form.hairTexture} onChange={v => updateField("hairTexture", v)} error={!!errors.hairTexture} />
                 {errors.hairTexture && <p className="text-xs text-[#EF4444] mt-1">{errors.hairTexture}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Current Hair Color</label>
-                <CustomSelect value={form.hairColor} onChange={v => updateField("hairColor", v)} options={HAIR_COLOR_OPTIONS} placeholder="Select your hair color..." />
+                <HairColorGrid value={form.hairColor} onChange={v => updateField("hairColor", v)} />
               </div>
             </div>
           </div>
@@ -729,17 +691,7 @@ export default function CustomerProfileSetupPage() {
             <div className="mb-8">
               <h3 className="text-base font-semibold text-gray-900 mb-1">Style Preferences</h3>
               <p className="text-sm text-gray-500 mb-4">What styles are you interested in? (Select all that apply)</p>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-x-2 md:gap-x-4 gap-y-1">
-                {visibleStyles.map(style => (
-                  <label key={style} className="flex items-center gap-2.5 py-2 px-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                    <input type="checkbox" checked={form.stylePrefs.includes(style)} onChange={() => toggleArray("stylePrefs", style)} className="w-5 h-5 rounded border-gray-300 text-[var(--color-primary)] accent-[var(--color-primary)] cursor-pointer" />
-                    <span className="text-sm text-gray-700">{style}</span>
-                  </label>
-                ))}
-              </div>
-              <button type="button" onClick={() => setShowMoreStyles(!showMoreStyles)} className="mt-3 text-sm text-[var(--color-primary)] font-medium hover:underline">
-                {showMoreStyles ? "− Show Less" : "+ Show More"}
-              </button>
+              <TagGrid items={STYLE_PREFERENCES} value={form.stylePrefs} onChange={v => setForm(prev => ({ ...prev, stylePrefs: v }))} />
             </div>
 
             <hr className="border-gray-100 mb-8" />
@@ -747,14 +699,7 @@ export default function CustomerProfileSetupPage() {
             <div>
               <h3 className="text-base font-semibold text-gray-900 mb-1">Hair Concerns <span className="text-gray-400 font-normal text-sm">(Optional)</span></h3>
               <p className="text-sm text-gray-500 mb-4">Any specific concerns you&rsquo;d like addressed?</p>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-x-2 md:gap-x-4 gap-y-1">
-                {HAIR_CONCERNS.map(concern => (
-                  <label key={concern} className="flex items-center gap-2.5 py-2 px-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                    <input type="checkbox" checked={form.concerns.includes(concern)} onChange={() => toggleArray("concerns", concern)} className="w-5 h-5 rounded border-gray-300 text-[var(--color-primary)] accent-[var(--color-primary)] cursor-pointer" />
-                    <span className="text-sm text-gray-700">{concern}</span>
-                  </label>
-                ))}
-              </div>
+              <TagGrid items={HAIR_CONCERNS} value={form.concerns} onChange={v => setForm(prev => ({ ...prev, concerns: v }))} />
             </div>
           </div>
         )}

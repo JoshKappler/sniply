@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { getCurrentUser, setCurrentUser, type User } from "@/lib/auth";
 import { apiRegisterUser, apiUpdateUser, apiCreateBarber, apiUpdateBarber, apiGetBarber, apiGetUser, apiLogin } from "@/lib/api";
 import { CustomSelect } from "@/components/CustomSelect";
+import { HairTypeGrid } from "@/components/HairTypeGrid";
+import { TagGrid } from "@/components/TagGrid";
 import Navbar from "@/components/Navbar";
 
 async function compressImage(file: File, maxDim = 800, quality = 0.80): Promise<string> {
@@ -51,13 +53,7 @@ const SPECIALTIES = [
 ];
 const HAIR_TYPES = ["Straight", "Wavy", "Curly", "Coily", "Kinky"];
 const LANGUAGES = ["English", "Spanish", "French", "Portuguese", "Mandarin", "Hindi", "Arabic"];
-const EXPERIENCE_OPTIONS = [
-  { value: "Under 1 year", label: "Under 1 year" },
-  { value: "1–2 years", label: "1–2 years" },
-  { value: "3–5 years", label: "3–5 years" },
-  { value: "5–10 years", label: "5–10 years" },
-  { value: "10+ years", label: "10+ years" },
-];
+const EXPERIENCE_LEVELS = ["Under 1 year", "1–2 years", "3–5 years", "5–10 years", "10+ years"];
 
 interface ServiceEntry { name: string; description: string; price: string; duration: string; }
 interface CredentialEntry { text: string; fileName?: string; fileData?: string; }
@@ -106,7 +102,6 @@ export default function ProfessionalProfileSetupPage() {
   // Specialties
   const [hairTypes, setHairTypes] = useState<string[]>([]);
   const [specialties, setSpecialties] = useState<string[]>([]);
-  const [showMoreSpecialties, setShowMoreSpecialties] = useState(false);
 
   // Services
   const [services, setServices] = useState<ServiceEntry[]>([{ name: "", description: "", price: "", duration: "" }]);
@@ -179,7 +174,6 @@ export default function ProfessionalProfileSetupPage() {
   }, []);
 
   const isEditing = !!existingUser;
-  const visibleSpecialties = showMoreSpecialties ? SPECIALTIES : SPECIALTIES.slice(0, 12);
 
   const toggleArr = (arr: string[], setArr: (v: string[]) => void, val: string) => {
     setArr(arr.includes(val) ? arr.filter(v => v !== val) : [...arr, val]);
@@ -510,17 +504,34 @@ export default function ProfessionalProfileSetupPage() {
         {errors.fullAddress && <p className="text-xs text-[#EF4444] mt-1">{errors.fullAddress}</p>}
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Years of Experience</label>
-        <CustomSelect value={experience} onChange={setExperience} options={EXPERIENCE_OPTIONS} placeholder="Select experience level..." />
+        <label className="block text-sm font-medium text-gray-700 mb-3">Years of Experience</label>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+          {EXPERIENCE_LEVELS.map(level => (
+            <button key={level} type="button"
+              onClick={() => setExperience(level)}
+              className={`p-3 rounded-xl border-2 text-sm font-medium text-center transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] ${
+                experience === level
+                  ? "border-[var(--color-primary)] bg-[var(--color-primary)]/5 text-[var(--color-primary)] shadow-sm"
+                  : "border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50 text-gray-700"
+              }`}>
+              {level}
+            </button>
+          ))}
+        </div>
       </div>
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-3">Languages Spoken</label>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1">
+        <div className="flex flex-wrap gap-2">
           {LANGUAGES.map(lang => (
-            <label key={lang} className="flex items-center gap-2.5 py-2 px-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-              <input type="checkbox" checked={languages.includes(lang)} onChange={() => toggleArr(languages, setLanguages, lang)} className="w-5 h-5 rounded border-gray-300 accent-[var(--color-primary)] cursor-pointer" />
-              <span className="text-sm text-gray-700">{lang}</span>
-            </label>
+            <button key={lang} type="button"
+              onClick={() => toggleArr(languages, setLanguages, lang)}
+              className={`px-4 py-1.5 rounded-full border-2 text-sm font-medium transition-all cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] ${
+                languages.includes(lang)
+                  ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-white shadow-sm"
+                  : "border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50 text-gray-700"
+              }`}>
+              {lang}
+            </button>
           ))}
         </div>
       </div>
@@ -531,28 +542,11 @@ export default function ProfessionalProfileSetupPage() {
     <>
       <div className="mb-6">
         <label className="block text-sm font-medium text-gray-700 mb-3">Hair Types Specialized In</label>
-        <div className="flex flex-wrap gap-2">
-          {HAIR_TYPES.map(ht => (
-            <button key={ht} type="button" onClick={() => toggleArr(hairTypes, setHairTypes, ht)}
-              className={`px-4 py-2 rounded-full text-sm font-medium border transition-all ${hairTypes.includes(ht) ? "bg-[var(--color-primary)] text-white border-[var(--color-primary)]" : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"}`}>
-              {ht}
-            </button>
-          ))}
-        </div>
+        <HairTypeGrid value="" onChange={() => {}} multiValue={hairTypes} onMultiChange={setHairTypes} />
       </div>
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-3">Specialties</label>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-1">
-          {visibleSpecialties.map(s => (
-            <label key={s} className="flex items-center gap-2.5 py-2 px-2 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-              <input type="checkbox" checked={specialties.includes(s)} onChange={() => toggleArr(specialties, setSpecialties, s)} className="w-5 h-5 rounded border-gray-300 accent-[var(--color-primary)] cursor-pointer" />
-              <span className="text-sm text-gray-700">{s}</span>
-            </label>
-          ))}
-        </div>
-        <button type="button" onClick={() => setShowMoreSpecialties(!showMoreSpecialties)} className="mt-3 text-sm text-[var(--color-primary)] font-medium hover:underline">
-          {showMoreSpecialties ? "− Show Less" : "+ Show More"}
-        </button>
+        <TagGrid items={SPECIALTIES} value={specialties} onChange={setSpecialties} />
       </div>
     </>
   );
