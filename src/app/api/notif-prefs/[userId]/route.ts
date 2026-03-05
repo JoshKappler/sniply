@@ -28,7 +28,12 @@ export async function PUT(
   if (!session) return unauthorized();
   if (session.userId !== userId) return forbidden();
 
-  const prefs = await req.json() as NotifPrefs;
+  let prefs: NotifPrefs;
+  try {
+    prefs = await req.json() as NotifPrefs;
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
+  }
 
   await pool().query(
     `INSERT INTO notif_prefs (user_id, booking_confirmations, booking_reminders, messages, promotions)

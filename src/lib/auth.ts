@@ -26,10 +26,13 @@ export function setCurrentUser(user: User): void {
   }
 }
 
-export function logout(): void {
+export async function logout(): Promise<void> {
   localStorage.removeItem("sniply_current_user");
   localStorage.removeItem("sniply_role");
   localStorage.removeItem("sniply_onboarded");
-  // Clear the server-side session cookie (fire-and-forget)
-  fetch("/api/auth/logout", { method: "POST" }).catch(() => undefined);
+  try {
+    await fetch("/api/auth/logout", { method: "POST" });
+  } catch {
+    // Session cookie may persist if network is unavailable, but local state is cleared
+  }
 }

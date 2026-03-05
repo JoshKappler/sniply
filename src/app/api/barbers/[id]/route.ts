@@ -33,7 +33,12 @@ export async function PUT(
   const existing = await queryOne(`SELECT * FROM barbers WHERE id = $1`, [id]);
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  const body = await req.json() as Partial<Barber>;
+  let body: Partial<Barber>;
+  try {
+    body = await req.json() as Partial<Barber>;
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
+  }
   const merged: Barber = { ...rowToBarber(existing), ...body };
   merged.rating = rowToBarber(existing).rating;
   merged.reviewCount = rowToBarber(existing).reviewCount;

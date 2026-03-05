@@ -79,7 +79,12 @@ export async function PUT(
   const existing = await queryOne(`SELECT * FROM users WHERE id = $1`, [id]);
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  const body = await req.json() as Partial<User> & { currentPassword?: string };
+  let body: Partial<User> & { currentPassword?: string };
+  try {
+    body = await req.json() as Partial<User> & { currentPassword?: string };
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
+  }
 
   // If changing password, verify current password and hash the new one
   if (body.password !== undefined) {
@@ -103,6 +108,21 @@ export async function PUT(
   }
 
   const { currentPassword: _cp, ...userPatch } = body;
+
+  // Validate username uniqueness if it's being changed
+  if (userPatch.username && userPatch.username !== (existing.username as string)) {
+    const taken = await queryOne(
+      `SELECT id FROM users WHERE lower(username) = lower($1) AND id != $2`,
+      [userPatch.username, id]
+    );
+    if (taken) {
+      return NextResponse.json(
+        { error: "That username is already taken. Please choose another." },
+        { status: 409 }
+      );
+    }
+  }
+
   const merged: User = { ...rowToUser(existing), ...userPatch };
   merged.role = rowToUser(existing).role as "customer" | "pro";
   merged.profileId = rowToUser(existing).profileId;

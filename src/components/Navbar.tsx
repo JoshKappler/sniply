@@ -108,8 +108,8 @@ export default function Navbar({ variant = "default", showBack = false, onBack }
     }
   };
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     setUser(null);
     setMenuOpen(false);
     setMobileDrawerOpen(false);
@@ -118,7 +118,7 @@ export default function Navbar({ variant = "default", showBack = false, onBack }
 
   const isLoggedIn = !!user;
   const initials = user?.name
-    ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+    ? user.name.split(" ").filter(Boolean).map((n) => n[0]).join("").toUpperCase().slice(0, 2) || "?"
     : "?";
 
   const proMenuItems = [

@@ -23,7 +23,8 @@ export default function HomePage() {
     else if (role === "customer") setUserRole("customer");
     apiGetBarbers()
       .then(async ({ barbers }) => {
-        setFeaturedBarbers(barbers.filter((b) => FEATURED_IDS.includes(b.id)));
+        const featured = barbers.filter((b) => FEATURED_IDS.includes(b.id));
+        setFeaturedBarbers(featured.length > 0 ? featured : barbers.slice(0, 3));
         const collected: LiveTestimonial[] = [];
         await Promise.allSettled(
           barbers.map((b) =>

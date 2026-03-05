@@ -42,7 +42,12 @@ export async function PUT(
   const session = getSession(req);
   if (!session) return unauthorized();
 
-  const incoming = await req.json() as MessageThread[];
+  let incoming: MessageThread[];
+  try {
+    incoming = await req.json() as MessageThread[];
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
+  }
 
   if (session.role === "pro") {
     // Pro must own this profile
@@ -124,10 +129,15 @@ export async function PUT(
     }
   }
 
-  // Return all threads for this pro
-  const rows = await query(
-    `SELECT * FROM threads WHERE pro_id = $1 ORDER BY ts DESC NULLS LAST`,
-    [proId]
-  );
+  // Return threads: pros see all; customers only see their own
+  const rows = session.role === "pro"
+    ? await query(
+        `SELECT * FROM threads WHERE pro_id = $1 ORDER BY ts DESC NULLS LAST`,
+        [proId]
+      )
+    : await query(
+        `SELECT * FROM threads WHERE pro_id = $1 AND customer_id = $2 ORDER BY ts DESC NULLS LAST`,
+        [proId, session.userId]
+      );
   return NextResponse.json(rows.map(rowToThread));
 }

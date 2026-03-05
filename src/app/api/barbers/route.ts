@@ -33,7 +33,12 @@ export async function POST(req: NextRequest) {
     // stale profile_id — barber is gone, allow recreation
   }
 
-  const body = await req.json() as Omit<Barber, "id">;
+  let body: Omit<Barber, "id">;
+  try {
+    body = await req.json() as Omit<Barber, "id">;
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
+  }
   const id = randomUUID();
 
   const client = await pool().connect();

@@ -7,10 +7,18 @@ import bcrypt from "bcryptjs";
 import { randomUUID } from "crypto";
 
 export async function POST(req: NextRequest) {
-  const body = await req.json() as Omit<User, "id">;
+  let body: Omit<User, "id">;
+  try {
+    body = await req.json() as Omit<User, "id">;
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
+  }
 
   if (!body.username || !body.password || !body.name || !body.role) {
     return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
+  }
+  if (!["customer", "pro"].includes(body.role)) {
+    return NextResponse.json({ error: "Invalid role." }, { status: 400 });
   }
 
   const existing = await queryOne(

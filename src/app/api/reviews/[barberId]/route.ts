@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { query, rowToReview, pool } from "@/lib/db";
+import { query, queryOne, rowToReview, pool } from "@/lib/db";
 import type { StoredReview } from "@/lib/types";
 import { getSession, unauthorized, forbidden } from "@/lib/server-auth";
 import type { PoolClient } from "pg";
@@ -24,7 +24,12 @@ export async function POST(
   const session = getSession(req);
   if (!session) return unauthorized();
 
-  const body = await req.json() as StoredReview;
+  let body: StoredReview;
+  try {
+    body = await req.json() as StoredReview;
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
+  }
   if (body.userId !== session.userId) return forbidden();
   if (!body.rating || body.rating < 1 || body.rating > 5) {
     return NextResponse.json({ error: "Rating must be between 1 and 5." }, { status: 400 });
@@ -41,16 +46,18 @@ export async function POST(
 
   // Insert the review and update the barber's aggregate atomically
   const client: PoolClient = await pool().connect();
+  let insertedId: number;
   try {
     await client.query("BEGIN");
-    await client.query(
+    const inserted = await client.query(
       `INSERT INTO reviews (barber_id, user_id, user_name, rating, text, date, photos)
-       VALUES ($1,$2,$3,$4,$5,$6,$7)`,
+       VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id`,
       [
         barberId, body.userId, body.userName ?? null, body.rating,
         body.text ?? null, body.date ?? null, body.photos ?? [],
       ]
     );
+    insertedId = inserted.rows[0].id as number;
     await client.query(
       `UPDATE barbers SET
          review_count = review_count + 1,
@@ -68,5 +75,7 @@ export async function POST(
     client.release();
   }
 
-  return NextResponse.json(body, { status: 201 });
+  // Return the persisted row (with DB-generated id) rather than the raw request body
+  const row = await queryOne(`SELECT * FROM reviews WHERE id = $1`, [insertedId]);
+  return NextResponse.json(rowToReview(row!), { status: 201 });
 }

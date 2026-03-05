@@ -2,6 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { query, queryOne, rowToBooking, pool } from "@/lib/db";
 import { getSession, unauthorized, forbidden } from "@/lib/server-auth";
 import type { Booking } from "@/lib/types";
+import { randomUUID } from "crypto";
+
+function parseTime12h(t: string): number {
+  const match = t.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if (!match) return -1;
+  let h = parseInt(match[1], 10);
+  const m = parseInt(match[2], 10);
+  const period = match[3].toUpperCase();
+  if (period === "AM" && h === 12) h = 0;
+  if (period === "PM" && h !== 12) h += 12;
+  return h * 60 + m;
+}
 
 export async function GET(req: NextRequest) {
   const session = getSession(req);
@@ -61,10 +73,24 @@ export async function POST(req: NextRequest) {
   const session = getSession(req);
   if (!session) return unauthorized();
 
-  const body = await req.json() as Booking;
+  let body: Booking;
+  try {
+    body = await req.json() as Booking;
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
+  }
 
   // Only allow booking under the authenticated user's own ID
   if (body.userId !== session.userId) return forbidden();
+
+  // Validate time ordering
+  if (body.time && body.endTime) {
+    const start = parseTime12h(body.time);
+    const end = parseTime12h(body.endTime);
+    if (start >= 0 && end >= 0 && start >= end) {
+      return NextResponse.json({ error: "End time must be after start time." }, { status: 400 });
+    }
+  }
 
   // Wrap conflict check + insert in a transaction to prevent race-condition double bookings
   const client = await pool().connect();
@@ -95,13 +121,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "That time slot is no longer available." }, { status: 409 });
     }
 
+    const id = randomUUID();
+
     await client.query(
       `INSERT INTO bookings (
          id, barber_id, barber_name, barber_image, user_id, user_name,
          service, date, time, end_time, price, duration, status, cancelled, notes
        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`,
       [
-        body.id, body.barberId, body.barberName ?? null, body.barberImage ?? null,
+        id, body.barberId, body.barberName ?? null, body.barberImage ?? null,
         body.userId, body.userName ?? null, body.service ?? null,
         body.date ?? null, body.time ?? null, body.endTime ?? null,
         body.price ?? 0, body.duration ?? 0,
@@ -111,13 +139,13 @@ export async function POST(req: NextRequest) {
     );
 
     await client.query("COMMIT");
+
+    const row = await queryOne(`SELECT * FROM bookings WHERE id = $1`, [id]);
+    return NextResponse.json(rowToBooking(row!), { status: 201 });
   } catch (err) {
     await client.query("ROLLBACK");
     throw err;
   } finally {
     client.release();
   }
-
-  const row = await queryOne(`SELECT * FROM bookings WHERE id = $1`, [body.id]);
-  return NextResponse.json(rowToBooking(row!), { status: 201 });
 }

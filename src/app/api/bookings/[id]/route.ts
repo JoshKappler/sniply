@@ -29,7 +29,12 @@ export async function PUT(
   const booking = rowToBooking(existing);
   if (!(await canMutateBooking(session, booking))) return forbidden();
 
-  const body = await req.json() as Partial<Booking>;
+  let body: Partial<Booking>;
+  try {
+    body = await req.json() as Partial<Booking>;
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
+  }
   const merged: Booking = { ...booking, ...body };
 
   // Lock immutable identity fields — clients must never reassign ownership
