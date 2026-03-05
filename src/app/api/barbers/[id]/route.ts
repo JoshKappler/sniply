@@ -35,6 +35,8 @@ export async function PUT(
 
   const body = await req.json() as Partial<Barber>;
   const merged: Barber = { ...rowToBarber(existing), ...body };
+  merged.rating = rowToBarber(existing).rating;
+  merged.reviewCount = rowToBarber(existing).reviewCount;
 
   await pool().query(
     `UPDATE barbers SET
@@ -88,7 +90,7 @@ export async function DELETE(
     await client.query(`DELETE FROM availability     WHERE barber_id      = $1`, [id]);
     await client.query(`DELETE FROM business_hours   WHERE profile_id     = $1`, [id]);
     await client.query(`DELETE FROM customer_threads WHERE pro_profile_id = $1`, [id]);
-    await client.query(`DELETE FROM threads          WHERE pro_id         = $1`, [session.userId]);
+    await client.query(`DELETE FROM threads          WHERE pro_id         = $1`, [id]);
     await client.query(`DELETE FROM barbers          WHERE id             = $1`, [id]);
     // Always clear profile_id regardless of whether barber row existed (handles orphaned state)
     await client.query(`UPDATE users SET profile_id = NULL WHERE profile_id = $1`, [id]);

@@ -217,7 +217,7 @@ export default function Navbar({ variant = "default", showBack = false, onBack }
                     Browse Pros
                   </Link>
                 )}
-                {user?.role === "customer" && (
+                {user?.role === "customer" && pathname !== "/messages" && (
                   <Link
                     href="/messages"
                     className="hidden md:flex items-center gap-1.5 text-sm font-medium ml-1 px-3 py-1.5 rounded-lg relative nav-link"

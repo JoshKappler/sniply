@@ -29,14 +29,23 @@ export async function PUT(
 
   const ids = await req.json() as string[];
 
-  // Replace all favorites for this user
-  await pool().query(`DELETE FROM favorites WHERE user_id = $1`, [userId]);
-
-  for (const barberId of ids) {
-    await pool().query(
-      `INSERT INTO favorites (user_id, barber_id) VALUES ($1,$2) ON CONFLICT DO NOTHING`,
-      [userId, barberId]
-    );
+  // Replace all favorites atomically
+  const client = await pool().connect();
+  try {
+    await client.query("BEGIN");
+    await client.query(`DELETE FROM favorites WHERE user_id = $1`, [userId]);
+    for (const barberId of ids) {
+      await client.query(
+        `INSERT INTO favorites (user_id, barber_id) VALUES ($1,$2) ON CONFLICT DO NOTHING`,
+        [userId, barberId]
+      );
+    }
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
   }
 
   return NextResponse.json(ids);

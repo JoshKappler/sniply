@@ -238,9 +238,13 @@ export default function MessagesPage() {
                     selectedIdx === idx ? "bg-blue-50" : ""
                   }`}
                 >
-                  <div className="w-9 h-9 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
-                    {proInitials(lt.ref.proName)}
-                  </div>
+                  {lt.ref.proAvatar ? (
+                    <img src={lt.ref.proAvatar} alt={lt.ref.proName} className="w-9 h-9 rounded-full object-cover shrink-0 mt-0.5" />
+                  ) : (
+                    <div className="w-9 h-9 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                      {proInitials(lt.ref.proName)}
+                    </div>
+                  )}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-1">
                       <p className={`text-sm font-semibold truncate ${lt.ref.unread ? "text-gray-900" : "text-gray-700"}`}>
@@ -272,9 +276,13 @@ export default function MessagesPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
                   </button>
-                  <div className="w-9 h-9 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold text-xs flex items-center justify-center shrink-0">
-                    {proInitials(selectedItem.ref.proName)}
-                  </div>
+                  {selectedItem.ref.proAvatar ? (
+                    <img src={selectedItem.ref.proAvatar} alt={selectedItem.ref.proName} className="w-9 h-9 rounded-full object-cover shrink-0" />
+                  ) : (
+                    <div className="w-9 h-9 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold text-xs flex items-center justify-center shrink-0">
+                      {proInitials(selectedItem.ref.proName)}
+                    </div>
+                  )}
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-gray-900 truncate">{selectedItem.ref.proName}</p>
                   </div>

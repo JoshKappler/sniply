@@ -55,7 +55,7 @@ export function verifySession(token: string): SessionPayload | null {
     const payload = JSON.parse(
       Buffer.from(encoded, "base64url").toString()
     ) as SessionPayload;
-    if (!payload.userId || !payload.role) return null;
+    if (!payload.userId || !["customer", "pro"].includes(payload.role)) return null;
     return payload;
   } catch {
     return null;

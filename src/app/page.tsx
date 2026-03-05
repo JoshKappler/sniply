@@ -328,14 +328,6 @@ export default function HomePage() {
                   key={step}
                   className="relative rounded-2xl p-8 overflow-hidden transition-all duration-300 hover:-translate-y-1 bg-white how-it-works-card"
                 >
-                  {/* Large faint step number */}
-                  <span
-                    className="absolute bottom-3 right-4 font-heading font-bold leading-none select-none pointer-events-none"
-                    style={{ fontSize: "88px", color: "rgba(var(--color-primary-rgb),0.035)" }}
-                  >
-                    {step}
-                  </span>
-
                   {/* Icon with gradient bg */}
                   <div
                     className="w-14 h-14 rounded-2xl flex items-center justify-center text-white mb-6"

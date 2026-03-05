@@ -52,59 +52,75 @@ export async function PUT(
     );
     if (!owner || owner.profile_id !== proId) return forbidden();
 
-    // Upsert all incoming threads, delete ones that were removed
+    // Upsert all incoming threads, delete ones that were removed — atomically
     const incomingIds = incoming.map((t) => t.id);
-
-    for (const t of incoming) {
-      await pool().query(
-        `INSERT INTO threads (pro_id, thread_id, customer_id, customer_name, preview, ts, unread, messages)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
-         ON CONFLICT (pro_id, thread_id) DO UPDATE SET
-           customer_id   = EXCLUDED.customer_id,
-           customer_name = EXCLUDED.customer_name,
-           preview       = EXCLUDED.preview,
-           ts            = EXCLUDED.ts,
-           unread        = EXCLUDED.unread,
-           messages      = EXCLUDED.messages`,
-        [
-          proId, t.id, t.customerId ?? null, t.customerName,
-          t.preview ?? null,
-          t.timestamp ? new Date(t.timestamp) : null,
-          t.unread ?? false, JSON.stringify(t.messages ?? []),
-        ]
-      );
-    }
-
-    // Delete threads no longer in the incoming list
-    if (incomingIds.length > 0) {
-      await pool().query(
-        `DELETE FROM threads WHERE pro_id = $1 AND thread_id != ALL($2::text[])`,
-        [proId, incomingIds]
-      );
-    } else {
-      await pool().query(`DELETE FROM threads WHERE pro_id = $1`, [proId]);
+    const client = await pool().connect();
+    try {
+      await client.query("BEGIN");
+      for (const t of incoming) {
+        await client.query(
+          `INSERT INTO threads (pro_id, thread_id, customer_id, customer_name, preview, ts, unread, messages)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+           ON CONFLICT (pro_id, thread_id) DO UPDATE SET
+             customer_id   = EXCLUDED.customer_id,
+             customer_name = EXCLUDED.customer_name,
+             preview       = EXCLUDED.preview,
+             ts            = EXCLUDED.ts,
+             unread        = EXCLUDED.unread,
+             messages      = EXCLUDED.messages`,
+          [
+            proId, t.id, t.customerId ?? null, t.customerName,
+            t.preview ?? null,
+            t.timestamp ? new Date(t.timestamp) : null,
+            t.unread ?? false, JSON.stringify(t.messages ?? []),
+          ]
+        );
+      }
+      if (incomingIds.length > 0) {
+        await client.query(
+          `DELETE FROM threads WHERE pro_id = $1 AND thread_id != ALL($2::text[])`,
+          [proId, incomingIds]
+        );
+      } else {
+        await client.query(`DELETE FROM threads WHERE pro_id = $1`, [proId]);
+      }
+      await client.query("COMMIT");
+    } catch (err) {
+      await client.query("ROLLBACK");
+      throw err;
+    } finally {
+      client.release();
     }
   } else {
-    // Customer: only upsert threads that belong to this customer
+    // Customer: only upsert threads that belong to this customer — atomically
     const customerThreads = incoming.filter((t) => t.customerId === session.userId);
-
-    for (const t of customerThreads) {
-      await pool().query(
-        `INSERT INTO threads (pro_id, thread_id, customer_id, customer_name, preview, ts, unread, messages)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
-         ON CONFLICT (pro_id, thread_id) DO UPDATE SET
-           customer_name = EXCLUDED.customer_name,
-           preview       = EXCLUDED.preview,
-           ts            = EXCLUDED.ts,
-           unread        = EXCLUDED.unread,
-           messages      = EXCLUDED.messages`,
-        [
-          proId, t.id, t.customerId ?? null, t.customerName,
-          t.preview ?? null,
-          t.timestamp ? new Date(t.timestamp) : null,
-          t.unread ?? false, JSON.stringify(t.messages ?? []),
-        ]
-      );
+    const client = await pool().connect();
+    try {
+      await client.query("BEGIN");
+      for (const t of customerThreads) {
+        await client.query(
+          `INSERT INTO threads (pro_id, thread_id, customer_id, customer_name, preview, ts, unread, messages)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+           ON CONFLICT (pro_id, thread_id) DO UPDATE SET
+             customer_name = EXCLUDED.customer_name,
+             preview       = EXCLUDED.preview,
+             ts            = EXCLUDED.ts,
+             unread        = EXCLUDED.unread,
+             messages      = EXCLUDED.messages`,
+          [
+            proId, t.id, t.customerId ?? null, t.customerName,
+            t.preview ?? null,
+            t.timestamp ? new Date(t.timestamp) : null,
+            t.unread ?? false, JSON.stringify(t.messages ?? []),
+          ]
+        );
+      }
+      await client.query("COMMIT");
+    } catch (err) {
+      await client.query("ROLLBACK");
+      throw err;
+    } finally {
+      client.release();
     }
   }
 

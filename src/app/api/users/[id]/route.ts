@@ -32,7 +32,7 @@ export async function DELETE(
     // Pro-only: cascade through barber profile
     if (profileId) {
       await client.query(`DELETE FROM customer_threads WHERE pro_profile_id = $1`, [profileId]);
-      await client.query(`DELETE FROM threads          WHERE pro_id         = $1`, [id]);
+      await client.query(`DELETE FROM threads          WHERE pro_id         = $1`, [profileId]);
       await client.query(`DELETE FROM bookings         WHERE barber_id      = $1`, [profileId]);
       await client.query(`DELETE FROM reviews          WHERE barber_id      = $1`, [profileId]);
       await client.query(`DELETE FROM availability     WHERE barber_id      = $1`, [profileId]);
@@ -86,15 +86,26 @@ export async function PUT(
     if (!body.currentPassword) {
       return NextResponse.json({ error: "Current password is required." }, { status: 400 });
     }
-    const valid = await bcrypt.compare(body.currentPassword, existing.password as string);
+    let valid: boolean;
+    try {
+      valid = await bcrypt.compare(body.currentPassword, existing.password as string);
+    } catch {
+      return NextResponse.json({ error: "Authentication error." }, { status: 500 });
+    }
     if (!valid) {
       return NextResponse.json({ error: "Current password is incorrect." }, { status: 400 });
     }
-    body.password = await bcrypt.hash(body.password, 10);
+    try {
+      body.password = await bcrypt.hash(body.password, 10);
+    } catch {
+      return NextResponse.json({ error: "Failed to update password." }, { status: 500 });
+    }
   }
 
   const { currentPassword: _cp, ...userPatch } = body;
   const merged: User = { ...rowToUser(existing), ...userPatch };
+  merged.role = rowToUser(existing).role as "customer" | "pro";
+  merged.profileId = rowToUser(existing).profileId;
 
   await pool().query(
     `UPDATE users SET

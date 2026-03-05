@@ -4,10 +4,14 @@ import type { NotifPrefs } from "@/lib/types";
 import { getSession, unauthorized, forbidden } from "@/lib/server-auth";
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ userId: string }> }
 ) {
   const { userId } = await params;
+  const session = getSession(req);
+  if (!session) return unauthorized();
+  if (session.userId !== userId) return forbidden();
+
   const row = await queryOne(
     `SELECT * FROM notif_prefs WHERE user_id = $1`,
     [userId]

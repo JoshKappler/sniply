@@ -26,6 +26,9 @@ export async function POST(
 
   const body = await req.json() as StoredReview;
   if (body.userId !== session.userId) return forbidden();
+  if (!body.rating || body.rating < 1 || body.rating > 5) {
+    return NextResponse.json({ error: "Rating must be between 1 and 5." }, { status: 400 });
+  }
 
   // Prevent duplicate reviews from the same user for the same barber
   const alreadyReviewed = await query(

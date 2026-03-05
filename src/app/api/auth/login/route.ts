@@ -48,7 +48,16 @@ export async function POST(req: NextRequest) {
     `SELECT * FROM users WHERE lower(username) = lower($1)`,
     [username]
   );
-  if (!row || !(await bcrypt.compare(password, row.password as string))) {
+  if (!row) {
+    return NextResponse.json({ error: "Invalid username or password." }, { status: 401 });
+  }
+  let passwordMatch: boolean;
+  try {
+    passwordMatch = await bcrypt.compare(password, row.password as string);
+  } catch {
+    return NextResponse.json({ error: "Authentication error." }, { status: 500 });
+  }
+  if (!passwordMatch) {
     return NextResponse.json({ error: "Invalid username or password." }, { status: 401 });
   }
 

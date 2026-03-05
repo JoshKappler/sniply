@@ -269,6 +269,12 @@
    ============================================================ */
 
 /* Body & page root */
+html.dark {
+  --color-primary: #7ba4e8;
+  --color-primary-light: #a5c0f0;
+  --color-primary-rgb: 123, 164, 232;
+}
+
 html.dark body {
   background-color: #000000;
   color: #ffffff;

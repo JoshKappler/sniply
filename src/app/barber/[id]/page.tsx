@@ -282,7 +282,7 @@ function BookingModal({
     return null;
   };
 
-  const canConfirm = !!selectedService;
+  const canConfirm = !!selectedService && !!selectedSlot;
 
   const handleConfirm = async () => {
     if (!canConfirm || !selectedSlot || isConfirming) return;
@@ -309,11 +309,12 @@ function BookingModal({
     };
     setIsConfirming(true);
     try {
-      // If rescheduling, delete old booking first
+      // Create new booking first — if it fails, old booking is preserved.
+      // Only delete old booking after new one is confirmed.
+      await apiCreateBooking(booking);
       if (rescheduleBookingId) {
         await apiDeleteBooking(rescheduleBookingId);
       }
-      await apiCreateBooking(booking);
     } catch (err) {
       console.error("sniply/booking: failed to save booking", err);
       const msg = err instanceof Error ? err.message : "Booking could not be saved. Please try again.";

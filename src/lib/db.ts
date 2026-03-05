@@ -195,6 +195,16 @@ export async function migrate(): Promise<void> {
   await db.query(DDL);
   await db.query(`ALTER TABLE barbers ADD COLUMN IF NOT EXISTS shop_name TEXT`);
 
+  await db.query(`
+    CREATE INDEX IF NOT EXISTS idx_users_username    ON users (lower(username));
+    CREATE INDEX IF NOT EXISTS idx_bookings_user     ON bookings (user_id);
+    CREATE INDEX IF NOT EXISTS idx_bookings_barber   ON bookings (barber_id);
+    CREATE INDEX IF NOT EXISTS idx_reviews_barber    ON reviews (barber_id);
+    CREATE INDEX IF NOT EXISTS idx_favorites_user    ON favorites (user_id);
+    CREATE INDEX IF NOT EXISTS idx_threads_pro       ON threads (pro_id);
+    CREATE INDEX IF NOT EXISTS idx_cthreads_customer ON customer_threads (customer_id);
+  `);
+
   const { rows } = await db.query("SELECT COUNT(*) FROM barbers");
   if (parseInt(rows[0].count, 10) === 0) {
     await seedBarbers(db);

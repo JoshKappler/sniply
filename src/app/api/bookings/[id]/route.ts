@@ -37,9 +37,10 @@ export async function PUT(
   merged.userId = booking.userId;
   merged.barberId = booking.barberId;
 
-  // Customers cannot change price — only pros can adjust it
+  // Customers cannot change price or status — only pros can adjust these
   if (session.role !== "pro") {
     merged.price = booking.price;
+    merged.status = booking.status;
   }
 
   await pool().query(
