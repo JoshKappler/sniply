@@ -53,7 +53,7 @@ export async function queryOne<T extends object = Record<string, unknown>>(
 const DDL = `
   CREATE TABLE IF NOT EXISTS users (
     id          TEXT PRIMARY KEY,
-    username    TEXT UNIQUE NOT NULL,
+    email       TEXT UNIQUE NOT NULL,
     password    TEXT NOT NULL,
     name        TEXT NOT NULL,
     role        TEXT NOT NULL,
@@ -68,6 +68,13 @@ const DDL = `
     notes       TEXT,
     gender      TEXT,
     location    TEXT
+  );
+
+  CREATE TABLE IF NOT EXISTS password_reset_tokens (
+    token      TEXT PRIMARY KEY,
+    user_id    TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    expires_at TIMESTAMPTZ NOT NULL,
+    used       BOOLEAN DEFAULT FALSE
   );
 
   CREATE TABLE IF NOT EXISTS shops (
@@ -195,8 +202,13 @@ export async function migrate(): Promise<void> {
   await db.query(DDL);
   await db.query(`ALTER TABLE barbers ADD COLUMN IF NOT EXISTS shop_name TEXT`);
 
+  // Migrate username → email for existing databases
+  await db.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS email TEXT`);
+  await db.query(`UPDATE users SET email = id || '@placeholder.local' WHERE email IS NULL`);
+  await db.query(`ALTER TABLE users DROP COLUMN IF EXISTS username`);
+
   await db.query(`
-    CREATE INDEX IF NOT EXISTS idx_users_username    ON users (lower(username));
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email    ON users (lower(email));
     CREATE INDEX IF NOT EXISTS idx_bookings_user     ON bookings (user_id);
     CREATE INDEX IF NOT EXISTS idx_bookings_barber   ON bookings (barber_id);
     CREATE INDEX IF NOT EXISTS idx_reviews_barber    ON reviews (barber_id);
@@ -292,7 +304,7 @@ type Row = Record<string, unknown>;
 export function rowToUser(r: Row): User {
   return {
     id: r.id as string,
-    username: r.username as string,
+    email: r.email as string,
     password: r.password as string,
     name: r.name as string,
     role: r.role as "customer" | "pro",

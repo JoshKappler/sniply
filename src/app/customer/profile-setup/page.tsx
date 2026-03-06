@@ -112,7 +112,7 @@ export default function CustomerProfileSetupPage() {
   const [existingUser, setExistingUser] = useState<User | null>(null);
 
   // Account
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -227,7 +227,8 @@ export default function CustomerProfileSetupPage() {
   const validateStep = useCallback((s: number): Record<string, string> => {
     const errs: Record<string, string> = {};
     if (s === 1 && !isEditing) {
-      if (!username.trim()) errs.username = "Username is required";
+      if (!email.trim()) errs.email = "Email is required";
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) errs.email = "Enter a valid email address";
       if (!password) errs.password = "Password is required";
       else if (password.length < 6) errs.password = "Password must be at least 6 characters";
       if (password !== confirmPassword) errs.confirmPassword = "Passwords do not match";
@@ -240,7 +241,7 @@ export default function CustomerProfileSetupPage() {
       if (!form.hairTexture) errs.hairTexture = "Hair texture is required";
     }
     return errs;
-  }, [isEditing, username, password, confirmPassword, form]);
+  }, [isEditing, email, password, confirmPassword, form]);
 
   const handleNext = () => {
     const errs = validateStep(step);
@@ -271,7 +272,8 @@ export default function CustomerProfileSetupPage() {
     const allErrors: Record<string, string> = {};
 
     if (!isEditing) {
-      if (!username.trim()) allErrors.username = "Username is required";
+      if (!email.trim()) allErrors.email = "Email is required";
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) allErrors.email = "Enter a valid email address";
       if (!password) allErrors.password = "Password is required";
       else if (password.length < 6) allErrors.password = "Password must be at least 6 characters";
       if (password !== confirmPassword) allErrors.confirmPassword = "Passwords do not match";
@@ -282,7 +284,7 @@ export default function CustomerProfileSetupPage() {
 
     if (Object.keys(allErrors).length > 0) {
       setErrors(allErrors);
-      if (!isEditing && (allErrors.username || allErrors.password || allErrors.confirmPassword)) setStep(1);
+      if (!isEditing && (allErrors.email || allErrors.password || allErrors.confirmPassword)) setStep(1);
       else if (allErrors.firstName) setStep(2);
       else if (allErrors.hairType || allErrors.hairTexture) setStep(3);
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -308,16 +310,16 @@ export default function CustomerProfileSetupPage() {
       if (!isEditing) {
         try {
           const newUser = await apiRegisterUser({
-            username: username.trim(),
+            email: email.trim(),
             password,
             role: "customer",
             ...prefPatch,
           });
           // Establish the server-side session cookie so authenticated API calls work
-          await apiLogin(username.trim(), password);
+          await apiLogin(email.trim(), password);
           setCurrentUser(newUser);
         } catch (err) {
-          setErrors({ username: err instanceof Error ? err.message : "Registration failed" });
+          setErrors({ email: err instanceof Error ? err.message : "Registration failed" });
           setStep(1);
           return;
         }
@@ -472,7 +474,7 @@ export default function CustomerProfileSetupPage() {
             <div className="space-y-4">
               <div id="hairType">
                 <label className="block text-sm font-medium text-gray-700 mb-3">Hair Type <span className="text-[#EF4444]">*</span></label>
-                <HairTypeGrid value={form.hairType} onChange={v => { updateField("hairType", v); updateField("hairSubtype", ""); }} error={!!errors.hairType} />
+                <HairTypeGrid value={form.hairType} onChange={v => updateField("hairType", v)} error={!!errors.hairType} />
                 {errors.hairType && <p className="text-xs text-[#EF4444] mt-1">{errors.hairType}</p>}
               </div>
               {subtypeOptions.length > 0 && (
@@ -564,15 +566,16 @@ export default function CustomerProfileSetupPage() {
           <div>
             <div className="text-center mb-10">
               <h1 className="font-heading font-bold text-gray-900 text-3xl mb-2">Create your account</h1>
-              <p className="text-gray-500">Choose a username and password to get started</p>
+              <p className="text-gray-500">Enter your email and create a password to get started</p>
             </div>
             <div className="space-y-4">
-              <div id="username">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Username <span className="text-[#EF4444]">*</span></label>
-                <input type="text" placeholder="e.g., alex_hair" value={username}
-                  onChange={e => { setUsername(e.target.value); if (errors.username) setErrors(p => ({ ...p, username: "" })); }}
-                  className={`input-field ${errors.username ? "border-[#EF4444]" : ""}`} />
-                {errors.username && <p className="text-xs text-[#EF4444] mt-1">{errors.username}</p>}
+              <div id="email">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Email <span className="text-[#EF4444]">*</span></label>
+                <input type="email" placeholder="you@example.com" value={email}
+                  onChange={e => { setEmail(e.target.value); if (errors.email) setErrors(p => ({ ...p, email: "" })); }}
+                  className={`input-field ${errors.email ? "border-[#EF4444]" : ""}`}
+                  autoComplete="email" />
+                {errors.email && <p className="text-xs text-[#EF4444] mt-1">{errors.email}</p>}
               </div>
               <div id="password">
                 <label className="block text-sm font-medium text-gray-700 mb-2">Password <span className="text-[#EF4444]">*</span></label>
@@ -651,7 +654,7 @@ export default function CustomerProfileSetupPage() {
             <div className="space-y-4">
               <div id="hairType">
                 <label className="block text-sm font-medium text-gray-700 mb-3">Hair Type <span className="text-[#EF4444]">*</span></label>
-                <HairTypeGrid value={form.hairType} onChange={v => { updateField("hairType", v); updateField("hairSubtype", ""); }} error={!!errors.hairType} />
+                <HairTypeGrid value={form.hairType} onChange={v => updateField("hairType", v)} error={!!errors.hairType} />
                 {errors.hairType && <p className="text-xs text-[#EF4444] mt-1">{errors.hairType}</p>}
               </div>
               {subtypeOptions.length > 0 && (

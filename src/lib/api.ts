@@ -65,8 +65,8 @@ export async function apiDeleteUser(id: string): Promise<void> {
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 
-export async function apiLogin(username: string, password: string): Promise<User> {
-  return apiFetch("/api/auth/login", { method: "POST", body: JSON.stringify({ username, password }) });
+export async function apiLogin(email: string, password: string): Promise<User> {
+  return apiFetch("/api/auth/login", { method: "POST", body: JSON.stringify({ email, password }) });
 }
 
 // ── Bookings ──────────────────────────────────────────────────────────────────

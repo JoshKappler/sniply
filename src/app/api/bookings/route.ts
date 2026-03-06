@@ -83,11 +83,14 @@ export async function POST(req: NextRequest) {
   // Only allow booking under the authenticated user's own ID
   if (body.userId !== session.userId) return forbidden();
 
-  // Validate time ordering
+  // Validate time format and ordering
   if (body.time && body.endTime) {
     const start = parseTime12h(body.time);
     const end = parseTime12h(body.endTime);
-    if (start >= 0 && end >= 0 && start >= end) {
+    if (start < 0 || end < 0) {
+      return NextResponse.json({ error: "Invalid time format." }, { status: 400 });
+    }
+    if (start >= end) {
       return NextResponse.json({ error: "End time must be after start time." }, { status: 400 });
     }
   }
@@ -142,9 +145,9 @@ export async function POST(req: NextRequest) {
 
     const row = await queryOne(`SELECT * FROM bookings WHERE id = $1`, [id]);
     return NextResponse.json(rowToBooking(row!), { status: 201 });
-  } catch (err) {
+  } catch {
     await client.query("ROLLBACK");
-    throw err;
+    return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
   } finally {
     client.release();
   }

@@ -42,14 +42,14 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { username, password } = await req.json() as { username: string; password: string };
+  const { email, password } = await req.json() as { email: string; password: string };
 
   const row = await queryOne(
-    `SELECT * FROM users WHERE lower(username) = lower($1)`,
-    [username]
+    `SELECT * FROM users WHERE lower(email) = lower($1)`,
+    [email]
   );
   if (!row) {
-    return NextResponse.json({ error: "Invalid username or password." }, { status: 401 });
+    return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
   }
   let passwordMatch: boolean;
   try {
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Authentication error." }, { status: 500 });
   }
   if (!passwordMatch) {
-    return NextResponse.json({ error: "Invalid username or password." }, { status: 401 });
+    return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
   }
 
   clearAttempts(ip);

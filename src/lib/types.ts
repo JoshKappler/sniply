@@ -27,7 +27,7 @@ export interface BarberReview {
 export interface Barber {
   id: string;
   name: string;
-  username: string;
+  username?: string;
   rating: number;
   reviewCount: number;
   location: string;
@@ -58,7 +58,7 @@ export interface Barber {
 
 export interface User {
   id: string;
-  username: string;
+  email: string;
   password?: string; // never returned from API — stored only in DB
   name: string;
   role: "customer" | "pro";

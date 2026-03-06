@@ -34,6 +34,9 @@ export async function POST(
   if (!body.rating || body.rating < 1 || body.rating > 5) {
     return NextResponse.json({ error: "Rating must be between 1 and 5." }, { status: 400 });
   }
+  if (body.text && body.text.length > 2000) {
+    return NextResponse.json({ error: "Review text must be 2000 characters or fewer." }, { status: 400 });
+  }
 
   // Prevent duplicate reviews from the same user for the same barber
   const alreadyReviewed = await query(
@@ -68,9 +71,9 @@ export async function POST(
       [barberId]
     );
     await client.query("COMMIT");
-  } catch (err) {
+  } catch {
     await client.query("ROLLBACK");
-    throw err;
+    return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
   } finally {
     client.release();
   }

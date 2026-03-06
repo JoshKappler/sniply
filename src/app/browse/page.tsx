@@ -9,7 +9,7 @@ import MapView, { type MapBarber } from "@/components/MapView";
 import type { Barber } from "@/lib/types";
 import { apiGetBarbers, apiGetReviews, apiGetAvailability } from "@/lib/api";
 import { getCurrentUser } from "@/lib/auth";
-import { haversineDistance, computeMatchScore, type CustomerProfile } from "@/lib/utils";
+import { haversineDistance, computeMatchScore, geocodeQuery, type CustomerProfile } from "@/lib/utils";
 
 type SortKey = "recommended" | "rating" | "reviews" | "price-low" | "price-high";
 type ViewMode = "list" | "map";
@@ -20,35 +20,6 @@ interface LocationPin {
   label: string;
 }
 
-// ── Geocode via Nominatim (OpenStreetMap, no API key needed) ───────────────
-async function geocodeQuery(
-  query: string
-): Promise<{ lat: number; lng: number; label: string } | null> {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 5000);
-  try {
-    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1&addressdetails=0&countrycodes=us`;
-    const res = await fetch(url, {
-      headers: { "Accept-Language": "en-US,en;q=0.9" },
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-    const data = await res.json();
-    if (Array.isArray(data) && data.length > 0) {
-      return {
-        lat: parseFloat(data[0].lat),
-        lng: parseFloat(data[0].lon),
-        label: data[0].display_name,
-      };
-    }
-  } catch (err) {
-    clearTimeout(timeoutId);
-    if ((err as Error).name === "AbortError") {
-      throw new Error("timeout");
-    }
-  }
-  return null;
-}
 
 const SORT_OPTIONS: { value: SortKey; label: string }[] = [
   { value: "recommended", label: "Recommended" },
@@ -434,19 +405,19 @@ function BrowseContent() {
       {/* Unified search sticky bar */}
       <div className="sticky top-[68px] z-30 bg-[var(--color-section-bg)] dark:bg-[#141414] border-b border-[var(--color-primary)]/15">
         <div className="max-w-[1200px] mx-auto px-6 py-3">
-          <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-3">
+          <div className="flex flex-col gap-2">
 
-            {/* ── Unified search bar ─────────────────────────────────── */}
-            <div className="flex-1 min-w-0 flex items-stretch h-[44px] rounded-xl border border-[var(--color-primary)]/15 bg-white overflow-hidden transition-colors focus-within:border-[var(--color-primary)]">
+            {/* ── Top row: main search + zip bar + map button ─────────── */}
+            <div className="flex items-stretch gap-2">
 
-              {/* Left: keyword — name / specialty / style */}
-              <div className="flex items-center px-3 gap-2 flex-1 min-w-0">
+              {/* Main search bar */}
+              <div className="flex-1 min-w-0 flex items-center h-[44px] rounded-xl border border-[var(--color-primary)]/15 bg-white overflow-hidden transition-colors focus-within:border-[var(--color-primary)] px-3 gap-2">
                 <svg className="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
                 <input
                   type="text"
-                  placeholder="Name, specialty, or style…"
+                  placeholder="Search barbers, specialties, hair types, locations…"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   className="flex-1 text-sm bg-transparent focus:outline-none min-w-0 placeholder-gray-400 text-gray-900"
@@ -461,19 +432,16 @@ function BrowseContent() {
                 )}
               </div>
 
-              {/* Divider */}
-              <div className="self-stretch w-px bg-gray-200 my-2 shrink-0" />
-
-              {/* Right: location — GPS + text input + radius (when active) */}
-              <div className="flex items-center px-2 gap-1.5 flex-1 min-w-0">
+              {/* Zip code bar (smaller) */}
+              <div className="flex items-stretch h-[44px] rounded-xl border border-[var(--color-primary)]/15 bg-white overflow-hidden transition-colors focus-within:border-[var(--color-primary)] shrink-0 w-[200px] sm:w-[220px]">
                 {/* GPS button */}
                 <button
                   onClick={handleGetGps}
                   disabled={geocoding}
                   title="Use my current location"
-                  className={`shrink-0 flex items-center justify-center w-7 h-7 rounded-lg transition-colors ${
+                  className={`shrink-0 flex items-center justify-center w-9 h-full transition-colors ${
                     userGpsPin
-                      ? "bg-[var(--color-primary)] text-white"
+                      ? "text-[var(--color-primary)]"
                       : "text-gray-400 hover:text-[var(--color-primary)]"
                   }`}
                 >
@@ -487,66 +455,89 @@ function BrowseContent() {
                   )}
                 </button>
 
-                {/* Location text input */}
+                {/* Zip / city input */}
                 <input
                   type="text"
-                  placeholder="City or zip…"
+                  placeholder="Zip code"
                   value={locationQuery}
                   onChange={(e) => { setLocationQuery(e.target.value); setGeoError(null); }}
                   onKeyDown={(e) => e.key === "Enter" && handleGeoSearch(locationQuery)}
-                  className="flex-1 text-sm bg-transparent focus:outline-none min-w-0 placeholder-gray-400 text-gray-900"
+                  className="flex-1 min-w-0 text-sm bg-transparent focus:outline-none placeholder-gray-400 text-gray-900"
                   style={{ fontSize: "16px" }}
                 />
 
-                {locationQuery && (
-                  <button onClick={clearLocation} className="shrink-0 text-gray-400 hover:text-gray-600">
+                {locationQuery && !locationPin && (
+                  <button onClick={clearLocation} className="shrink-0 flex items-center justify-center w-7 text-gray-400 hover:text-gray-600">
                     <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                     </svg>
                   </button>
                 )}
 
-                {/* Radius selector — only when a location is active */}
+                {/* Radius selector — only when a location pin is active */}
                 {locationPin && (
                   <>
                     <div className="self-stretch w-px bg-gray-200 my-2 shrink-0" />
-                    <div className="relative shrink-0">
+                    <div className="relative shrink-0 flex items-center">
                       <select
                         value={searchRadius}
                         onChange={(e) => setSearchRadius(Number(e.target.value))}
-                        className="appearance-none h-8 pl-2 pr-6 rounded-lg border border-gray-200 text-xs font-medium text-gray-700 bg-white focus:outline-none focus:border-[var(--color-primary)] cursor-pointer"
+                        className="appearance-none h-8 pl-2 pr-5 text-xs font-medium text-gray-700 bg-transparent focus:outline-none cursor-pointer"
                       >
                         {RADIUS_OPTIONS.map((r) => (
                           <option key={r} value={r}>{r} mi</option>
                         ))}
                       </select>
-                      <svg className="absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="absolute right-0.5 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
                     </div>
+                    <button onClick={clearLocation} className="shrink-0 flex items-center justify-center w-7 text-gray-400 hover:text-gray-600">
+                      <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </button>
                   </>
                 )}
+
+                {/* Zip search trigger */}
+                <button
+                  onClick={() => handleGeoSearch(locationQuery)}
+                  disabled={geocoding || !locationQuery.trim()}
+                  className="shrink-0 self-stretch px-3 bg-[var(--color-primary)] text-white text-sm font-semibold disabled:opacity-40 hover:bg-[#243A6F] transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </button>
               </div>
 
-              {/* Blue search button (right edge — triggers location geocoding) */}
+              {/* Map toggle button */}
               <button
-                onClick={() => handleGeoSearch(locationQuery)}
-                disabled={geocoding || !locationQuery.trim()}
-                className="shrink-0 self-stretch px-5 bg-[var(--color-primary)] text-white text-sm font-semibold disabled:opacity-40 hover:bg-[#243A6F] transition-colors"
+                onClick={() => setViewMode((v) => (v === "map" ? "list" : "map"))}
+                className={`shrink-0 flex items-center gap-2 px-4 h-[44px] rounded-xl border text-sm font-semibold transition-all ${
+                  viewMode === "map"
+                    ? "bg-[var(--color-primary)] text-white border-[var(--color-primary)] hover:bg-[#243A6F]"
+                    : "bg-white text-gray-700 border-[var(--color-primary)]/15 hover:border-[var(--color-primary)]/40 hover:text-gray-900"
+                }`}
               >
-                Search
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                </svg>
+                <span className="hidden sm:inline">Map</span>
               </button>
+
             </div>
 
-            {/* Controls row: sort + filters + toggle */}
-            <div className="flex items-center gap-2 md:gap-3">
+            {/* ── Bottom row: sort + filters ──────────────────────────── */}
+            <div className="flex items-center gap-2">
 
               {/* Sort dropdown */}
-              <div className="relative flex flex-1 md:flex-none">
+              <div className="relative flex flex-1 sm:flex-none">
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as SortKey)}
-                  className="appearance-none w-full h-[44px] pl-4 pr-9 rounded-xl border border-[var(--color-primary)]/15 text-sm font-medium text-gray-700 bg-white focus:outline-none focus:border-[var(--color-primary)] focus:ring-2 focus:ring-[var(--color-primary)]/20 cursor-pointer"
+                  className="appearance-none w-full h-[38px] pl-4 pr-9 rounded-xl border border-[var(--color-primary)]/15 text-sm font-medium text-gray-700 bg-white focus:outline-none focus:border-[var(--color-primary)] cursor-pointer"
                 >
                   {SORT_OPTIONS.map((o) => (
                     <option key={o.value} value={o.value}>{getSortLabel(o, !!customerProfile)}</option>
@@ -560,7 +551,7 @@ function BrowseContent() {
               {/* Filters button */}
               <button
                 onClick={() => setFilterOpen(true)}
-                className={`flex items-center gap-2 px-3 md:px-4 h-[44px] rounded-xl border text-sm font-semibold transition-all shrink-0 ${
+                className={`flex items-center gap-2 px-3 sm:px-4 h-[38px] rounded-xl border text-sm font-semibold transition-all shrink-0 ${
                   filterCount > 0
                     ? "bg-[var(--color-primary)] text-white border-[var(--color-primary)] hover:bg-[#243A6F]"
                     : "bg-white text-gray-700 border-[var(--color-primary)]/15 hover:border-[var(--color-primary)]/40 hover:text-gray-900"
@@ -576,37 +567,6 @@ function BrowseContent() {
                   </span>
                 )}
               </button>
-
-              {/* List / Map toggle */}
-              <div className="flex shrink-0 rounded-xl border border-[var(--color-primary)]/15 overflow-hidden h-[44px]">
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={`flex items-center gap-1.5 px-4 text-sm font-semibold transition-colors ${
-                    viewMode === "list"
-                      ? "bg-[var(--color-primary)] text-white"
-                      : "bg-white text-gray-600 hover:bg-gray-100"
-                  }`}
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                  </svg>
-                  <span className="hidden sm:inline">List</span>
-                </button>
-                <div className="w-px bg-gray-200" />
-                <button
-                  onClick={() => setViewMode("map")}
-                  className={`flex items-center gap-1.5 px-4 text-sm font-semibold transition-colors ${
-                    viewMode === "map"
-                      ? "bg-[var(--color-primary)] text-white"
-                      : "bg-white text-gray-600 hover:bg-gray-100"
-                  }`}
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                  </svg>
-                  <span className="hidden sm:inline">Map</span>
-                </button>
-              </div>
 
             </div>
 
@@ -713,21 +673,6 @@ function BrowseContent() {
                   </button>
                 )}
               </p>
-              {/* Mobile sort */}
-              <div className="relative sm:hidden">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as SortKey)}
-                  className="appearance-none h-9 pl-3 pr-8 rounded-lg border border-[var(--color-primary)]/15 text-xs font-medium text-gray-700 bg-white focus:outline-none cursor-pointer"
-                >
-                  {SORT_OPTIONS.map((o) => (
-                    <option key={o.value} value={o.value}>{getSortLabel(o, !!customerProfile)}</option>
-                  ))}
-                </select>
-                <svg className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
             </div>
 
             {/* ── MAP VIEW ─────────────────────────────────────────────── */}

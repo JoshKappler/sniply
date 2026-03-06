@@ -181,7 +181,7 @@ export default function SettingsPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `sniply-data-${user.username}.json`;
+    a.download = `sniply-data-${user.name.replace(/\s+/g, "-").toLowerCase()}.json`;
     a.click();
     URL.revokeObjectURL(url);
     addToast("Your data has been downloaded.");
@@ -189,7 +189,7 @@ export default function SettingsPage() {
   };
 
   const handleDeleteAccount = async () => {
-    if (!user || deleteInput !== user.username || isDeletingAccount) return;
+    if (!user || deleteInput !== user.email || isDeletingAccount) return;
     setIsDeletingAccount(true);
 
     // Hard-delete user and all related data
@@ -230,18 +230,17 @@ export default function SettingsPage() {
       <main className="max-w-[560px] mx-auto px-4 sm:px-6 py-10 animate-fade-in-up">
         <h1 className="font-heading font-bold text-gray-900 text-3xl mb-8">Account Settings</h1>
 
-        {/* Username (read-only) */}
+        {/* Email (read-only) */}
         <div className="bg-white border border-[var(--color-primary)]/12 rounded-xl p-4 sm:p-6 mb-5">
           <h2 className="font-semibold text-gray-900 mb-4">Account Info</h2>
           <div className="space-y-3">
             <div>
               <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
-                Username
+                Email
               </label>
               <p className="text-sm text-gray-800 bg-[var(--color-section-bg)] dark:bg-[#1a1a1a] border border-[var(--color-primary)]/12 rounded-lg px-4 py-2.5">
-                @{user?.username}
+                {user?.email}
               </p>
-              <p className="text-xs text-gray-400 mt-1">Usernames cannot be changed.</p>
             </div>
           </div>
         </div>
@@ -437,11 +436,11 @@ export default function SettingsPage() {
           ) : (
             <div className="space-y-3">
               <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700">
-                This will permanently delete your account, bookings, and all saved data. To confirm, type your username below.
+                This will permanently delete your account, bookings, and all saved data. To confirm, type your email address below.
               </div>
               <input
-                type="text"
-                placeholder={`Type "${user?.username}" to confirm`}
+                type="email"
+                placeholder={`Type "${user?.email}" to confirm`}
                 value={deleteInput}
                 onChange={(e) => setDeleteInput(e.target.value)}
                 className="input-field border-red-200 focus:border-red-400 focus:ring-red-100"
@@ -455,7 +454,7 @@ export default function SettingsPage() {
                 </button>
                 <button
                   onClick={() => void handleDeleteAccount()}
-                  disabled={deleteInput !== user?.username || isDeletingAccount}
+                  disabled={deleteInput !== user?.email || isDeletingAccount}
                   className="flex-1 h-11 rounded-xl text-sm font-semibold text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                   style={{ background: "linear-gradient(135deg, #EF4444, #DC2626)" }}
                 >

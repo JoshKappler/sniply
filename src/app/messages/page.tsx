@@ -128,7 +128,8 @@ export default function MessagesPage() {
 
   const sendMessage = () => {
     if (!replyText.trim() || selectedIdx === null) return;
-    const item = loadedThreads[selectedIdx];
+    const capturedIdx = selectedIdx; // capture before any await so rollback targets the right thread
+    const item = loadedThreads[capturedIdx];
     if (!item) return;
     const user = currentUserRef.current;
     if (!user) return;
@@ -149,7 +150,7 @@ export default function MessagesPage() {
     // Optimistic update
     setLoadedThreads((prev) =>
       prev.map((lt, i) =>
-        i === selectedIdx
+        i === capturedIdx
           ? { ...lt, thread: updatedThread, ref: { ...lt.ref, lastMessage: msg.text, timestamp: new Date().toISOString(), unread: false } }
           : lt
       )
@@ -172,9 +173,9 @@ export default function MessagesPage() {
           await apiUpdateCustomerThreads(user.id, refs);
         }
       } catch {
-        // Roll back optimistic update
+        // Roll back optimistic update on the thread that was being edited
         setLoadedThreads((prev) =>
-          prev.map((lt, i) => i === selectedIdx ? { ...lt, thread: item.thread, ref: item.ref } : lt)
+          prev.map((lt, i) => i === capturedIdx ? { ...lt, thread: item.thread, ref: item.ref } : lt)
         );
         setReplyText(msg.text);
         setSendError("Message couldn't be sent. Please try again.");

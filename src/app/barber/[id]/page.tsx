@@ -1478,7 +1478,7 @@ export default function BarberProfilePage({
                             <span className="flex-1">{c.text}</span>
                             {c.fileData && (
                               <button
-                                onClick={() => { const w = window.open(); if (w) { w.document.write(`<iframe src="${c.fileData}" style="width:100%;height:100vh;border:none;"></iframe>`); } }}
+                                onClick={() => window.open(c.fileData, "_blank")}
                                 className="text-xs font-semibold text-[var(--color-primary)] hover:underline shrink-0 ml-1"
                               >
                                 View

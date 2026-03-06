@@ -19,6 +19,9 @@ export async function POST(
   if (!owner || owner.profile_id !== barberId) return forbidden();
 
   const { reviewId, text } = await req.json() as { reviewId: number; text: string };
+  if (!text || typeof text !== "string" || text.length > 2000) {
+    return NextResponse.json({ error: "Reply text must be between 1 and 2000 characters." }, { status: 400 });
+  }
 
   // Verify the review belongs to this barber before updating
   const existing = await queryOne(

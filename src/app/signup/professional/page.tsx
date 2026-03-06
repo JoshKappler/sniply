@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getCurrentUser, setCurrentUser, type User } from "@/lib/auth";
 import { apiRegisterUser, apiUpdateUser, apiCreateBarber, apiUpdateBarber, apiGetBarber, apiGetUser, apiLogin } from "@/lib/api";
+import { geocodeQuery } from "@/lib/utils";
 import { CustomSelect } from "@/components/CustomSelect";
 import { HairTypeGrid } from "@/components/HairTypeGrid";
 import { TagGrid } from "@/components/TagGrid";
@@ -79,7 +80,7 @@ export default function ProfessionalProfileSetupPage() {
   const [existingId, setExistingId] = useState<string | null>(null);
 
   // Account
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -220,7 +221,8 @@ export default function ProfessionalProfileSetupPage() {
   const validateStep = (s: number): Record<string, string> => {
     const errs: Record<string, string> = {};
     if (s === 1 && !isEditing) {
-      if (!username.trim()) errs.username = "Username is required";
+      if (!email.trim()) errs.email = "Email is required";
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) errs.email = "Enter a valid email address";
       if (!password) errs.password = "Password is required";
       else if (password.length < 6) errs.password = "Password must be at least 6 characters";
       if (password !== confirmPassword) errs.confirmPassword = "Passwords do not match";
@@ -265,7 +267,8 @@ export default function ProfessionalProfileSetupPage() {
     setSubmitError("");
     const allErrors: Record<string, string> = {};
     if (!isEditing) {
-      if (!username.trim()) allErrors.username = "Username is required";
+      if (!email.trim()) allErrors.email = "Email is required";
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) allErrors.email = "Enter a valid email address";
       if (!password || password.length < 6) allErrors.password = "Password must be at least 6 characters";
       if (password !== confirmPassword) allErrors.confirmPassword = "Passwords do not match";
     }
@@ -276,7 +279,7 @@ export default function ProfessionalProfileSetupPage() {
     if (barberType === "shop" && !shopName.trim()) allErrors.shopName = "Shop name is required";
     if (Object.keys(allErrors).length > 0) {
       setErrors(allErrors);
-      if (!isEditing && (allErrors.username || allErrors.password || allErrors.confirmPassword)) setStep(1);
+      if (!isEditing && (allErrors.email || allErrors.password || allErrors.confirmPassword)) setStep(1);
       else if (allErrors.firstName || allErrors.lastName) setStep(2);
       else if (allErrors.barberType || allErrors.fullAddress || allErrors.shopName) setStep(4);
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -292,12 +295,22 @@ export default function ProfessionalProfileSetupPage() {
       const startingPrice = validServices.length > 0 ? Math.min(...validServices.map(s => s.price)) : 0;
       const filledPortfolio = portfolioImages.filter(Boolean) as string[];
 
+      // Geocode the address so the barber appears in location/radius searches
+      let geoCoords: { lat: number; lng: number } | null = null;
+      try {
+        const geo = await geocodeQuery(fullAddress.trim());
+        if (geo) geoCoords = { lat: geo.lat, lng: geo.lng };
+      } catch {
+        // Geocoding failed — save without coords; barber won't appear in radius searches
+      }
+
       const profileData = {
         name: `${firstName.trim()} ${lastName.trim()}`,
-        username: existingUser?.username ?? username.trim(),
         bio: bio.trim(),
         location: fullAddress.trim(),
         fullAddress: fullAddress.trim(),
+        lat: geoCoords?.lat ?? undefined,
+        lng: geoCoords?.lng ?? undefined,
         type: barberType as "independent" | "shop",
         shopName: barberType === "shop" ? shopName.trim() : undefined,
         experience: experience || "Under 1 year",
@@ -313,10 +326,11 @@ export default function ProfessionalProfileSetupPage() {
       if (isEditing && existingBarberIdForEdit) {
         const editPatch = {
           name: profileData.name,
-          username: profileData.username,
           bio: profileData.bio,
           location: profileData.location,
           fullAddress: profileData.fullAddress,
+          lat: profileData.lat,
+          lng: profileData.lng,
           type: profileData.type,
           shopName: profileData.shopName,
           experience: profileData.experience,
@@ -339,14 +353,14 @@ export default function ProfessionalProfileSetupPage() {
         let newUser: User;
         try {
           newUser = await apiRegisterUser({
-            username: username.trim(), password,
+            email: email.trim(), password,
             name: profileData.name, role: "pro", avatar: profilePhoto ?? undefined,
           });
           // Registration already sets a session cookie; login confirms it
-          await apiLogin(username.trim(), password);
+          await apiLogin(email.trim(), password);
         } catch (err) {
           const msg = err instanceof Error ? err.message : "Registration failed";
-          setErrors({ username: msg });
+          setErrors({ email: msg });
           setStep(1);
           return;
         }
@@ -764,15 +778,16 @@ export default function ProfessionalProfileSetupPage() {
           <div>
             <div className="text-center mb-10">
               <h1 className="font-heading font-bold text-gray-900 text-3xl mb-2">Create your account</h1>
-              <p className="text-gray-500">Choose a username and password to get started</p>
+              <p className="text-gray-500">Enter your email and create a password to get started</p>
             </div>
             <div className="space-y-4">
-              <div id="username">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Username <span className="text-[#EF4444]">*</span></label>
-                <input type="text" placeholder="e.g., johnstylist" value={username}
-                  onChange={e => { setUsername(e.target.value); if (errors.username) setErrors(p => ({ ...p, username: "" })); }}
-                  className={`input-field ${errors.username ? "border-[#EF4444]" : ""}`} />
-                {errors.username && <p className="text-xs text-[#EF4444] mt-1">{errors.username}</p>}
+              <div id="email">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Email <span className="text-[#EF4444]">*</span></label>
+                <input type="email" placeholder="you@example.com" value={email}
+                  onChange={e => { setEmail(e.target.value); if (errors.email) setErrors(p => ({ ...p, email: "" })); }}
+                  className={`input-field ${errors.email ? "border-[#EF4444]" : ""}`}
+                  autoComplete="email" />
+                {errors.email && <p className="text-xs text-[#EF4444] mt-1">{errors.email}</p>}
               </div>
               <div id="password">
                 <label className="block text-sm font-medium text-gray-700 mb-2">Password <span className="text-[#EF4444]">*</span></label>

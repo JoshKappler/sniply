@@ -27,6 +27,45 @@ export function haversineDistance(lat1: number, lng1: number, lat2: number, lng2
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+/** Geocode a free-text query (zip code, city, or address) via Nominatim. */
+export async function geocodeQuery(
+  query: string
+): Promise<{ lat: number; lng: number; label: string } | null> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
+  // Use structured postal code lookup for bare US zip codes (more accurate than free-text)
+  const isZip = /^\d{5}$/.test(query.trim());
+  const url = isZip
+    ? `https://nominatim.openstreetmap.org/search?postalcode=${query.trim()}&country=US&format=json&limit=1&addressdetails=1`
+    : `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1&addressdetails=1&countrycodes=us`;
+  try {
+    const res = await fetch(url, {
+      headers: { "Accept-Language": "en-US,en;q=0.9" },
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    const data = await res.json();
+    if (Array.isArray(data) && data.length > 0) {
+      const item = data[0];
+      const addr = item.address ?? {};
+      const city = addr.city ?? addr.town ?? addr.village ?? addr.county ?? "";
+      const state = addr.state ?? "";
+      const label = city && state ? `${city}, ${state}` : item.display_name;
+      return {
+        lat: parseFloat(item.lat),
+        lng: parseFloat(item.lon),
+        label,
+      };
+    }
+  } catch (err) {
+    clearTimeout(timeoutId);
+    if ((err as Error).name === "AbortError") {
+      throw new Error("timeout");
+    }
+  }
+  return null;
+}
+
 /**
  * Compute a 0–100 match score between a barber and a customer's hair profile.
  * Returns undefined if there is not enough profile data to score.

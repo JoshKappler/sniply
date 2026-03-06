@@ -14,20 +14,23 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
   }
 
-  if (!body.username || !body.password || !body.name || !body.role) {
+  if (!body.email || !body.password || !body.name || !body.role) {
     return NextResponse.json({ error: "Missing required fields." }, { status: 400 });
   }
   if (!["customer", "pro"].includes(body.role)) {
     return NextResponse.json({ error: "Invalid role." }, { status: 400 });
   }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) {
+    return NextResponse.json({ error: "Invalid email address." }, { status: 400 });
+  }
 
   const existing = await queryOne(
-    `SELECT id FROM users WHERE lower(username) = lower($1)`,
-    [body.username]
+    `SELECT id FROM users WHERE lower(email) = lower($1)`,
+    [body.email]
   );
   if (existing) {
     return NextResponse.json(
-      { error: "That username is already taken. Please choose another." },
+      { error: "An account with that email already exists." },
       { status: 409 }
     );
   }
@@ -37,12 +40,12 @@ export async function POST(req: NextRequest) {
 
   await pool().query(
     `INSERT INTO users (
-       id, username, password, name, role, profile_id, avatar,
+       id, email, password, name, role, profile_id, avatar,
        hair_type, hair_subtype, hair_texture, hair_color,
        style_prefs, concerns, notes, gender, location
      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)`,
     [
-      id, body.username, hashedPassword, body.name, body.role,
+      id, body.email, hashedPassword, body.name, body.role,
       body.profileId ?? null, body.avatar ?? null,
       body.hairType ?? null, body.hairSubtype ?? null,
       body.hairTexture ?? null, body.hairColor ?? null,

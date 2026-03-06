@@ -58,7 +58,7 @@ function EyeIcon({ open }: { open: boolean }) {
 
 export default function LoginPage() {
   const router = useRouter();
-  const [form, setForm] = useState({ username: "", password: "" });
+  const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showPassword, setShowPassword] = useState(false);
   const [testimonialIdx] = useState(() => Math.floor(Math.random() * TESTIMONIALS.length));
@@ -75,7 +75,7 @@ export default function LoginPage() {
 
   const handleSubmit = async () => {
     const newErrors: Record<string, string> = {};
-    if (!form.username.trim()) newErrors.username = "Username is required";
+    if (!form.email.trim()) newErrors.email = "Email is required";
     if (!form.password) newErrors.password = "Password is required";
 
     if (Object.keys(newErrors).length > 0) {
@@ -85,7 +85,7 @@ export default function LoginPage() {
 
     setSubmitting(true);
     try {
-      const user = await apiLogin(form.username.trim(), form.password);
+      const user = await apiLogin(form.email.trim(), form.password);
       setCurrentUser(user);
       localStorage.setItem("sniply_role", user.role);
       localStorage.setItem("sniply_onboarded", "true");
@@ -95,7 +95,7 @@ export default function LoginPage() {
         router.push("/browse");
       }
     } catch {
-      setErrors({ general: "Incorrect username or password. Please try again." });
+      setErrors({ general: "Incorrect email or password. Please try again." });
     } finally {
       setSubmitting(false);
     }
@@ -191,20 +191,20 @@ export default function LoginPage() {
             )}
 
             <div className="space-y-5">
-              {/* Username */}
+              {/* Email */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Username</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
                 <input
-                  type="text"
-                  placeholder="Your username"
-                  value={form.username}
-                  onChange={(e) => updateField("username", e.target.value)}
+                  type="email"
+                  placeholder="you@example.com"
+                  value={form.email}
+                  onChange={(e) => updateField("email", e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter") void handleSubmit(); }}
-                  className={`input-field ${errors.username ? "border-red-400 focus:border-red-400" : ""}`}
-                  autoComplete="username"
+                  className={`input-field ${errors.email ? "border-red-400 focus:border-red-400" : ""}`}
+                  autoComplete="email"
                 />
-                {errors.username && (
-                  <p className="text-xs text-red-500 mt-1.5">{errors.username}</p>
+                {errors.email && (
+                  <p className="text-xs text-red-500 mt-1.5">{errors.email}</p>
                 )}
               </div>
 
@@ -212,7 +212,7 @@ export default function LoginPage() {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <label className="block text-sm font-semibold text-gray-700">Password</label>
-                  <span className="text-xs text-gray-400 cursor-not-allowed select-none">Forgot password?</span>
+                  <Link href="/forgot-password" className="text-xs hover:underline" style={{ color: "var(--color-primary)" }}>Forgot password?</Link>
                 </div>
                 <div className="relative">
                   <input

@@ -20,19 +20,6 @@ export async function POST(req: NextRequest) {
   if (!session) return unauthorized();
   if (session.role !== "pro") return forbidden();
 
-  // Prevent duplicate barber profiles for the same authenticated user
-  const user = await queryOne<{ profile_id: string | null }>(
-    `SELECT profile_id FROM users WHERE id = $1`,
-    [session.userId]
-  );
-  if (user?.profile_id) {
-    const existingBarber = await queryOne(`SELECT id FROM barbers WHERE id = $1`, [user.profile_id]);
-    if (existingBarber) {
-      return NextResponse.json({ error: "Barber profile already exists" }, { status: 409 });
-    }
-    // stale profile_id — barber is gone, allow recreation
-  }
-
   let body: Omit<Barber, "id">;
   try {
     body = await req.json() as Omit<Barber, "id">;
@@ -44,6 +31,22 @@ export async function POST(req: NextRequest) {
   const client = await pool().connect();
   try {
     await client.query("BEGIN");
+
+    // Prevent duplicate barber profiles — lock the user row to serialize concurrent requests
+    const userRow = await client.query<{ profile_id: string | null }>(
+      `SELECT profile_id FROM users WHERE id = $1 FOR UPDATE`,
+      [session.userId]
+    );
+    const existingProfileId = userRow.rows[0]?.profile_id;
+    if (existingProfileId) {
+      const existingBarber = await client.query(`SELECT id FROM barbers WHERE id = $1`, [existingProfileId]);
+      if (existingBarber.rows.length > 0) {
+        await client.query("ROLLBACK");
+        return NextResponse.json({ error: "Barber profile already exists" }, { status: 409 });
+      }
+      // stale profile_id — barber is gone, allow recreation
+    }
+
     await client.query(
       `INSERT INTO barbers (
          id, name, username, rating, review_count, location, full_address,
@@ -63,9 +66,9 @@ export async function POST(req: NextRequest) {
     );
     await client.query(`UPDATE users SET profile_id = $1 WHERE id = $2`, [id, session.userId]);
     await client.query("COMMIT");
-  } catch (err) {
+  } catch {
     await client.query("ROLLBACK");
-    throw err;
+    return NextResponse.json({ error: "Something went wrong. Please try again." }, { status: 500 });
   } finally {
     client.release();
   }

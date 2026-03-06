@@ -1,5 +1,14 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+
+function escHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
 import type { Map, LayerGroup, Marker } from "leaflet";
 
 export interface MapBarber {
@@ -182,7 +191,7 @@ export default function MapView({ barbers, center, userPin }: MapViewProps) {
 
       const popupContent = `
         <div style="font-family:Inter,system-ui,sans-serif;min-width:175px;max-width:215px;">
-          <div style="font-weight:700;font-size:14px;color:#111827;margin-bottom:5px;line-height:1.35;">${barber.name}</div>
+          <div style="font-weight:700;font-size:14px;color:#111827;margin-bottom:5px;line-height:1.35;">${escHtml(barber.name)}</div>
           <div style="display:inline-flex;align-items:center;background:${badgeColor}18;color:${badgeColor};font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;margin-bottom:8px;">${badgeLabel}</div>
           <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px;">
             <span style="color:var(--color-accent);font-size:12px;line-height:1;">${starStr(barber.rating)}</span>
@@ -190,7 +199,7 @@ export default function MapView({ barbers, center, userPin }: MapViewProps) {
             <span style="color:#9ca3af;font-size:11px;">(${barber.reviewCount})</span>
           </div>
           <div style="color:#374151;font-size:12px;margin-bottom:2px;">from <strong style="color:#111827;">$${barber.startingPrice}</strong></div>
-          <div style="color:#9ca3af;font-size:11px;margin-bottom:11px;">${barber.location}</div>
+          <div style="color:#9ca3af;font-size:11px;margin-bottom:11px;">${escHtml(barber.location)}</div>
           <a href="/barber/${barber.id}" style="display:block;text-align:center;font-size:12px;font-weight:700;color:#fff;text-decoration:none;background:linear-gradient(135deg,#3050A0,#1E3573);padding:7px 14px;border-radius:9px;">View Profile →</a>
         </div>`;
 

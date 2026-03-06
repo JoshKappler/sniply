@@ -109,15 +109,18 @@ export async function PUT(
 
   const { currentPassword: _cp, ...userPatch } = body;
 
-  // Validate username uniqueness if it's being changed
-  if (userPatch.username && userPatch.username !== (existing.username as string)) {
+  // Validate email uniqueness if it's being changed
+  if (userPatch.email && userPatch.email !== (existing.email as string)) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userPatch.email)) {
+      return NextResponse.json({ error: "Invalid email address." }, { status: 400 });
+    }
     const taken = await queryOne(
-      `SELECT id FROM users WHERE lower(username) = lower($1) AND id != $2`,
-      [userPatch.username, id]
+      `SELECT id FROM users WHERE lower(email) = lower($1) AND id != $2`,
+      [userPatch.email, id]
     );
     if (taken) {
       return NextResponse.json(
-        { error: "That username is already taken. Please choose another." },
+        { error: "An account with that email already exists." },
         { status: 409 }
       );
     }
@@ -129,14 +132,14 @@ export async function PUT(
 
   await pool().query(
     `UPDATE users SET
-       username     = $2, password    = $3, name        = $4, role        = $5,
+       email        = $2, password    = $3, name        = $4, role        = $5,
        profile_id   = $6, avatar      = $7, hair_type   = $8, hair_subtype = $9,
        hair_texture = $10, hair_color = $11, style_prefs = $12, concerns   = $13,
        notes        = $14, gender     = $15, location    = $16
      WHERE id = $1`,
     [
       id,
-      merged.username, merged.password, merged.name, merged.role,
+      merged.email, merged.password, merged.name, merged.role,
       merged.profileId ?? null, merged.avatar ?? null,
       merged.hairType ?? null, merged.hairSubtype ?? null,
       merged.hairTexture ?? null, merged.hairColor ?? null,

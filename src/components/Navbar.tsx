@@ -336,7 +336,7 @@ export default function Navbar({ variant = "default", showBack = false, onBack }
                       >
                         <div className="px-4 py-3" style={{ borderBottom: isDark ? "1px solid #1e1e1e" : "1px solid rgba(var(--color-primary-rgb),0.07)" }}>
                           <p className="text-sm font-semibold" style={{ color: isDark ? "#ffffff" : "#111827" }}>{user?.name}</p>
-                          <p className="text-xs" style={{ color: isDark ? "#5a5a5a" : "#9CA3AF" }}>@{user?.username}</p>
+                          <p className="text-xs" style={{ color: isDark ? "#5a5a5a" : "#9CA3AF" }}>{user?.email}</p>
                         </div>
                         {menuItems.map((item) => (
                           <Link
@@ -462,7 +462,7 @@ export default function Navbar({ variant = "default", showBack = false, onBack }
                 )}
                 <div className="min-w-0">
                   <p className="text-sm font-semibold truncate" style={{ color: isDark ? "#ffffff" : "#111827" }}>{user?.name}</p>
-                  <p className="text-xs truncate" style={{ color: isDark ? "#5a5a5a" : "#9CA3AF" }}>@{user?.username}</p>
+                  <p className="text-xs truncate" style={{ color: isDark ? "#5a5a5a" : "#9CA3AF" }}>{user?.email}</p>
                 </div>
                 {(unreadCount + customerUnreadCount) > 0 && (
                   <span className="ml-auto text-xs font-bold bg-red-500 text-white px-2 py-0.5 rounded-full shrink-0">
