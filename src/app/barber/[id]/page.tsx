@@ -1478,7 +1478,16 @@ export default function BarberProfilePage({
                             <span className="flex-1">{c.text}</span>
                             {c.fileData && (
                               <button
-                                onClick={() => window.open(c.fileData, "_blank")}
+                                onClick={() => {
+                                  const [header, base64] = c.fileData!.split(",");
+                                  const mime = header.match(/:(.*?);/)?.[1] ?? "application/octet-stream";
+                                  const bytes = atob(base64);
+                                  const arr = new Uint8Array(bytes.length);
+                                  for (let j = 0; j < bytes.length; j++) arr[j] = bytes.charCodeAt(j);
+                                  const blob = new Blob([arr], { type: mime });
+                                  const url = URL.createObjectURL(blob);
+                                  window.open(url, "_blank");
+                                }}
                                 className="text-xs font-semibold text-[var(--color-primary)] hover:underline shrink-0 ml-1"
                               >
                                 View
