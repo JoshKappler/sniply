@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# sniply.biz
 
-## Getting Started
+Live two-sided marketplace for booking barbers and stylists. Customers discover, chat with, and book professionals. Professionals manage their availability, profile, and bookings.
 
-First, run the development server:
+Live at [sniply.biz](https://sniply.biz).
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Features
+
+- **Discovery** — location-based search with an interactive Leaflet map, filtered by hair type, specialty, and availability.
+- **Matching** — smart scoring surfaces the best-fit professionals first.
+- **Booking** — real-time availability, PostgreSQL advisory locks prevent double-booking across instances.
+- **Messaging** — in-app chat between customer and professional.
+- **Reviews and scheduling** — post-appointment reviews, calendar view for professionals.
+- **Auth** — custom HMAC-SHA256 session tokens with timing-safe verification, role-based access (customer vs pro).
+
+## Architecture
+
+Monolithic Next.js 16 full-stack. Pages and API routes colocated under `app/`, shared data access and auth under `lib/`.
+
+```
+app/
+  (customer)/   customer-facing pages
+  (pro)/        professional-facing pages
+  api/          REST endpoints (auth, bookings, messages, etc)
+lib/
+  db/           typed Postgres query helpers, connection pooling (singleton Pool)
+  auth/         HMAC-SHA256 sessions, role checks
+  api/          typed async fetch wrappers with standardized error handling
+types/          shared client/server type definitions
+tests/          Vitest unit, API, and Playwright E2E
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Key patterns
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **PostgreSQL advisory locks** around the booking transaction prevent double-booking when two customers race to book the same slot across separate instances. Locks are keyed by `(professional_id, slot_start)`.
+- **Custom session auth.** HMAC-SHA256 signed tokens with timing-safe verification. Sessions are stored server-side, clients hold only the signed token. Role-based access gates customer vs pro endpoints.
+- **Typed data access.** Query helpers wrap the pg driver with generics so every DB call is typed end-to-end. Connection pooling via a singleton Pool.
+- **Centralized fetch wrappers** on the client standardize error handling, JSON parsing, and retries.
+- **Full test suite.** Vitest for unit and API tests, Playwright for 54 E2E tests covering auth, booking, messaging, and settings flows.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Stack
 
-## Learn More
+Next.js 16 · React 19 · TypeScript · PostgreSQL (pg) · Tailwind CSS 4 · Vitest · Playwright · Leaflet · Resend · bcryptjs
 
-To learn more about Next.js, take a look at the following resources:
+## Running locally
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+pnpm install
+cp .env.local.example .env.local   # set DATABASE_URL, RESEND_API_KEY, etc.
+pnpm dev                            # http://localhost:3000
+```
