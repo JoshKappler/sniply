@@ -13,7 +13,17 @@ vi.mock("@/lib/db", () => ({
     messages: Boolean(r.messages),
     promotions: Boolean(r.promotions),
   }),
-  pool: vi.fn(() => ({ query: mockPoolQuery })),
+  pool: vi.fn(() => ({
+    query: mockPoolQuery,
+    // Transaction client: BEGIN/COMMIT/ROLLBACK are no-ops so they don't
+    // consume mockResolvedValueOnce queues scripted by individual tests.
+    connect: vi.fn().mockResolvedValue({
+      query: vi.fn((sql: string, ...rest: unknown[]) =>
+        /^(BEGIN|COMMIT|ROLLBACK)/i.test(String(sql)) ? Promise.resolve({ rows: [] }) : mockPoolQuery(sql, ...rest),
+      ),
+      release: vi.fn(),
+    }),
+  })),
 }));
 
 import * as db from "@/lib/db";
@@ -42,9 +52,21 @@ beforeEach(() => {
 });
 
 describe("GET /api/notif-prefs/[userId]", () => {
+  it("returns 401 with no session", async () => {
+    const req = new NextRequest("http://localhost/api/notif-prefs/u1");
+    const res = await getNotifPrefs(req, { params: Promise.resolve({ userId: "u1" }) });
+    expect(res.status).toBe(401);
+  });
+
+  it("returns 403 when session userId does not match", async () => {
+    const req = authedReq("http://localhost/api/notif-prefs/u1", "GET", "u-other");
+    const res = await getNotifPrefs(req, { params: Promise.resolve({ userId: "u1" }) });
+    expect(res.status).toBe(403);
+  });
+
   it("returns prefs when row exists", async () => {
     mockQueryOne.mockResolvedValueOnce(PREFS_ROW);
-    const req = new NextRequest("http://localhost/api/notif-prefs/u1");
+    const req = authedReq("http://localhost/api/notif-prefs/u1", "GET", "u1");
     const res = await getNotifPrefs(req, { params: Promise.resolve({ userId: "u1" }) });
     expect(res.status).toBe(200);
     const body = await res.json();
@@ -54,8 +76,9 @@ describe("GET /api/notif-prefs/[userId]", () => {
 
   it("returns null when no prefs row", async () => {
     mockQueryOne.mockResolvedValueOnce(null);
-    const req = new NextRequest("http://localhost/api/notif-prefs/u1");
+    const req = authedReq("http://localhost/api/notif-prefs/u1", "GET", "u1");
     const res = await getNotifPrefs(req, { params: Promise.resolve({ userId: "u1" }) });
+    expect(res.status).toBe(200);
     expect(await res.json()).toBeNull();
   });
 });

@@ -8,12 +8,22 @@ vi.mock("@/lib/db", () => ({
   queryOne: vi.fn(),
   query: vi.fn(),
   rowToUser: (r: Record<string, unknown>) => ({
-    id: r.id, username: r.username, password: r.password, name: r.name, role: r.role,
+    id: r.id, email: r.email, password: r.password, name: r.name, role: r.role,
     profileId: r.profile_id ?? undefined, avatar: r.avatar ?? undefined,
     hairType: r.hair_type ?? undefined, stylePrefs: r.style_prefs ?? undefined,
     concerns: r.concerns ?? undefined, location: r.location ?? undefined,
   }),
-  pool: vi.fn(() => ({ query: mockPoolQuery })),
+  pool: vi.fn(() => ({
+    query: mockPoolQuery,
+    // Transaction client: BEGIN/COMMIT/ROLLBACK are no-ops so they don't
+    // consume mockResolvedValueOnce queues scripted by individual tests.
+    connect: vi.fn().mockResolvedValue({
+      query: vi.fn((sql: string, ...rest: unknown[]) =>
+        /^(BEGIN|COMMIT|ROLLBACK)/i.test(String(sql)) ? Promise.resolve({ rows: [] }) : mockPoolQuery(sql, ...rest),
+      ),
+      release: vi.fn(),
+    }),
+  })),
 }));
 
 vi.mock("bcryptjs", () => ({
@@ -32,7 +42,7 @@ const mockBcryptCompare = vi.mocked(bcrypt.default.compare);
 const mockBcryptHash = vi.mocked(bcrypt.default.hash);
 
 const BASE_ROW = {
-  id: "u1", username: "alice", password: "$hashed", name: "Alice", role: "customer",
+  id: "u1", email: "alice@example.com", password: "$hashed", name: "Alice", role: "customer",
   profile_id: null, avatar: null, hair_type: "curly", hair_subtype: null,
   hair_texture: null, hair_color: null, style_prefs: ["Fades"], concerns: null,
   notes: null, gender: null, location: "Atlanta, GA",
@@ -59,35 +69,47 @@ beforeEach(() => {
 describe("POST /api/users", () => {
   it("creates a user and returns 201 with session cookie", async () => {
     mockQueryOne
-      .mockResolvedValueOnce(null)     // no duplicate username
+      .mockResolvedValueOnce(null)     // no duplicate email
       .mockResolvedValueOnce(BASE_ROW); // fetch created user
 
     const req = new NextRequest("http://localhost/api/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: "alice", password: "secret", name: "Alice", role: "customer" }),
+      body: JSON.stringify({ email: "alice@example.com", password: "secret", name: "Alice", role: "customer" }),
     });
     const res = await createUser(req);
     expect(res.status).toBe(201);
     const body = await res.json();
-    expect(body.username).toBe("alice");
+    expect(body.email).toBe("alice@example.com");
     expect(body.password).toBeUndefined(); // never returned
     const cookie = res.headers.get("set-cookie");
     expect(cookie).toContain(SESSION_COOKIE);
   });
 
-  it("returns 409 when username is already taken", async () => {
+  it("returns 400 when email is malformed", async () => {
+    const req = new NextRequest("http://localhost/api/users", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: "not-an-email", password: "secret", name: "Alice", role: "customer" }),
+    });
+    const res = await createUser(req);
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toMatch(/invalid email/i);
+  });
+
+  it("returns 409 when email is already registered", async () => {
     mockQueryOne.mockResolvedValueOnce({ id: "existing" });
 
     const req = new NextRequest("http://localhost/api/users", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: "alice", password: "pw", name: "Bob", role: "customer" }),
+      body: JSON.stringify({ email: "alice@example.com", password: "pw", name: "Bob", role: "customer" }),
     });
     const res = await createUser(req);
     expect(res.status).toBe(409);
     const body = await res.json();
-    expect(body.error).toMatch(/already taken/i);
+    expect(body.error).toMatch(/already exists/i);
   });
 });
 

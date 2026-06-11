@@ -5,7 +5,7 @@ import type { User } from "@/lib/auth";
 
 const MOCK_USER: User = {
   id: "u1",
-  username: "alice",
+  email: "alice@example.com",
   password: "",
   name: "Alice",
   role: "customer",
@@ -42,7 +42,7 @@ describe("setCurrentUser", () => {
     expect(raw).not.toBeNull();
     const parsed = JSON.parse(raw!);
     expect(parsed.id).toBe("u1");
-    expect(parsed.username).toBe("alice");
+    expect(parsed.email).toBe("alice@example.com");
   });
 });
 

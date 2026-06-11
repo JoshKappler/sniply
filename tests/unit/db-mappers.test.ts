@@ -27,7 +27,7 @@ describe("rowToUser", () => {
   it("maps all basic fields", () => {
     const row = {
       id: "u1",
-      username: "alice",
+      email: "alice@example.com",
       password: "hashed",
       name: "Alice",
       role: "customer",
@@ -45,7 +45,7 @@ describe("rowToUser", () => {
     };
     const user = rowToUser(row);
     expect(user.id).toBe("u1");
-    expect(user.username).toBe("alice");
+    expect(user.email).toBe("alice@example.com");
     expect(user.role).toBe("customer");
     expect(user.hairType).toBe("curly");
     expect(user.stylePrefs).toEqual(["fades", "tapers"]);
@@ -54,7 +54,7 @@ describe("rowToUser", () => {
   });
 
   it("leaves optional fields as undefined when null", () => {
-    const row = { id: "u2", username: "bob", password: "pw", name: "Bob", role: "pro",
+    const row = { id: "u2", email: "bob@example.com", password: "pw", name: "Bob", role: "pro",
       profile_id: null, avatar: null, hair_type: null, hair_subtype: null,
       hair_texture: null, hair_color: null, style_prefs: null, concerns: null,
       notes: null, gender: null, location: null };
@@ -65,7 +65,7 @@ describe("rowToUser", () => {
   });
 
   it("maps profileId from profile_id column", () => {
-    const row = { id: "u3", username: "pro1", password: "pw", name: "Pro",
+    const row = { id: "u3", email: "pro1@example.com", password: "pw", name: "Pro",
       role: "pro", profile_id: "barber-9", avatar: null, hair_type: null,
       hair_subtype: null, hair_texture: null, hair_color: null,
       style_prefs: null, concerns: null, notes: null, gender: null, location: null };

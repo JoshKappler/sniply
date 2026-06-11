@@ -7,7 +7,17 @@ const mockPoolQuery = vi.fn();
 vi.mock("@/lib/db", () => ({
   queryOne: vi.fn(),
   query: vi.fn(),
-  pool: vi.fn(() => ({ query: mockPoolQuery })),
+  pool: vi.fn(() => ({
+    query: mockPoolQuery,
+    // Transaction client: BEGIN/COMMIT/ROLLBACK are no-ops so they don't
+    // consume mockResolvedValueOnce queues scripted by individual tests.
+    connect: vi.fn().mockResolvedValue({
+      query: vi.fn((sql: string, ...rest: unknown[]) =>
+        /^(BEGIN|COMMIT|ROLLBACK)/i.test(String(sql)) ? Promise.resolve({ rows: [] }) : mockPoolQuery(sql, ...rest),
+      ),
+      release: vi.fn(),
+    }),
+  })),
 }));
 
 import * as db from "@/lib/db";

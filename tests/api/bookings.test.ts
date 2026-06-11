@@ -112,9 +112,10 @@ describe("POST /api/bookings", () => {
   });
 
   it("returns 409 when time slot is already booked", async () => {
-    // BEGIN → no rows, conflict check → has existing booking, ROLLBACK → no rows
+    // BEGIN → advisory lock on (barber, date) → conflict check finds a row → ROLLBACK
     mockClient.query
       .mockResolvedValueOnce({ rows: [] })                         // BEGIN
+      .mockResolvedValueOnce({ rows: [] })                         // pg_advisory_xact_lock
       .mockResolvedValueOnce({ rows: [{ id: "bk-existing" }] })   // conflict found
       .mockResolvedValueOnce({ rows: [] });                        // ROLLBACK
     const bookingData = { id: "bk2", barberId: "b1", userId: "u1", service: "Fade",
@@ -122,12 +123,15 @@ describe("POST /api/bookings", () => {
     const req = authedReq("http://localhost/api/bookings", "POST", "u1", "customer", bookingData);
     const res = await createBooking(req);
     expect(res.status).toBe(409);
+    const body = await res.json();
+    expect(body.error).toMatch(/no longer available/i);
   });
 
   it("creates a booking and returns 201", async () => {
-    // BEGIN, no conflict, INSERT, COMMIT
+    // BEGIN, advisory lock, no conflict, INSERT, COMMIT
     mockClient.query
       .mockResolvedValueOnce({ rows: [] })  // BEGIN
+      .mockResolvedValueOnce({ rows: [] })  // pg_advisory_xact_lock
       .mockResolvedValueOnce({ rows: [] })  // no conflict
       .mockResolvedValueOnce({ rows: [] })  // INSERT
       .mockResolvedValueOnce({ rows: [] }); // COMMIT

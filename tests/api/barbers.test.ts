@@ -22,7 +22,17 @@ vi.mock("@/lib/db", () => ({
   rowToShop: (r: Record<string, unknown>) => ({
     id: r.id, name: r.name, address: r.address ?? "", city: r.city ?? "", image: r.image ?? "",
   }),
-  pool: vi.fn(() => ({ query: mockPoolQuery })),
+  pool: vi.fn(() => ({
+    query: mockPoolQuery,
+    // Transaction client: BEGIN/COMMIT/ROLLBACK are no-ops so they don't
+    // consume mockResolvedValueOnce queues scripted by individual tests.
+    connect: vi.fn().mockResolvedValue({
+      query: vi.fn((sql: string, ...rest: unknown[]) =>
+        /^(BEGIN|COMMIT|ROLLBACK)/i.test(String(sql)) ? Promise.resolve({ rows: [] }) : mockPoolQuery(sql, ...rest),
+      ),
+      release: vi.fn(),
+    }),
+  })),
 }));
 
 import * as db from "@/lib/db";
@@ -93,19 +103,27 @@ describe("POST /api/barbers", () => {
   });
 
   it("returns 409 when pro already has a barber profile", async () => {
-    mockQueryOne.mockResolvedValueOnce({ profile_id: "b-existing" }); // user already has profile
+    // The duplicate check now runs inside the transaction on the pool client:
+    // SELECT profile_id ... FOR UPDATE, then SELECT id FROM barbers.
+    mockPoolQuery
+      .mockResolvedValueOnce({ rows: [{ profile_id: "b-existing" }] }) // user row locked — has profile
+      .mockResolvedValueOnce({ rows: [{ id: "b-existing" }] });        // that barber still exists
     const req = proReq("http://localhost/api/barbers", "POST", "pro-user", {
       name: "Marcus", username: "marcus", type: "independent",
       specialties: [], hairTypes: [], languages: [], services: [], reviews: [], portfolioImages: [],
     });
     const res = await createBarber(req);
     expect(res.status).toBe(409);
+    const body = await res.json();
+    expect(body.error).toMatch(/already exists/i);
   });
 
   it("creates a barber and returns 201", async () => {
-    mockQueryOne
-      .mockResolvedValueOnce({ profile_id: null }) // no existing profile
-      .mockResolvedValueOnce(BARBER_ROW);           // after insert
+    mockPoolQuery
+      .mockResolvedValueOnce({ rows: [{ profile_id: null }] }) // user row locked — no existing profile
+      .mockResolvedValueOnce({ rows: [] })                      // INSERT barber
+      .mockResolvedValueOnce({ rows: [] });                     // UPDATE users.profile_id
+    mockQueryOne.mockResolvedValueOnce(BARBER_ROW);             // fetch created barber after COMMIT
     const req = proReq("http://localhost/api/barbers", "POST", "pro-user", {
       name: "Marcus", username: "marcus", type: "independent",
       specialties: [], hairTypes: [], languages: [], services: [], reviews: [], portfolioImages: [],
@@ -199,23 +217,30 @@ describe("DELETE /api/barbers/[id]", () => {
     expect(res.status).toBe(403);
   });
 
-  it("returns 404 when barber not found", async () => {
-    mockQueryOne
-      .mockResolvedValueOnce({ profile_id: "b1" }) // ownership ok
-      .mockResolvedValueOnce(null);                 // barber not found
-    const req = proReq("http://localhost/api/barbers/b1", "DELETE", "pro-user");
-    const res = await deleteBarber(req, { params: Promise.resolve({ id: "b1" }) });
-    expect(res.status).toBe(404);
-  });
-
-  it("deletes barber when pro owns the profile", async () => {
-    mockQueryOne
-      .mockResolvedValueOnce({ profile_id: "b1" }) // ownership ok
-      .mockResolvedValueOnce({ id: "b1" });         // barber exists
+  it("succeeds and clears profile_id even when the barber row is already gone", async () => {
+    // The route no longer 404s on a missing barber row: a matching profile_id
+    // with no barber is treated as orphaned state and cleaned up anyway.
+    mockQueryOne.mockResolvedValueOnce({ profile_id: "b1" }); // ownership ok
+    mockPoolQuery.mockResolvedValue({ rows: [] });            // every cascade delete affects 0 rows
     const req = proReq("http://localhost/api/barbers/b1", "DELETE", "pro-user");
     const res = await deleteBarber(req, { params: Promise.resolve({ id: "b1" }) });
     expect(res.status).toBe(200);
     const body = await res.json();
     expect(body.success).toBe(true);
+    // profile_id is cleared regardless of whether the barber row existed
+    const sqls = mockPoolQuery.mock.calls.map((c) => String(c[0]));
+    expect(sqls.some((s) => /UPDATE users SET profile_id = NULL/i.test(s))).toBe(true);
+  });
+
+  it("deletes barber when pro owns the profile", async () => {
+    mockQueryOne.mockResolvedValueOnce({ profile_id: "b1" }); // ownership ok
+    const req = proReq("http://localhost/api/barbers/b1", "DELETE", "pro-user");
+    const res = await deleteBarber(req, { params: Promise.resolve({ id: "b1" }) });
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.success).toBe(true);
+    // Cascade delete runs in a transaction and removes the barber row itself
+    const sqls = mockPoolQuery.mock.calls.map((c) => String(c[0]));
+    expect(sqls.some((s) => /DELETE FROM barbers\s+WHERE id\s+= \$1/i.test(s))).toBe(true);
   });
 });

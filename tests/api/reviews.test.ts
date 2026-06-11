@@ -93,13 +93,21 @@ describe("POST /api/reviews/[barberId]", () => {
 
   it("creates review and returns 201", async () => {
     mockQuery.mockResolvedValueOnce([]); // no duplicate
-    // pool().connect() provides client for transaction
+    // Transaction on pool().connect(): INSERT … RETURNING id, then barber aggregate update
+    mockClient.query
+      .mockResolvedValueOnce({ rows: [] })           // BEGIN
+      .mockResolvedValueOnce({ rows: [{ id: 1 }] })  // INSERT review RETURNING id
+      .mockResolvedValueOnce({ rows: [] })           // UPDATE barbers rating/review_count
+      .mockResolvedValueOnce({ rows: [] });          // COMMIT
+    mockQueryOne.mockResolvedValueOnce(REVIEW_ROW);  // fetch persisted row by returned id
     const reviewBody = { userId: "u1", userName: "Alice", rating: 5, text: "Great!", date: "2026-01-01", photos: [] };
     const req = authedReq("http://localhost/api/reviews/b1", "POST", "u1", "customer", reviewBody);
     const res = await postReview(req, { params: Promise.resolve({ barberId: "b1" }) });
     expect(res.status).toBe(201);
     const body = await res.json();
+    expect(body.id).toBe(1); // DB-generated id, not echoed request body
     expect(body.userId).toBe("u1");
+    expect(body.rating).toBe(5);
   });
 });
 

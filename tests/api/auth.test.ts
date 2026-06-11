@@ -9,7 +9,10 @@ vi.mock("@/lib/db", () => ({
     id: r.id, username: r.username, password: r.password, name: r.name, role: r.role,
     profileId: r.profile_id ?? undefined, avatar: undefined,
   }),
-  pool: vi.fn(() => ({ query: vi.fn() })),
+  pool: vi.fn(() => ({
+    query: vi.fn().mockResolvedValue({ rows: [] }),
+    connect: vi.fn().mockResolvedValue({ query: vi.fn().mockResolvedValue({ rows: [] }), release: vi.fn() }),
+  })),
 }));
 
 vi.mock("bcryptjs", () => ({
