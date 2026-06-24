@@ -1,8 +1,22 @@
 # sniply.biz
 
-Live two-sided marketplace for booking barbers and stylists. Customers discover, chat with, and book professionals. Professionals manage their availability, profile, and bookings.
+**A live two-sided marketplace for booking barbers and stylists.** Customers
+discover pros by map, specialty, and availability, message them, and book in real
+time; professionals run their book, services, hours, and profile from a dashboard.
+The unglamorous parts are the point: real auth, race-condition-safe booking, and a
+test suite that covers both sides.
 
-Live at [sniply.biz](https://sniply.biz).
+### ▶ Live at [sniply.biz](https://sniply.biz)
+
+![sniply home](docs/screenshots/home.png)
+
+| Map + specialty discovery | A pro's profile & booking |
+|---|---|
+| ![Browse professionals](docs/screenshots/browse.png) | ![Professional profile](docs/screenshots/profile.png) |
+
+<sub>Customers browse and filter pros (map, hair type, specialty, availability),
+then open a profile to review portfolio, reviews, and book a slot. Shown with the
+seeded demo professionals.</sub>
 
 ## Features
 
